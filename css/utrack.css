@@ -1,1 +1,57 @@
 /* Put any additional CSS here */
+html {
+  font-size: 16px;
+}
+
+body {
+  background-color: rgb(90, 140, 207);
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+.header {
+  background: white;
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  position: absolute;
+  left: 4rem;
+  top: 0;
+}
+
+section {
+  margin-top: 40vh;
+}
+
+.container {
+  background: white;
+  box-shadow: 1px 1px 1px rgb(89, 89, 89);
+}
+
+ul {
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+li {
+  display: inline-block;
+  background: white;
+  padding: 0.2rem 2rem;
+  font-size: 1.5rem;
+  color: gray;
+}
+
+li.active {
+  background: rgb(78, 101, 192);
+  color: white;
+}
+
+li + li {
+  margin-left: -0.1rem;
+}
+
+.row.nav {
+  width: 1170px;
+  margin: 0 auto;
+}
