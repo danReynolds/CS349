@@ -15,9 +15,24 @@ var GRAPH_SELECTED_EVENT = 'GRAPH_SELECTED_EVENT';
  * @constructor
  */
 var ActivityData = function(activityType, healthMetricsDict, activityDurationInMinutes) {
+    var errors = [];
+    for (var key in healthMetricsDict) {
+        if (!_.isFinite(parseInt(healthMetricsDict[key]))) {
+            errors.push("Error - Invalid Number entered for " + key);
+        }
+    }
+
+    if !(_.isFinite(parseInt(activityDurationInMinutes))) {
+        errors.push("Error - Invalid Number entered for " + activityDurationInMinutes);
+    }
+
+    if (!errors.empty())
+        return errors;
+
     this.activityType = activityType;
     this.activityDataDict = healthMetricsDict;
-    this.activityDurationInMinutes = activityDurationInMinutes
+    this.activityDurationInMinutes = activityDurationInMinutes;
+    return true;
 };
 
 /**

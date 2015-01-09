@@ -1,23 +1,37 @@
 /* Put any additional CSS here */
+@media (min-width: 768px) { .row.nav, .container { width: 44rem; } }
+@media (min-width: 992px) { .row.nav, .container { width: 44rem; } }
+@media (min-width: 1200px) { .row.nav, .container { width: 44rem; } }
+
+@font-face {
+ font-family: 'Raleway';
+ src: url('/fonts/Raleway-Regular.ttf'),
+ url('/fonts/Raleway-Regular.ttf') format('truetype');
+ font-weight: normal;
+ font-style: normal;
+}
+
 html {
   font-size: 16px;
 }
 
 body {
-  background-color: rgb(90, 140, 207);
+  font-family: 'Raleway';
+  background: url("/images/footer_lodyas.png") repeat fixed center;
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
 .header {
-  background: white;
+  background: rgb(86, 182, 240);
   display: inline-block;
   padding: 1rem 2rem;
   position: absolute;
   left: 4rem;
   top: 0;
+  color: white;
 }
 
 .header h1 {
@@ -26,11 +40,12 @@ h1 {
 
 section {
   margin-top: 20vh;
+  padding: 2rem;
 }
 
 .container {
   background: white;
-  box-shadow: 1px 1px 1px rgb(89, 89, 89);
+  box-shadow: 1px 1px 1px rgb(86, 86, 86);
 }
 
 ul {
@@ -40,7 +55,7 @@ ul {
 
 li {
   display: inline-block;
-  background: rgb(87, 87, 87);
+  background: rgb(86, 182, 240);
   padding: 0.5rem 2rem;
   font-size: 1.5rem;
   color: white;
@@ -51,9 +66,7 @@ li.active {
   background: white;
   color: rgb(87, 87, 87);
 }
-
 .row.nav {
-  width: 1170px;
   margin: 0 auto;
 }
 
@@ -80,4 +93,9 @@ progress {
 
 .form-group.active {
   display: block;
+}
+
+.btn-primary {
+  border-color: white !important;
+  background-color: rgb(52, 150, 210) !important;
 }
