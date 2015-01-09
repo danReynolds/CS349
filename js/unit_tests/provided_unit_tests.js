@@ -82,15 +82,17 @@ describe('First unit test', function() {
     it('Listener unit test for GraphModel', function() {
         var graphModel = new GraphModel();
         var firstListener = sinon.spy();
-
+        graphModel.names.push("MyGraph");
+        graphModel.names.push("secondListener");
         graphModel.addListener(firstListener);
         graphModel.selectGraph("MyGraph");
 
         expect(firstListener.called, 'GraphModel listener should be called').to.be.ok;
-        expect(firstListener.calledWith('MyGraph'), 'GraphModel argument verification').to.be.true;
+        expect(firstListener.calledWith(firstListener.args[0][0], 'MyGraph'), 'GraphModel argument verification').to.be.true;
 
         var secondListener = sinon.spy();
         graphModel.addListener(secondListener);
+        graphModel.selectGraph("secondListener");
         expect(firstListener.callCount, 'GraphModel first listener should have been called twice').to.equal(2);
         expect(secondListener.called, "GraphModel second listener should have been called").to.be.ok;
     });

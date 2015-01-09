@@ -25,7 +25,8 @@ var ActivityData = function(activityType, healthMetricsDict, activityDurationInM
  * @constructor
  */
 var ActivityStoreModel = function() {
-
+    this.activities = [];
+    this.listeners = [];
 };
 
 // _ is the Underscore library
@@ -41,7 +42,7 @@ _.extend(ActivityStoreModel.prototype, {
      * activityData the ActivityData added or removed.
      */
     addListener: function(listener) {
-        // TODO
+        this.listeners.push(listener);
     },
 
     /**
@@ -49,7 +50,7 @@ _.extend(ActivityStoreModel.prototype, {
      * @param listener
      */
     removeListener: function(listener) {
-        // TODO
+        return this.listeners = _.filter([this.listeners], function(l) { l !== listener });
     },
 
     /**
@@ -58,7 +59,10 @@ _.extend(ActivityStoreModel.prototype, {
      * @param activityDataPoint
      */
     addActivityDataPoint: function(activityDataPoint) {
-        // TODO
+        _.each(this.listeners, function(listener) {
+            return listener.call(ACTIVITY_DATA_ADDED_EVENT, new Date(), activityDataPoint);
+        });
+        return this.activities.push(activityDataPoint);
     },
 
     /**
@@ -68,14 +72,19 @@ _.extend(ActivityStoreModel.prototype, {
      * @param activityDataPoint
      */
     removeActivityDataPoint: function(activityDataPoint) {
-        // TODO
+        if (_.contains(this.activities, activityDataPoint)) {
+            _.each(this.listeners, function(listener) {
+                return listener.call(ACTIVITY_DATA_REMOVED_EVENT, new Date(), activityDataPoint);
+            });
+            return this.activities = _.filter([this.activities], function(a) { a !== activityDataPoint });
+        }
     },
 
     /**
      * Should return an array of all activity data points
      */
     getActivityDataPoints: function() {
-        // TODO
+        return this.activites;
     }
 });
 
@@ -89,7 +98,9 @@ _.extend(ActivityStoreModel.prototype, {
  * @constructor
  */
 var GraphModel = function() {
-
+    this.listeners = [];
+    this.names = [];
+    this.activeName;
 };
 
 _.extend(GraphModel.prototype, {
@@ -102,7 +113,7 @@ _.extend(GraphModel.prototype, {
      * and eventData indicates the name of the new graph.
      */
     addListener: function(listener) {
-        // TODO
+        return this.listeners.push(listener);
     },
 
     /**
@@ -110,14 +121,16 @@ _.extend(GraphModel.prototype, {
      * @param listener
      */
     removeListener: function(listener) {
-        // TODO
+        return this.listeners = _.filter(this.listeners, function(l) {
+            return l !== listener;
+        });
     },
 
     /**
      * Returns a list of graphs (strings) that can be selected by the user
      */
     getAvailableGraphNames: function() {
-        // TODO
+        return this.names;
     },
 
     /**
@@ -125,7 +138,7 @@ _.extend(GraphModel.prototype, {
      * *always* be one graph that is currently available.
      */
     getNameOfCurrentlySelectedGraph: function() {
-        // TODO
+        return this.activeName;
     },
 
     /**
@@ -134,7 +147,12 @@ _.extend(GraphModel.prototype, {
      * @param graphName
      */
     selectGraph: function(graphName) {
-        // TODO
+        if (_.contains(this.names, graphName)) {
+            _.each(this.listeners, function(l) {
+                return l.call(GRAPH_SELECTED_EVENT, new Date, graphName);
+            });
+            return this.activeName = graphName;
+        }
     }
 
 });
