@@ -60,7 +60,7 @@ _.extend(ActivityStoreModel.prototype, {
      */
     addActivityDataPoint: function(activityDataPoint) {
         _.each(this.listeners, function(listener) {
-            return listener.call(ACTIVITY_DATA_ADDED_EVENT, new Date(), activityDataPoint);
+            return listener.call(this, ACTIVITY_DATA_ADDED_EVENT, new Date(), activityDataPoint);
         });
         return this.activities.push(activityDataPoint);
     },
@@ -74,7 +74,7 @@ _.extend(ActivityStoreModel.prototype, {
     removeActivityDataPoint: function(activityDataPoint) {
         if (_.contains(this.activities, activityDataPoint)) {
             _.each(this.listeners, function(listener) {
-                return listener.call(ACTIVITY_DATA_REMOVED_EVENT, new Date(), activityDataPoint);
+                return listener.call(this, ACTIVITY_DATA_REMOVED_EVENT, new Date(), activityDataPoint);
             });
             return this.activities = _.filter([this.activities], function(a) { a !== activityDataPoint });
         }
@@ -84,7 +84,7 @@ _.extend(ActivityStoreModel.prototype, {
      * Should return an array of all activity data points
      */
     getActivityDataPoints: function() {
-        return this.activites;
+        return this.activities;
     }
 });
 
@@ -149,7 +149,7 @@ _.extend(GraphModel.prototype, {
     selectGraph: function(graphName) {
         if (_.contains(this.names, graphName)) {
             _.each(this.listeners, function(l) {
-                return l.call(GRAPH_SELECTED_EVENT, new Date, graphName);
+                return l.call(this, "GRAPH_SELECTED_EVENT", new Date, graphName);
             });
             return this.activeName = graphName;
         }

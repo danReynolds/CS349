@@ -88,7 +88,7 @@ describe('First unit test', function() {
         graphModel.selectGraph("MyGraph");
 
         expect(firstListener.called, 'GraphModel listener should be called').to.be.ok;
-        expect(firstListener.calledWith(firstListener.args[0][0], 'MyGraph'), 'GraphModel argument verification').to.be.true;
+        expect(firstListener.calledWith("GRAPH_SELECTED_EVENT", sinon.match.defined, 'MyGraph'), 'GraphModel argument verification').to.be.true;
 
         var secondListener = sinon.spy();
         graphModel.addListener(secondListener);
@@ -96,5 +96,116 @@ describe('First unit test', function() {
         expect(firstListener.callCount, 'GraphModel first listener should have been called twice').to.equal(2);
         expect(secondListener.called, "GraphModel second listener should have been called").to.be.ok;
     });
-
 });
+
+describe('ActivityStoreModel', function() {
+    it('should add a given listener', function() {
+        var asm = new ActivityStoreModel();
+        var spy = sinon.spy();
+        asm.addListener(spy);
+        expect(asm.listeners).to.have.length(1);
+    });
+
+    it('should remove a given listener', function() {
+        var asm = new ActivityStoreModel();
+        var spy = sinon.spy();
+        asm.addListener(spy);
+        asm.removeListener(spy);
+        expect(asm.listeners).to.have.length(0);
+    });
+
+    describe('when adding an activity', function() {
+        var asm = new ActivityStoreModel();
+        var ad = new ActivityData('ACTIVITY_DATA_ADDED_EVENT', new Date(), { "energy":4, "stress":3, "happiness":2 });
+
+        it('should notify all listeners with activity data', function() {
+            var spy1 = sinon.spy();
+            var spy2 = sinon.spy();
+
+            asm.addListener(spy1);
+            asm.addListener(spy2);
+            asm.addActivityDataPoint(ad);
+
+            _.each(asm.listeners, function(l) {
+                expect(l.called).to.be.ok; 
+                expect(l.calledWithExactly('ACTIVITY_DATA_ADDED_EVENT', sinon.match.defined, ad)).to.be.true;
+            });
+        });
+
+        it('should add the activity to the list of activities', function() {
+            expect(asm.activities).to.have.length(1);
+        });
+    });
+
+    describe('when removing an activity', function() {
+        var spy = sinon.spy();
+        var asm = new ActivityStoreModel();
+        var ad = new ActivityData('ACTIVITY_DATA_ADDED_EVENT', new Date(), { "energy":4, "stress":3, "happiness":2 });
+        asm.activities.push(ad);
+
+        it('should not alert or remove if not in activities', function() {
+            var ad2 = new ActivityData('ACTIVITY_DATA_ADDED_EVENT', new Date(), { "energy":1, "stress":3, "happiness":2 });
+
+            asm.addListener(spy);
+            asm.removeActivityDataPoint(ad2);
+
+            expect(spy.called).to.be.false;
+            expect(asm.activities).to.have.length(1);
+        });
+
+        it('should alert listeners and remove if in activities', function() {
+            asm.addListener(spy);
+            asm.removeActivityDataPoint(ad);
+
+            expect(spy.called).to.be.true;
+            expect(asm.activities).to.have.length(0);
+        });
+    });
+
+    it('should return all activities', function() {
+        var asm = new ActivityStoreModel();
+        var ad = new ActivityData('ACTIVITY_DATA_ADDED_EVENT', new Date(), { "energy":4, "stress":3, "happiness":2 });
+        var ad2 = new ActivityData('ACTIVITY_DATA_ADDED_EVENT', new Date(), { "energy":1, "stress":3, "happiness":2 });
+        asm.activities.push(ad);
+        asm.activities.push(ad2);
+        expect(asm.getActivityDataPoints()).to.include.members([ad, ad2]);
+    });
+});
+
+describe('GraphModel', function() {
+    it('should add a given listener', function() {
+        var gm = new GraphModel();
+        var spy = sinon.spy();
+        gm.addListener(spy);
+        expect(gm.listeners).to.have.length(1);
+    });
+
+    it('should remove a given listener', function() {
+        var gm = new GraphModel();
+        var spy = sinon.spy();
+        gm.addListener(spy);
+        gm.removeListener(spy);
+        expect(gm.listeners).to.have.length(0);
+    });
+
+    it('should return all graph names', function() {
+        var gm = new GraphModel();
+        gm.names = ["test1", "test2"];
+        expect(gm.getAvailableGraphNames()).to.include.members(["test1", "test2"]);
+    });
+
+    it('should return selected graph name', function() {
+        var gm = new GraphModel();
+        gm.names = ["test"];
+        gm.activeName = "test";
+        expect(gm.getNameOfCurrentlySelectedGraph()).to.equal("test");
+    });
+
+    it('should select a graph name', function() {
+        var gm = new GraphModel();
+        gm.names = ["test"];
+        gm.selectGraph("test");
+        expect(gm.activeName).to.equal("test");
+    });
+});
+
