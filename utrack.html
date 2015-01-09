@@ -15,15 +15,15 @@
   <section>
     <div class="row nav">
       <ul>
-        <li class="active">
+        <li class="active tab" id="activity-tab">
           Add Activity
         </li>
-        <li>
-          test2
+        <li class="tab" id="history-tab">
+          Activity History
         </li>
       </ul>
     </div>
-    <div class="container">
+    <div class="container" id="activity">
       <div class="row add-activity"</div>
         <div class="col-md-6">
           <form>
@@ -37,15 +37,15 @@
             </div>
             <div class="form-group">
               <label for="energy">Energy Level (1-5)</label>
-              <input class="form-control" id="energy" placeholder="How good did you feel?">
+              <input class="form-control track-health" id="energy" placeholder="How good did you feel?">
             </div>
             <div class="form-group">
               <label for="stress">Stress Level (1-5)</label>
-              <input id="stress" class="form-control" placeholder="How stressed did you feel?">
+              <input id="stress" class="form-control track-health" placeholder="How stressed did you feel?">
             </div>
             <div class="form-group">
               <label for="happiness">Happiness Level (1-5)</label>
-              <input id="happiness" class="form-control" placeholder="How happy did it make you?">
+              <input id="happiness" class="form-control track-health" placeholder="How happy did it make you?">
             </div>
             <div class="form-group">
               <label for="time">Time Spent (minutes)</label>
@@ -58,9 +58,15 @@
         </div>
         <div class="col-md-6 text-center">
           <h1 class="status"> Health Rating </h1>
-          <progress id="progress" max="100" value="5"></progress>
+          <progress id="progress" max="100" value="0"></progress>
         </div>
       </div>
+    </div>
+
+    <div class="container" id="history">
+      <div class="row"</div>
+        <div class="col-md-6">
+        </div>
     </div>
   </section>
 

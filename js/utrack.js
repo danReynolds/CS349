@@ -5,27 +5,55 @@ Put any interaction code here
  */
 
 window.addEventListener('load', function() {
-  var carouselPosition = 0;
-  var carouselItems = document.getElementsByClassName('form-group');
-  var healthLevel = 0;
-  var progressBar = document.getElementById('progress');
+  // Health
+  var health = 0;
+  var healthBar = document.getElementById('progress');
+  var healthTrackers = document.getElementsByClassName('track-health');
 
-  updateCarousel()
+  function updateHealth() {
+    parent = document.getElementsByClassName('form-group active')[0];
+    health = 0;
+    _.each(healthTrackers, function(object) {
+      if (object.value != "") {
+        if (object.id == "stress") {
+          health = health + 5 - parseInt(object.value);
+        }
+        else {
+          health = health + parseInt(object.value);
+        }
+      }
+    });
+    health = health * 7.14;
+    healthBar.value = health;
+  }
 
-  _.each(document.getElementsByTagName('li'), function(object, index, list) {
-    object.addEventListener('click', function(e) {
+  // Tabs
+  var tabRegex = /(.*)-tab/
+
+  _.each(document.getElementsByClassName('tab'), function(object, index, list) {
+    object.addEventListener('click', function() {
       _.each(list, function(object) {
-        object.className = '';
+        object.className = 'tab';
+        document.getElementById(tabRegex.exec(object.id)[1]).style.display = 'none';
       });
-      this.className = 'active';
+      document.getElementById(tabRegex.exec(object.id)[1]).style.display = 'block';
+      this.className = 'tab active';
     });
   });
 
+  // Carousel
+  var carouselPosition = 0;
+  var carouselItems = document.getElementsByClassName('form-group');
+
+  updateCarousel() // Initially set the carousel
+
   document.getElementById('back').addEventListener('click', function(e) {
+    updateHealth();
     updateCarousel("backwards");
   });
 
   document.getElementById('next').addEventListener('click', function(e) {
+    updateHealth();
     updateCarousel("forwards");
   });
 
