@@ -16,7 +16,7 @@
     <div class="row nav">
       <ul>
         <li class="active">
-          test1
+          Add Activity
         </li>
         <li>
           test2
@@ -24,20 +24,43 @@
       </ul>
     </div>
     <div class="container">
-      <form action="activity_new">
-        <div class="row content">
-          <div class="col-md-8">
-            <select>
-              <option value="code">Writing Code</option>
-              <option value="play">Playing Games</option>
-              <option value="sports">Physical Activity</option>
-              <option value="assignments">Homework</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-          </div>
+      <div class="row add-activity"</div>
+        <div class="col-md-6">
+          <form>
+            <div class="form-group">
+              <label for="activity">Select an Activity</label>
+              <select class="form-control" id="activity">
+                <option value="work">Assignments</option>
+                <option value="sleep">Sleep</option>
+                <option value="play">Play</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="energy">Energy Level (1-5)</label>
+              <input class="form-control" id="energy" placeholder="How good did you feel?">
+            </div>
+            <div class="form-group">
+              <label for="stress">Stress Level (1-5)</label>
+              <input id="stress" class="form-control" placeholder="How stressed did you feel?">
+            </div>
+            <div class="form-group">
+              <label for="happiness">Happiness Level (1-5)</label>
+              <input id="happiness" class="form-control" placeholder="How happy did it make you?">
+            </div>
+            <div class="form-group">
+              <label for="time">Time Spent (minutes)</label>
+              <input id="time" class="form-control" placeholder="How long did you do it?">
+            </div>
+            <button type="button" id="back" class="btn btn-default">Back</button>
+            <button type="button" id="next" class="btn btn-primary active">Next</button>
+            <button type="button" id="finish" class="btn btn-secondary">Track it!</button>
+          </form>
         </div>
-      </form>
+        <div class="col-md-6 text-center">
+          <h1 class="status"> Health Rating </h1>
+          <progress id="progress" max="100" value="5"></progress>
+        </div>
+      </div>
     </div>
   </section>
 

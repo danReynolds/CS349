@@ -8,20 +8,24 @@ body {
 }
 
 h1 {
-  font-size: 3rem;
+  font-size: 2rem;
 }
 
 .header {
   background: white;
   display: inline-block;
-  padding: 0.5rem 1rem;
+  padding: 1rem 2rem;
   position: absolute;
   left: 4rem;
   top: 0;
 }
 
+.header h1 {
+  margin: 0;
+}
+
 section {
-  margin-top: 40vh;
+  margin-top: 20vh;
 }
 
 .container {
@@ -36,22 +40,44 @@ ul {
 
 li {
   display: inline-block;
-  background: white;
-  padding: 0.2rem 2rem;
+  background: rgb(87, 87, 87);
+  padding: 0.5rem 2rem;
   font-size: 1.5rem;
-  color: gray;
+  color: white;
+  cursor: pointer;
 }
 
 li.active {
-  background: rgb(78, 101, 192);
-  color: white;
-}
-
-li + li {
-  margin-left: -0.1rem;
+  background: white;
+  color: rgb(87, 87, 87);
 }
 
 .row.nav {
   width: 1170px;
   margin: 0 auto;
+}
+
+.row.add-activity {
+  margin: 1.5rem;
+  margin-left: 0;
+  padding: 2rem;
+}
+
+.add-activity input, .add-activity select {
+  width: 80%;
+}
+
+progress {
+  height: 50px;
+  width: 200px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.form-group {
+  display: none;
+}
+
+.form-group.active {
+  display: block;
 }
