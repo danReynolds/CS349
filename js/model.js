@@ -99,7 +99,7 @@ _.extend(ActivityStoreModel.prototype, {
  */
 var GraphModel = function() {
     this.listeners = [];
-    this.names = [];
+    this.names = ['activity-graph', 'activity-table'];
     this.activeName;
 };
 
@@ -148,10 +148,10 @@ _.extend(GraphModel.prototype, {
      */
     selectGraph: function(graphName) {
         if (_.contains(this.names, graphName)) {
+            this.activeName = graphName;
             _.each(this.listeners, function(l) {
                 return l.call(this, "GRAPH_SELECTED_EVENT", new Date, graphName);
             });
-            return this.activeName = graphName;
         }
     }
 

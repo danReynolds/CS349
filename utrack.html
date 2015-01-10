@@ -76,13 +76,33 @@
 
     <!-- Second tab -->
     <div class="container" id="history">
-      <div class="row"</div>
+      <div class="row">
         <div class="col-md-6">
+          <h1> Analyze Your Activities </h1>
+          <form role="form">
+            <div class="radio">
+              <label><input type="radio" class="toggle-graph" name="graph" value="activity-table" checked="checked">Activity Table</label>
+            </div>
+            <div class="radio">
+              <label><input type="radio" class="toggle-graph" value="activity-graph" name="graph">Activity Graph</label>
+            </div>
+          </form>
         </div>
         <div class="col-md-6">
           <canvas id="activity-graph" height="300">
           </canvas>
+          <table class="table table-bordered" id="activity-table">
+            <thead>
+              <tr>
+                <th>Activity</th>
+                <th>Time Spent in Activity (min)</th>
+              </tr>
+            </thead>
+            <tbody id="activity-table-body">
+            </tbody>
+          </table>
         </div>
+      </div>
     </div>
   </section>
 

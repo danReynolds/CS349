@@ -9,8 +9,22 @@ window.addEventListener('load', function() {
   var activityModel = new ActivityStoreModel();
   activityModel.addListener(function() {
     renderActivityChart(activityModel);
+    renderActivityTable(activityModel);
   });
   var graphModel = new GraphModel();
+  graphModel.addListener(function(event, date, name) {
+    if (name == 'activity-graph') {
+      renderActivityChart(activityModel);
+      document.getElementById('activity-graph').className = "show";
+      document.getElementById('activity-table').className = "table table-bordered hide";
+    }
+    else if (name == 'activity-table') {
+      renderActivityTable(activityModel);
+      document.getElementById('activity-graph').className = "hide";
+      document.getElementById('activity-table').className = "table table-bordered show";
+    }
+  });
+  graphModel.selectGraph('activity-table');
 
   // ========================================
   // Submit Activity
@@ -80,6 +94,17 @@ window.addEventListener('load', function() {
 
     return errors;
   }
+
+  // ========================================
+  // Toggle Graph Type
+  // ========================================
+  
+  var radios = document.getElementsByClassName('toggle-graph');
+  _.each(radios, function(r) {
+    r.addEventListener('click', function(e) {
+      graphModel.selectGraph(e.toElement.value);
+    });
+  });
 
   // ========================================
   // Health

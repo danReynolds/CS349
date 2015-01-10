@@ -115,3 +115,11 @@ progress::-webkit-progress-value {
 .alert ul {
   margin-left: 1rem;
 }
+
+table {
+  margin-top: 1.5rem;
+}
+
+table.show {
+  display: table !important;
+}
