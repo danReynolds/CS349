@@ -8,11 +8,13 @@
 </head>
 
 <body>
+<!-- Header -->
   <div class="header">
     <h1> UTrack </h1>
   </div>
 
   <section>
+  <!-- Navigation -->
     <div class="row nav">
       <ul>
         <li class="active tab" id="activity-tab">
@@ -24,6 +26,15 @@
       </ul>
     </div>
     <div class="container" id="activity">
+      <!-- Alert section -->
+      <div class="hide" id='alert-wrapper'>
+        <div id="alert-type" class="alert" role="alert">
+          <div class="close">&#x2715;</div>
+          <div id="alert-content"></div>
+        </div>
+      </div>
+
+      <!-- First Tab -->
       <div class="row add-activity"</div>
         <div class="col-md-6">
           <form id='activity-form'>
@@ -63,9 +74,14 @@
       </div>
     </div>
 
+    <!-- Second tab -->
     <div class="container" id="history">
       <div class="row"</div>
         <div class="col-md-6">
+        </div>
+        <div class="col-md-6">
+          <canvas id="activity-graph" height="300">
+          </canvas>
         </div>
     </div>
   </section>

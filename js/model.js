@@ -15,24 +15,9 @@ var GRAPH_SELECTED_EVENT = 'GRAPH_SELECTED_EVENT';
  * @constructor
  */
 var ActivityData = function(activityType, healthMetricsDict, activityDurationInMinutes) {
-    var errors = [];
-    for (var key in healthMetricsDict) {
-        if (!_.isFinite(parseInt(healthMetricsDict[key]))) {
-            errors.push("Error - Invalid Number entered for " + key);
-        }
-    }
-
-    if !(_.isFinite(parseInt(activityDurationInMinutes))) {
-        errors.push("Error - Invalid Number entered for " + activityDurationInMinutes);
-    }
-
-    if (!errors.empty())
-        return errors;
-
     this.activityType = activityType;
     this.activityDataDict = healthMetricsDict;
     this.activityDurationInMinutes = activityDurationInMinutes;
-    return true;
 };
 
 /**
@@ -74,10 +59,10 @@ _.extend(ActivityStoreModel.prototype, {
      * @param activityDataPoint
      */
     addActivityDataPoint: function(activityDataPoint) {
+        this.activities.push(activityDataPoint);
         _.each(this.listeners, function(listener) {
             return listener.call(this, ACTIVITY_DATA_ADDED_EVENT, new Date(), activityDataPoint);
         });
-        return this.activities.push(activityDataPoint);
     },
 
     /**
@@ -197,9 +182,9 @@ function generateFakeData(activityModel, numDataPointsToGenerate) {
             var activityDataPoint = new ActivityData(
                 fakeActivities[_.random(fakeActivities.length-1)],
                 {
-                    energyLevel: _.random(10),
-                    stressLevel: _.random(10),
-                    happinessLevel: _.random(10)
+                    energy: _.random(5),
+                    stress: _.random(5),
+                    happiness: _.random(5)
                 },
                 _.random(60)
             );

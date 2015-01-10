@@ -53,7 +53,7 @@ ul {
   margin-bottom: 0;
 }
 
-li {
+li.tab {
   display: inline-block;
   background: rgb(86, 182, 240);
   padding: 0.5rem 2rem;
@@ -62,7 +62,7 @@ li {
   cursor: pointer;
 }
 
-li.active {
+li.tab.active {
   background: white;
   color: rgb(87, 87, 87);
 }
@@ -87,6 +87,10 @@ progress {
   appearance: none;
 }
 
+progress::-webkit-progress-value {
+  background-color: rgb(86, 182, 240) !important;
+}
+
 .form-group {
   display: none;
 }
@@ -98,4 +102,16 @@ progress {
 .btn-primary {
   border-color: white !important;
   background-color: rgb(52, 150, 210) !important;
+}
+
+#history {
+  display: none;
+}
+
+.alert {
+  margin-top: 1rem;
+}
+
+.alert ul {
+  margin-left: 1rem;
 }

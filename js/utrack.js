@@ -1,23 +1,90 @@
 'use strict';
 
-/*
-Put any interaction code here
- */
-
 window.addEventListener('load', function() {
+
+  // ========================================
+  // Model Instantiation
+  // ========================================
+
+  var activityModel = new ActivityStoreModel();
+  activityModel.addListener(function() {
+    renderActivityChart(activityModel);
+  });
+  var graphModel = new GraphModel();
+
+  // ========================================
   // Submit Activity
-  document.getElementById('finish').addEventListener('click', function() {
+  // ========================================
+
+  function resetActivityForm() {
+    carouselPosition = 0;
+    health = 0;
+    var select = document.getElementById("activity-select")
     var inputs = document.getElementById('activity-form').getElementsByTagName('input');
+    _.each(inputs, function(i) {
+      i.value = "";
+    });
+    select.value = select.children[0].value;
+    updateCarousel();
+    updateHealthBar();
+  }
+
+  document.getElementById('finish').addEventListener('click', function() {
+    var inputs = document.getElementById('activity-form').getElementsByClassName('track-health');
     var activityName = document.getElementById('activity-select').value
     var time = document.getElementById('time').value
-    var healthMetricsDict = {}; 
+    var healthMetricsDict = {};
     _.each(inputs, function(i) {
       healthMetricsDict[i.id] = i.value;
     });
-    success = new ActivityData(activityName, healthMetricsDict, time);
+
+    var errors = validateActivity(healthMetricsDict, time);
+
+    var html = "";
+    if (errors.length == 0) {
+      var new_activity = new ActivityData(activityName, healthMetricsDict, time);
+      activityModel.addActivityDataPoint(new_activity);
+      html = "Activity Added.";
+      document.getElementById('alert-type').className = "alert alert-success";
+      resetActivityForm();
+    }
+    else {
+      html += '<ul id="alert-list">';
+      _.each(errors, function(e) {
+        html += "<li>" + e + "</li>";
+      });
+      html += "</ul>";
+      document.getElementById('alert-type').className = "alert alert-danger";
+    }
+    document.getElementById('alert-content').innerHTML = html;
+    document.getElementById('alert-wrapper').className = "show";
   });
 
+  // ========================================
+  // Validate Activity
+  // ========================================
+
+  function validateActivity(dictionary, time) {
+    var errors = [];
+    _.each(dictionary, function(value, key) {
+      value = parseInt(value);
+      if (!_.isFinite(value) || value < 1 || value > 5) {
+        errors.push("Error - " + key + " is not a number between 1 and 5.");
+      }
+    });
+
+    time = parseInt(time);
+    if (!_.isFinite(time) || time < 0) {
+      errors.push("Error - time in minutes is not valid.");
+    }
+
+    return errors;
+  }
+
+  // ========================================
   // Health
+  // ========================================
+
   var health = 0;
   var healthBar = document.getElementById('progress');
   var healthStatus = document.getElementById('health-status');
@@ -58,7 +125,23 @@ window.addEventListener('load', function() {
     health = health * 7.14;
   }
 
-  // Tabs
+  // ========================================
+  // Alert Boxes
+  // ========================================
+
+  var alerts = document.getElementsByClassName('alert')
+  _.each(alerts, function(a) {
+    _.each(a.getElementsByClassName('close'), function(c) {
+      c.addEventListener('click', function(e) {
+        e.toElement.parentElement.parentElement.className = "hide";
+      });
+    });
+  });
+
+  // ========================================
+  // Tab Interaction
+  // ========================================
+
   var tabRegex = /(.*)-tab/
 
   _.each(document.getElementsByClassName('tab'), function(object, index, list) {
@@ -72,7 +155,10 @@ window.addEventListener('load', function() {
     });
   });
 
-  // Carousel
+  // ========================================
+  // Carousel Interaction
+  // ========================================
+
   var carouselPosition = 0;
   var carouselItems = document.getElementsByClassName('form-group');
 
