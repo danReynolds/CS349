@@ -128,7 +128,7 @@ describe('ActivityStoreModel', function() {
 
             _.each(asm.listeners, function(l) {
                 expect(l.called).to.be.ok; 
-                expect(l.calledWithExactly('Activity 1', sinon.match.defined, ad)).to.be.true;
+                expect(l.calledWithExactly('ACTIVITY_DATA_ADDED_EVENT', sinon.match.defined, ad)).to.be.true;
             });
         });
 
