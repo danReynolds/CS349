@@ -72,6 +72,11 @@ function renderActivityChart(model) {
     index = index + 1; // increment because each doesn't keep track
   });
 
+  // render axis labels
+  context.rotate(Math.PI * -0.5);
+  context.fillText("Total Time Spent on Activity", innerLeft, innerBottom);
+  context.rotate(Math.PI * 0.5);
+
   // render the y-axis markers
   if (highestBar == 0) {
     context.fillText(highestBar, outerLeft, innerBottom);
