@@ -99,7 +99,7 @@ _.extend(ActivityStoreModel.prototype, {
  */
 var GraphModel = function() {
     this.listeners = [];
-    this.names = ['activity-graph', 'activity-table'];
+    this.names = ['activity-graph', 'activity-table', 'duration-graph'];
     this.activeName;
 };
 

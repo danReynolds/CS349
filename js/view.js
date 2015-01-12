@@ -1,6 +1,6 @@
 'use strict';
 
-function composeData(model) {
+function totalActivities(model) {
   var data = {
     "Assignments": 0,
     "Sleep": 0,
@@ -13,8 +13,20 @@ function composeData(model) {
   return data;
 }
 
+function durationActivities(model) {
+  var data = {};
+  _.each(model.activities, function(a) {
+    if (data[a.activityDurationInMinutes] === undefined)
+      data[a.activityDurationInMinutes] = 1;
+    else
+      data[a.activityDurationInMinutes] = data[a.activityDurationInMinutes] + 1;
+  })
+
+  return data;
+}
+
 function renderActivityTable(model) {
-  var data = composeData(model);
+  var data = totalActivities(model);
   var html = "";
   _.each(data, function(total, key) {
     html += "<tr><td>" + key + "</td><td>" + total + "</td>";
@@ -25,15 +37,28 @@ function renderActivityTable(model) {
   document.getElementById("activity-table-body").innerHTML = html;
 }
 
-function renderActivityChart(model) {
-  var canvas = document.getElementById('activity-graph');
+function renderBarGraph(model, graphId) {
+  var canvas = document.getElementById('graph');
   canvas.width = canvas.width
   var context = canvas.getContext('2d');
-  var data = composeData(model);
+  var data, graphTitle, xAxisTitle, yAxisTitle;
+
+  if (graphId == 'activity-graph'){
+    data = totalActivities(model);
+    graphTitle = "Total Time Spent Per Activity";
+    xAxisTitle = "Activity";
+    yAxisTitle = "Time in Minutes";
+  }
+  else if (graphId == 'duration-graph') {
+    data = durationActivities(model);
+    graphTitle = "Length of Activity";
+    xAxisTitle = "Activity Time in Minutes";
+    yAxisTitle = "Number of Activities";
+  }
 
   // Margin between outer and inner content
-  var marginX = 25;
-  var marginY = 20;
+  var marginX = 40;
+  var marginY = 40;
 
   // outer content
   var outerTop = 0;
@@ -64,26 +89,30 @@ function renderActivityChart(model) {
     context.fillStyle = "#363636";
     renderBar(context, innerLeft + (index * barWidth) + (index + 1) * barSpacing, innerBottom, barWidth, -(innerHeight * (total / highestBar)), true);
     
-    // Add the column title to the x-axis
+    // Render column labels
     context.textAlign = "left";
     context.fillStyle = "#000";
-    context.fillText(key, innerLeft + (index * barWidth) + (index + 1) * barSpacing, outerBottom - 5);
+    context.fillText(key, innerLeft + (index * barWidth) + (index + 1) * barSpacing, innerBottom + 15);
 
     index = index + 1; // increment because each doesn't keep track
   });
 
   // render axis labels
-  context.rotate(Math.PI * -0.5);
-  context.fillText("Total Time Spent on Activity", innerLeft, innerBottom);
-  context.rotate(Math.PI * 0.5);
+    context.save(); // save current state before doing rotation of canvas
+    context.textAlign = "center";
+    context.fillText(graphTitle, innerWidth / 1.5, innerTop - 10); // render graph title
+    context.fillText(xAxisTitle, innerWidth / 1.5, outerBottom - 5); // render x-axis label
+    context.rotate(Math.PI * -0.5); // rotates canvas about axis at 0,0 (top left)
+    context.fillText(yAxisTitle, innerWidth * -0.6, 10); // render y-axis label
+    context.restore(); // restore current state when finished
 
   // render the y-axis markers
-  if (highestBar == 0) {
-    context.fillText(highestBar, outerLeft, innerBottom);
+  if (highestBar == 0 || highestBar == -Infinity) {
+    context.fillText(0, outerLeft + 15, innerBottom);
   }
   else {
     for (var x = 0; x <= 10; x = x + 1) {
-      context.fillText(highestBar * x / 10, outerLeft, innerBottom * (11 - x) / 11);
+      context.fillText(highestBar * x / 10, outerLeft + 20, innerBottom - innerHeight * x / 10);
     }
   }
 }

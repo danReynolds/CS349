@@ -123,3 +123,7 @@ table {
 table.show {
   display: table !important;
 }
+
+#graph {
+  margin: 1rem 0;
+}

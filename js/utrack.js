@@ -8,20 +8,25 @@ window.addEventListener('load', function() {
 
   var activityModel = new ActivityStoreModel();
   activityModel.addListener(function() {
-    renderActivityChart(activityModel);
-    renderActivityTable(activityModel);
+    name = graphModel.getNameOfCurrentlySelectedGraph();
+    if (name == 'activity-table') {
+      renderActivityTable(activityModel);
+    }
+    else {
+      renderBarGraph(activityModel, name);
+    }
   });
   var graphModel = new GraphModel();
   graphModel.addListener(function(event, date, name) {
-    if (name == 'activity-graph') {
-      renderActivityChart(activityModel);
-      document.getElementById('activity-graph').className = "show";
-      document.getElementById('activity-table').className = "table table-bordered hide";
-    }
-    else if (name == 'activity-table') {
+    if (name == 'activity-table') {
       renderActivityTable(activityModel);
-      document.getElementById('activity-graph').className = "hide";
-      document.getElementById('activity-table').className = "table table-bordered show";
+      document.getElementById('graph').className = "hide";
+      document.getElementById(name).className = "table table-bordered show";
+    }
+    else {
+      renderBarGraph(activityModel, name, "Total Time Spent Per Activity", "Activity", "Time in Minutes");
+      document.getElementById('graph').className = "show";
+      document.getElementById('activity-table').className = "table table-bordered hide";
     }
   });
   graphModel.selectGraph('activity-table');

@@ -84,12 +84,15 @@
               <label><input type="radio" class="toggle-graph" name="graph" value="activity-table" checked="checked">Activity Table</label>
             </div>
             <div class="radio">
-              <label><input type="radio" class="toggle-graph" value="activity-graph" name="graph">Activity Graph</label>
+              <label><input type="radio" class="toggle-graph" value="activity-graph" name="graph">Activity Time Graph</label>
+            </div>
+            <div class="radio">
+              <label><input type="radio" class="toggle-graph" value="duration-graph" name="graph">Activity Duration Graph</label>
             </div>
           </form>
         </div>
         <div class="col-md-6">
-          <canvas id="activity-graph" height="300">
+          <canvas id="graph" height="300" width="300">
           </canvas>
           <table class="table table-bordered" id="activity-table">
             <thead>
