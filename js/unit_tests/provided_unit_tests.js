@@ -99,6 +99,7 @@ describe('First unit test', function() {
 });
 
 describe('ActivityStoreModel', function() {
+
     it('should add a given listener', function() {
         var asm = new ActivityStoreModel();
         var spy = sinon.spy();
@@ -115,10 +116,10 @@ describe('ActivityStoreModel', function() {
     });
 
     describe('when adding an activity', function() {
-        var asm = new ActivityStoreModel();
-        var ad = new ActivityData('Activity 1', new Date(), { "energy":4, "stress":3, "happiness":2 });
 
         it('should notify all listeners with activity data', function() {
+            var asm = new ActivityStoreModel();
+            var ad = new ActivityData('Activity 1', new Date(), { "energy":4, "stress":3, "happiness":2 });
             var spy1 = sinon.spy();
             var spy2 = sinon.spy();
 
@@ -130,20 +131,17 @@ describe('ActivityStoreModel', function() {
                 expect(l.called).to.be.ok; 
                 expect(l.calledWithExactly('ACTIVITY_DATA_ADDED_EVENT', sinon.match.defined, ad)).to.be.true;
             });
-        });
-
-        it('should add the activity to the list of activities', function() {
             expect(asm.activities).to.have.length(1);
         });
     });
 
     describe('when removing an activity', function() {
-        var spy = sinon.spy();
-        var asm = new ActivityStoreModel();
-        var ad = new ActivityData('Activity 1', new Date(), { "energy":4, "stress":3, "happiness":2 });
-        asm.activities.push(ad);
 
         it('should not alert or remove if not in activities', function() {
+            var spy = sinon.spy();
+            var asm = new ActivityStoreModel();
+            var ad = new ActivityData('Activity 1', new Date(), { "energy":4, "stress":3, "happiness":2 });
+            asm.activities.push(ad);
             var ad2 = new ActivityData('Activity 2', new Date(), { "energy":1, "stress":3, "happiness":2 });
 
             asm.addListener(spy);
@@ -154,6 +152,10 @@ describe('ActivityStoreModel', function() {
         });
 
         it('should alert listeners and remove if in activities', function() {
+            var spy = sinon.spy();
+            var asm = new ActivityStoreModel();
+            var ad = new ActivityData('Activity 1', new Date(), { "energy":4, "stress":3, "happiness":2 });
+            asm.activities.push(ad);
             asm.addListener(spy);
             asm.removeActivityDataPoint(ad);
 
