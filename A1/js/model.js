@@ -15,6 +15,22 @@ var GRAPH_SELECTED_EVENT = 'GRAPH_SELECTED_EVENT';
  * @constructor
  */
 var ActivityData = function(activityType, healthMetricsDict, activityDurationInMinutes) {
+    var errors = [];
+    _.each(healthMetricsDict, function(value, key) {
+      value = parseInt(value);
+      if (!_.isFinite(value) || value < 1 || value > 5) {
+        errors.push("Error - " + key + " is not a number between 1 and 5.");
+      }
+    });
+
+    var time = parseInt(activityDurationInMinutes);
+    if (!_.isFinite(time) || time < 0) {
+      errors.push("Error - time in minutes is not valid.");
+    }
+
+    if (errors.length !== 0)
+        throw errors;
+
     this.activityType = activityType;
     this.activityDataDict = healthMetricsDict;
     this.activityDurationInMinutes = activityDurationInMinutes;

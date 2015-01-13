@@ -1,10 +1,17 @@
 'use strict';
 
-window.addEventListener('load', function() {
+// Controller - Interaction Code
 
-  // ========================================
-  // Model Instantiation for View
-  // ========================================
+// ========================================
+// Instantiate Models, add listeners
+// ========================================
+
+window.addEventListener('load', function() {
+  var view = viewModule();
+  var content = document.getElementById('utrack-content');
+  var header = new view.HeaderView(document.body)
+  var navigation = new view.NavigationView(content);
+  var tabs = new view.TabsView(content);
 
   var activityModel = new ActivityStoreModel();
   activityModel.addListener(function() {
@@ -16,6 +23,7 @@ window.addEventListener('load', function() {
       renderBarGraph(activityModel, name);
     }
   });
+  
   var graphModel = new GraphModel();
   graphModel.addListener(function(event, date, name) {
     if (name == 'activity-table') {
@@ -53,21 +61,20 @@ window.addEventListener('load', function() {
     var activityName = document.getElementById('activity-select').value
     var time = document.getElementById('time').value
     var healthMetricsDict = {};
+    var html = "";
+
     _.each(inputs, function(i) {
       healthMetricsDict[i.id] = i.value;
     });
 
-    var errors = validateActivity(healthMetricsDict, time);
-
-    var html = "";
-    if (errors.length == 0) {
+    try  {
       var new_activity = new ActivityData(activityName, healthMetricsDict, time);
       activityModel.addActivityDataPoint(new_activity);
       html = "Activity Added.";
       document.getElementById('alert-type').className = "alert alert-success";
       resetActivityForm();
     }
-    else {
+    catch(errors) {
       html += '<ul id="alert-list">';
       _.each(errors, function(e) {
         html += "<li>" + e + "</li>";
@@ -103,7 +110,7 @@ window.addEventListener('load', function() {
   // ========================================
   // Toggle Graph Type
   // ========================================
-  
+
   var radios = document.getElementsByClassName('toggle-graph');
   _.each(radios, function(r) {
     r.addEventListener('click', function(e) {
@@ -243,4 +250,3 @@ window.addEventListener('load', function() {
     }
   }
 });
-

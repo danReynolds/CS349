@@ -1,5 +1,50 @@
 'use strict';
 
+// View
+
+// ========================================
+// View Module
+// ========================================
+
+function viewModule() {
+  // Create Abstract View Class
+  var AbstractView = function() {};
+
+  _.extend(AbstractView.prototype, {
+    _instantiateInterface: function (templateId, attachToElement) {
+      var template = document.getElementById(templateId);
+      this.hostElement = document.createElement('div');
+      this.hostElement.innerHTML = template.innerHTML;
+      attachToElement.appendChild(this.hostElement);
+    }
+  });
+
+  var HeaderView = function (attachToElement) {
+    this._instantiateInterface('header_template', attachToElement);
+  };
+  _.extend(HeaderView.prototype, AbstractView.prototype); // so that navigation view can instantiate interface, Woo inheritance
+
+  var NavigationView = function (attachToElement) {
+    this._instantiateInterface('navigation_template', attachToElement);
+  };
+  _.extend(NavigationView.prototype, AbstractView.prototype);
+
+  var TabsView = function (attachToElement) {
+    this._instantiateInterface('tabs_template', attachToElement);
+  };
+  _.extend(TabsView.prototype, AbstractView.prototype);
+
+  return {
+    HeaderView: HeaderView,
+    NavigationView: NavigationView,
+    TabsView: TabsView
+  };
+}
+
+// ========================================
+// Graphing Functions
+// ========================================
+
 function totalActivities(model) {
   var data = {
     "Assignments": 0,
