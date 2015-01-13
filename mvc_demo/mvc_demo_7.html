@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>MVC demo 7</title>
+</head>
+<body>
+
+<div id="app">
+
+    <template id="excitement_level_text_view_template">
+        Your current excitement level is: <span class="excitement_span">1</span>
+    </template>
+
+    <template id="excitement_level_slider_template">
+        Set your excitement level: <input type="range" class="excitement_slider"/>
+    </template>
+
+    <script id="excitement_level_buttons_template" type="text/html">
+        <button class="decrement_button">Lower Your Excitement</button>
+        <button class="increment_button">Increase Your Excitement</button>
+    </script>
+
+    <template id="word_view_template">
+        I'd say you're <span class="word_view">???</span>.
+    </template>
+</div>
+
+<button id="make_ui_button" style="margin-top: 20px;">
+    Make User Interface
+</button>
+
+<div style="margin-top: 40px;">
+    <a href="mvc_demo_6.html">Previous demo (MVC 6)</a>
+    <a href="mvc_demo_7a.html">This same demo, but using a different method to load templates</a>
+</div>
+
+<!--
+    Underscore will create a variable named _ that will provide a bunch of functionality.
+    We'll use its functional aspects
+-->
+<script src="ext/underscore.js"></script>
+<script>
+
+    /*
+    In this demo, we add a new view.
+     */
+
+    function createModule() {
+        // Define our classes
+
+        // Our model remains the same
+        var ExcitementModel = function () {
+            this.listeners = [];
+            this.excitement = 1;
+
+            this.setExcitement = function (value) {
+
+                // Transform value to a number, if it's not already
+                this.excitement = parseInt(value) || 1;
+
+                // Notify our listeners
+                // Save a reference to this for the function call below
+                var model = this;
+                // Use underscore to iterate over all listeners, calling each in turn
+                _.each(
+                        this.listeners,
+                        function (listener_fn) {
+                            listener_fn(model, model.excitement);
+                        }
+                );
+            };
+
+            this.getExcitement = function () {
+                return this.excitement;
+            };
+
+            // Signature for listener_fn: (model, newValue)
+            this.addListener = function (listener_fn) {
+                this.listeners.push(listener_fn);
+            };
+        };
+
+        // Define our views
+        var AbstractView = function () {
+        };
+
+        _.extend(AbstractView.prototype, {
+            _instantiateInterface: function (templateId, attachToElement) {
+                var template = document.getElementById(templateId);
+                this.hostElement = document.createElement('div');
+                this.hostElement.innerHTML = template.innerHTML;
+                attachToElement.appendChild(this.hostElement);
+            }
+        });
+
+        var ExcitementTextView = function (attachToElement, excitementModel) {
+            this._instantiateInterface('excitement_level_text_view_template', attachToElement);
+
+            var span = this.hostElement.getElementsByClassName('excitement_span')[0];
+            span.innerText = excitementModel.getExcitement();
+            excitementModel.addListener(function (model, newValue) {
+                span.innerText = newValue;
+            });
+        };
+        _.extend(ExcitementTextView.prototype, AbstractView.prototype);
+
+        var ExcitementSlider = function (attachToElement, excitementModel) {
+            this._instantiateInterface('excitement_level_slider_template', attachToElement);
+
+            var slider = this.hostElement.getElementsByClassName('excitement_slider')[0];
+            slider.min = 1;
+            slider.max = 11;
+            slider.value = excitementModel.getExcitement();
+            slider.addEventListener('input', function () {
+                excitementModel.setExcitement(slider.value);
+            });
+            excitementModel.addListener(function (model, newValue) {
+                slider.value = newValue;
+            });
+        };
+        _.extend(ExcitementSlider.prototype, AbstractView.prototype);
+
+        var ExcitementButtons = function (attachToElement, excitementModel) {
+            this._instantiateInterface('excitement_level_buttons_template', attachToElement);
+
+            var decrementButton = this.hostElement.getElementsByClassName('decrement_button')[0];
+            decrementButton.addEventListener('click', function () {
+                excitementModel.setExcitement(excitementModel.getExcitement() - 1);
+            });
+
+            var incrementButton = this.hostElement.getElementsByClassName('increment_button')[0];
+            incrementButton.addEventListener('click', function () {
+                excitementModel.setExcitement(excitementModel.getExcitement() + 1);
+            });
+        };
+        _.extend(ExcitementButtons.prototype, AbstractView.prototype);
+
+
+        // New view: Changes the numeric value into a phrase
+        var ExcitementWordView = function (attachToElement, excitementModel) {
+            this._instantiateInterface('word_view_template', attachToElement);
+
+            var span = this.hostElement.getElementsByClassName('word_view')[0];
+            span.innerText = this.getExcitementText(excitementModel.getExcitement());
+
+            var self = this;
+            excitementModel.addListener(function (model, newValue) {
+                span.innerText = self.getExcitementText(newValue);
+            });
+        };
+        _.extend(ExcitementWordView.prototype, AbstractView.prototype, {
+            getExcitementText: function(level) {
+                // Randomize the level a bit, to show that the views are independent from one another
+                level = level + _.random(-2, 2);
+                switch (level) {
+                    case 2:
+                        return 'sleeping';
+                    case 3:
+                        return 'in some other class';
+                    case 4:
+                        return 'in need of coffee';
+                    case 5:
+                        return 'waking up';
+                    case 6:
+                        return 'thinking about CS349 assignments';
+                    case 7:
+                        return 'on your way to CS349';
+                    case 8:
+                        return 'reading this code';
+                    case 9:
+                        return 'thinking about writing code like this';
+                    case 10:
+                        return 'on winter break';
+                    case 11:
+                        return 'sitting in CS349 lecture';
+                }
+                if (level <= 1) {
+                    return 'dead';
+                }
+                return 'in nirvana';
+            }
+        });
+
+        return {
+            ExcitementModel: ExcitementModel,
+            ExcitementTextView: ExcitementTextView,
+            ExcitementWordView: ExcitementWordView,
+            ExcitementSlider:  ExcitementSlider,
+            ExcitementButtons: ExcitementButtons
+        };
+    }
+
+    window.addEventListener('load', function() {
+        var classes = createModule();
+        var excitementModel = new classes.ExcitementModel();
+        var makeUIButton = document.getElementById('make_ui_button');
+        makeUIButton.addEventListener('click', function() {
+            makeUI(classes, excitementModel);
+        });
+    });
+
+    function makeUI(classes, excitementModel) {
+        var appDiv = document.getElementById('app');
+        var textView = new classes.ExcitementTextView(appDiv, excitementModel);
+        var textWordView = new classes.ExcitementWordView(appDiv, excitementModel);
+        var sliderView = new classes.ExcitementSlider(appDiv, excitementModel);
+        var buttonsView = new classes.ExcitementButtons(appDiv, excitementModel);
+    }
+
+    /*
+    Try making your own view! It should be fairly straightforward at this point.
+     */
+
+    // Original author: Michael Terry (mterry@cs.uwaterloo.ca)
+</script>
+</body>
+</html>

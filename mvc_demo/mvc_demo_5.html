@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>MVC demo 5</title>
+</head>
+<body>
+
+<div id="app">
+
+    <template id="excitement_level_text_view_template">
+        Your current excitement level is: <span class="excitement_span">1</span>
+    </template>
+
+    <template id="excitement_level_slider_template">
+        Set your excitement level: <input type="range" class="excitement_slider"/>
+    </template>
+
+    <script id="excitement_level_buttons_template" type="text/html">
+        <button class="decrement_button">Lower Your Excitement</button>
+        <button class="increment_button">Increase Your Excitement</button>
+    </script>
+</div>
+
+<button id="make_ui_button" style="margin-top: 30px;">
+    Make User Interface
+</button>
+
+<div style="margin-top: 40px;">
+    <a href="mvc_demo_4.html">Previous demo (MVC 4)</a>
+    <a href="mvc_demo_6.html">Next demo (MVC 6)</a>
+</div>
+
+<!--
+    Underscore will create a variable named _ that will provide a bunch of functionality.
+    We'll use its functional aspects
+-->
+<script src="ext/underscore.js"></script>
+<script>
+
+    /*
+    Building on the last demo, we now create a set of view classes that
+    can be instantiated whenever we want to create a new element of that type.
+
+    Hit the Make User Interface button as often as you want...
+     */
+
+    /**
+     * We define our classes now in a module that is created when the window first loads.
+     * This enables us to use any JavaScript libraries referenced by the page.
+     */
+    function createModule() {
+        // Define our classes
+        var AbstractView = function() {
+        };
+
+        // Underscore's extend will modify the first object with the properties found in the second
+        // object. Used on an object's prototype, you can think of it as providing a means of inheritance.
+        _.extend(AbstractView.prototype, {
+            _instantiateInterface : function (templateId, attachToElement) {
+                var template = document.getElementById(templateId);
+                this.hostElement = document.createElement('div');
+                this.hostElement.innerHTML = template.innerHTML;
+                attachToElement.appendChild(this.hostElement);
+            }
+        });
+
+        /* There is no controller yet */
+        
+        var ExcitementTextView = function(attachToElement) {
+            this._instantiateInterface('excitement_level_text_view_template', attachToElement);
+        };
+        _.extend(ExcitementTextView.prototype, AbstractView.prototype);
+
+
+        var ExcitementSlider = function(attachToElement) {
+            this._instantiateInterface('excitement_level_slider_template', attachToElement);
+        };
+        _.extend(ExcitementSlider.prototype, AbstractView.prototype);
+
+        var ExcitementButtons = function(attachToElement) {
+            this._instantiateInterface('excitement_level_buttons_template', attachToElement);
+        };
+        _.extend(ExcitementButtons.prototype, AbstractView.prototype);
+
+        return {
+            ExcitementTextView: ExcitementTextView,
+            ExcitementSlider: ExcitementSlider,
+            ExcitementButtons: ExcitementButtons
+        };
+    }
+
+    window.addEventListener('load', function() {
+        var classes = createModule();
+        var makeUIButton = document.getElementById('make_ui_button');
+        makeUIButton.addEventListener('click', function() {
+            makeUI(classes);
+        });
+    });
+
+    function makeUI(classes) {
+        var appDiv = document.getElementById('app');
+        var textView = new classes.ExcitementTextView(appDiv);
+        var sliderView = new classes.ExcitementSlider(appDiv);
+        var buttonsView = new classes.ExcitementButtons(appDiv);
+    }
+
+    /*
+      Next up, we'll reintroduce our model and respond to events
+     */
+
+    // Original author: Michael Terry (mterry@cs.uwaterloo.ca)
+</script>
+</body>
+</html>

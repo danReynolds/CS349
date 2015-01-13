@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>MVC demo 3</title>
+</head>
+<body>
+
+<div id="app">
+    <div>
+        Your current excitement level is: <span id="excitement_span">1</span>
+    </div>
+
+    <div>
+        Set your excitement level: <input type="range" id="excitement_slider"/>
+    </div>
+
+<!-- New code (compared to mvc_demo_2.html) -->
+    <div>
+        <button id="decrement_button">Lower Your Excitement</button>
+        <button id="increment_button">Increase Your Excitement</button>
+    </div>
+<!-- End new code -->
+
+</div>
+
+<div style="margin-top: 40px;">
+    <a href="mvc_demo_2.html">Previous demo (MVC 2)</a>
+    <a href="mvc_demo_4.html">Next demo (MVC 4)</a>
+</div>
+
+<!--
+    Underscore will create a variable named _ that will provide a bunch of functionality.
+    We'll use its functional aspects
+-->
+<script src="ext/underscore.js"></script>
+<script>
+
+    /*
+    Building off of the previous example, we'll add two new buttons and allow them
+    to update the model
+     */
+
+    // Our model remains the same
+    var ExcitementModel = function() {
+        this.listeners = [];
+        this.excitement = 1;
+
+        this.setExcitement = function(value) {
+
+            // Transform value to a number, if it's not already
+            this.excitement = parseInt(value) || 1;
+
+            // Notify our listeners
+            // Save a reference to this for the function call below
+            var model = this;
+            // Use underscore to iterate over all listeners, calling each in turn
+            _.each(
+                this.listeners,
+                function(listener_fn) {
+                    listener_fn(model, model.excitement);
+                }
+            );
+        };
+
+        this.getExcitement = function() {
+            return this.excitement;
+        };
+
+        // Signature for listener_fn: (model, newValue)
+        this.addListener = function(listener_fn) {
+            this.listeners.push(listener_fn);
+        };
+    };
+
+    window.addEventListener('load', function() {
+        var excitementModel = new ExcitementModel();
+
+        var excitementSpan = document.getElementById('excitement_span');
+        // Init the span to the model's value
+        excitementSpan.innerText = excitementModel.getExcitement();
+
+        var excitementSlider = document.getElementById('excitement_slider');
+        excitementSlider.min = 1;
+        excitementSlider.max = 11;
+        excitementSlider.value = excitementModel.getExcitement();
+
+        // Now, rather than responding directly to changes in the slider, we'll update
+        // the model
+        excitementSlider.addEventListener('input', function() {
+            excitementModel.setExcitement(excitementSlider.value);
+        });
+
+        // And we'll register a listener with the model to update the span and
+        // the slider when the model changes.
+        // Why do we also update the slider? In the next demo, something else may
+        // update the model, so we need to keep in sync with it
+        excitementModel.addListener(function(model, newValue) {
+            excitementSpan.innerText = newValue;
+            if (excitementSlider.value != newValue) {
+                excitementSlider.value = newValue;
+            }
+        });
+
+        // NEW CODE (all of the above code is the same)
+        var decrementButton = document.getElementById('decrement_button');
+        var incrementButton = document.getElementById('increment_button');
+        decrementButton.addEventListener('click', function() {
+            excitementModel.setExcitement(excitementModel.getExcitement()-1);
+        });
+        incrementButton.addEventListener('click', function() {
+            excitementModel.setExcitement(excitementModel.getExcitement()+1);
+        });
+        // DONE NEW CODE
+    });
+    /*
+    Now the advantages of the MVC architecture become a bit more apparent: with only
+    a few lines of extra code, we now can change our excitement level with buttons,
+    and everything on the screen updates itself automatically in response.
+
+    But we haven't really extracted out the views into separate components. We'll do
+    that next in mvc_demo_4.html
+     */
+
+    // Original author: Michael Terry (mterry@cs.uwaterloo.ca)
+</script>
+</body>
+</html>

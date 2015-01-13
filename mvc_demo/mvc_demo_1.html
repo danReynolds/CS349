@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>MVC demo 1</title>
+</head>
+<body>
+
+<div id="app">
+    <div>
+        Your current excitement level is: <span id="excitement_span">1</span>
+    </div>
+    <div>
+        Set your excitement level: <input type="range" id="excitement_slider"/>
+    </div>
+</div>
+
+<div style="margin-top: 40px;">
+    <a href="mvc_demo_2.html">Next demo (MVC 2)</a>
+</div>
+<script>
+    // NOTE: This is NOT an example of an MVC architecture
+
+    window.addEventListener('load', function() {
+        var excitementSpan = document.getElementById('excitement_span');
+        var excitementSlider = document.getElementById('excitement_slider');
+
+        excitementSlider.min = 1;
+        excitementSlider.max = 11;
+        excitementSlider.value = 1;
+        excitementSlider.addEventListener('input', function() {
+            excitementSpan.innerText = excitementSlider.value;
+        });
+    });
+    /*
+     This code works -- we can change your excitement level with the slider.
+     For such a simple application, this code is fine.
+
+     However, as the web app gets more sophisticated, there will be more content
+     and components on the screen. Retrieving elements by their ID and updating
+     them in response to events can lead to unwieldy code, since the DOM is kind
+     of like a global variable.
+
+     What we'd like to do is to separate concerns and better structure our code
+     so that we have smaller modules of code responsible for small, discrete chunks
+     of functionality in the app.
+
+     mvc_demo_2.html will start to move us in that direction by introducing MVC
+     (again, note that this page is NOT an example of MVC).
+     */
+
+    // Original author: Michael Terry (mterry@cs.uwaterloo.ca)
+</script>
+</body>
+</html>
