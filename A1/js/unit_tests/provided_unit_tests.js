@@ -182,7 +182,17 @@ describe('GraphModel', function() {
         expect(gm.listeners).to.have.length(1);
     });
 
-    it('should remove a given listener', function() {
+    it('should not remove a given listener if not matching', function() {
+        var gm = new GraphModel();
+        var spy = sinon.spy();
+        var spy2 = sinon.spy();
+        gm.addListener(spy);
+        gm.removeListener(spy2);
+        expect(gm.listeners).to.have.length(1);
+    });
+
+
+    it('should not remove a given listener', function() {
         var gm = new GraphModel();
         var spy = sinon.spy();
         gm.addListener(spy);

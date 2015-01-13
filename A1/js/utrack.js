@@ -3,7 +3,7 @@
 window.addEventListener('load', function() {
 
   // ========================================
-  // Model Instantiation
+  // Model Instantiation for View
   // ========================================
 
   var activityModel = new ActivityStoreModel();
