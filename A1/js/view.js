@@ -22,7 +22,7 @@ function viewModule() {
   var HeaderView = function (attachToElement) {
     this._instantiateInterface('header_template', attachToElement);
   };
-  _.extend(HeaderView.prototype, AbstractView.prototype); // so that navigation view can instantiate interface, Woo inheritance
+  _.extend(HeaderView.prototype, AbstractView.prototype); // so that header view can use instantiateInterface, Woo inheritance
 
   var NavigationView = function (attachToElement) {
     this._instantiateInterface('navigation_template', attachToElement);

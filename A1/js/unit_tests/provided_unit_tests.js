@@ -119,7 +119,7 @@ describe('ActivityStoreModel', function() {
 
         it('should notify all listeners with activity data', function() {
             var asm = new ActivityStoreModel();
-            var ad = new ActivityData('Activity 1', new Date(), { "energy":4, "stress":3, "happiness":2 });
+            var ad = new ActivityData('Activity 1', { "energy":4, "stress":3, "happiness":2 }, 5);
             var spy1 = sinon.spy();
             var spy2 = sinon.spy();
 
@@ -140,9 +140,9 @@ describe('ActivityStoreModel', function() {
         it('should not alert or remove if not in activities', function() {
             var spy = sinon.spy();
             var asm = new ActivityStoreModel();
-            var ad = new ActivityData('Activity 1', new Date(), { "energy":4, "stress":3, "happiness":2 });
+            var ad = new ActivityData('Activity 1', { "energy":4, "stress":3, "happiness":2 }, 5);
             asm.activities.push(ad);
-            var ad2 = new ActivityData('Activity 2', new Date(), { "energy":1, "stress":3, "happiness":2 });
+            var ad2 = new ActivityData('Activity 2', { "energy":1, "stress":3, "happiness":2 }, 5);
 
             asm.addListener(spy);
             asm.removeActivityDataPoint(ad2);
@@ -154,7 +154,7 @@ describe('ActivityStoreModel', function() {
         it('should alert listeners and remove if in activities', function() {
             var spy = sinon.spy();
             var asm = new ActivityStoreModel();
-            var ad = new ActivityData('Activity 1', new Date(), { "energy":4, "stress":3, "happiness":2 });
+            var ad = new ActivityData('Activity 1', { "energy":4, "stress":3, "happiness":2 }, 5);
             asm.activities.push(ad);
             asm.addListener(spy);
             asm.removeActivityDataPoint(ad);
@@ -166,8 +166,8 @@ describe('ActivityStoreModel', function() {
 
     it('should return all activities', function() {
         var asm = new ActivityStoreModel();
-        var ad = new ActivityData('Activity 1', new Date(), { "energy":4, "stress":3, "happiness":2 });
-        var ad2 = new ActivityData('Activity 2', new Date(), { "energy":1, "stress":3, "happiness":2 });
+        var ad = new ActivityData('Activity 1', { "energy":4, "stress":3, "happiness":2 }, 5);
+        var ad2 = new ActivityData('Activity 2', { "energy":1, "stress":3, "happiness":2 }, 5);
         asm.activities.push(ad);
         asm.activities.push(ad2);
         expect(asm.getActivityDataPoints()).to.include.members([ad, ad2]);
