@@ -1,7 +1,7 @@
 10
 
 dir
-260
+767
 svn://assignments.student.cs.uwaterloo.ca:6002/cs349_repo/djreynol/a1/images
 svn://assignments.student.cs.uwaterloo.ca:6002/cs349_repo
 
@@ -26,13 +26,81 @@ j2avery
 
 a7518d2b-bc7f-4e60-b1eb-02bd93e3a2b9
 
+table.png
+file
+
+
+
+
+2015-01-13T22:19:25.000000Z
+7d9340b21019dc0b2758d5ef5d1eb43b
+2015-01-07T21:22:34.522894Z
+258
+j2avery
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+35854
+
+footer_lodyas.png
+file
+768
+
+
+
+2015-01-13T22:19:25.000000Z
+9a30e6c6c75344e5bd217bbe9720ef3e
+2015-01-19T19:34:42.625188Z
+768
+djreynol
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+33702
+
 input.png
 file
 
 
 
 
-2015-01-08T22:23:34.019599Z
+2015-01-13T22:19:25.000000Z
 69b3710ac9527e0cb4bec44d84bd35be
 2015-01-07T21:22:34.522894Z
 258
@@ -66,7 +134,7 @@ file
 
 
 
-2015-01-08T22:23:34.038577Z
+2015-01-13T22:19:25.000000Z
 1c7400e84c46b12ab3373b3b8f2d8f54
 2015-01-07T21:22:34.522894Z
 258
@@ -93,38 +161,4 @@ has-props
 
 
 35829
-
-table.png
-file
-
-
-
-
-2015-01-08T22:23:34.043605Z
-7d9340b21019dc0b2758d5ef5d1eb43b
-2015-01-07T21:22:34.522894Z
-258
-j2avery
-has-props
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-35854
 
