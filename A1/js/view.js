@@ -1,6 +1,6 @@
 'use strict';
 
-// View
+// View - Front-facing View Modules
 
 // ========================================
 // View Module
@@ -22,7 +22,7 @@ function viewModule() {
   var HeaderView = function (attachToElement) {
     this._instantiateInterface('header_template', attachToElement);
   };
-  _.extend(HeaderView.prototype, AbstractView.prototype); // so that header view can use instantiateInterface, Woo inheritance
+  _.extend(HeaderView.prototype, AbstractView.prototype); // so that header view can use instantiateInterface, woohoo inheritance
 
   var NavigationView = function (attachToElement) {
     this._instantiateInterface('navigation_template', attachToElement);
