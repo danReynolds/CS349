@@ -240,5 +240,9 @@ window.addEventListener('load', function() {
       document.getElementById('back').disabled = true;
       carouselItems[carouselPosition].className = "form-group active";
     }
+
+    _.each(carouselItems[carouselPosition].getElementsByTagName('input'), function(input) {
+      input.focus();
+    });
   }
 });
