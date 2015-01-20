@@ -7,11 +7,20 @@
 // ========================================
 
 window.addEventListener('load', function() {
+
+  // ========================================
+  // Create view module and objects
+  // ========================================
+
   var view = viewModule();
   var content = document.getElementById('utrack-content');
   var header = new view.HeaderView(document.body)
   var navigation = new view.NavigationView(content);
   var tabs = new view.TabsView(content);
+
+  // ========================================
+  // Create activity model and add listeners
+  // ========================================
 
   var activityModel = new ActivityStoreModel();
   activityModel.addListener(function() {
@@ -23,6 +32,10 @@ window.addEventListener('load', function() {
       renderBarGraph(activityModel, name);
     }
   });
+
+  // ========================================
+  // Create graph moedl and add listeners
+  // ========================================
   
   var graphModel = new GraphModel();
   graphModel.addListener(function(event, date, name) {
@@ -85,27 +98,6 @@ window.addEventListener('load', function() {
     document.getElementById('alert-content').innerHTML = html;
     document.getElementById('alert-wrapper').className = "show";
   });
-
-  // ========================================
-  // Validate Activity
-  // ========================================
-
-  function validateActivity(dictionary, time) {
-    var errors = [];
-    _.each(dictionary, function(value, key) {
-      value = parseInt(value);
-      if (!_.isFinite(value) || value < 1 || value > 5) {
-        errors.push("Error - " + key + " is not a number between 1 and 5.");
-      }
-    });
-
-    time = parseInt(time);
-    if (!_.isFinite(time) || time < 0) {
-      errors.push("Error - time in minutes is not valid.");
-    }
-
-    return errors;
-  }
 
   // ========================================
   // Toggle Graph Type
