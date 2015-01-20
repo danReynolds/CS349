@@ -151,15 +151,21 @@ describe('ActivityStoreModel', function() {
             expect(asm.activities).to.have.length(1);
         });
 
-        it('should alert listeners and remove if in activities', function() {
-            var spy = sinon.spy();
+        it('should alert all listeners and remove if in activities', function() {
+            var spy1 = sinon.spy();
+            var spy2 = sinon.spy();
             var asm = new ActivityStoreModel();
             var ad = new ActivityData('Activity 1', { "energy":4, "stress":3, "happiness":2 }, 5);
             asm.activities.push(ad);
-            asm.addListener(spy);
+            asm.addListener(spy1);
+            asm.addListener(spy2);
             asm.removeActivityDataPoint(ad);
 
-            expect(spy.called).to.be.true;
+            _.each(asm.listeners, function(l) {
+                expect(l.called).to.be.ok; 
+                expect(l.calledWithExactly('ACTIVITY_DATA_REMOVED_EVENT', sinon.match.defined, ad)).to.be.true;
+            });
+
             expect(asm.activities).to.have.length(0);
         });
     });

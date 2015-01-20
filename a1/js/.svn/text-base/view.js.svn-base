@@ -48,8 +48,8 @@ function viewModule() {
 function totalActivities(model) {
   var data = {
     "Assignments": 0,
-    "Sleep": 0,
-    "Play": 0
+    "Sports": 0,
+    "Side Projects": 0
   }
   _.each(model.activities, function(a) {
     data[a.activityType] = data[a.activityType] + parseInt(a.activityDurationInMinutes);

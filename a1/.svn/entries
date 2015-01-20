@@ -26,9 +26,6 @@ j2avery
 
 a7518d2b-bc7f-4e60-b1eb-02bd93e3a2b9
 
-fonts
-dir
-
 README.txt
 file
 
@@ -102,14 +99,14 @@ j2avery
 
 utrack.html
 file
-768
+794
 
 
 
-2015-01-13T22:19:32.455353Z
-964b39c3340335b34cf92010d059b390
-2015-01-19T19:34:42.625188Z
-768
+2015-01-20T00:09:11.926499Z
+5849efd2ec74622a28ce3bf14652d49a
+2015-01-20T00:12:01.509201Z
+794
 djreynol
 
 
@@ -132,7 +129,7 @@ djreynol
 
 
 
-4714
+4734
 
 unit_tests.html
 file
@@ -172,5 +169,8 @@ images
 dir
 
 css
+dir
+
+fonts
 dir
 
