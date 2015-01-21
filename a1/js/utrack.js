@@ -2,31 +2,13 @@
 
 // Controller - Interaction Code
 
-// ========================================
-// Instantiate Models, add listeners
-// ========================================
-
 window.addEventListener('load', function() {
 
   // ========================================
-  // Create activity model and add listeners
+  // Create graph/activity model and add listeners
   // ========================================
 
   var activityModel = new ActivityStoreModel();
-  activityModel.addListener(function() {
-    name = graphModel.getNameOfCurrentlySelectedGraph();
-    if (name == 'activity-table') {
-      renderActivityTable(activityModel);
-    }
-    else {
-      renderBarGraph(activityModel, name);
-    }
-  });
-
-  // ========================================
-  // Create graph model and add listeners
-  // ========================================
-  
   var graphModel = new GraphModel();
 
   // ========================================
@@ -61,7 +43,7 @@ window.addEventListener('load', function() {
   graphModel.selectGraph('activity-table');
 
   // ========================================
-  // Submit Activity
+  // Interaction Code - Submit Activity
   // ========================================
 
   function resetActivityForm() {
@@ -108,7 +90,7 @@ window.addEventListener('load', function() {
   });
 
   // ========================================
-  // Toggle Graph Type
+  // Interaction Code - Toggle Graph Type
   // ========================================
 
   var radios = document.getElementsByClassName('toggle-graph');
@@ -119,7 +101,7 @@ window.addEventListener('load', function() {
   });
 
   // ========================================
-  // Health
+  // Interaction Code - Health
   // ========================================
 
   var health = 0;
@@ -163,7 +145,7 @@ window.addEventListener('load', function() {
   }
 
   // ========================================
-  // Alert Boxes
+  // Interaction Code - Alert Boxes
   // ========================================
 
   var alerts = document.getElementsByClassName('alert')
@@ -176,7 +158,7 @@ window.addEventListener('load', function() {
   });
 
   // ========================================
-  // Tab Interaction
+  // Interaction Code - Tab Interaction
   // ========================================
 
   var tabRegex = /(.*)-tab/
@@ -193,7 +175,7 @@ window.addEventListener('load', function() {
   });
 
   // ========================================
-  // Carousel Interaction
+  // Interaction Code - Carousel Interaction
   // ========================================
 
   var carouselPosition = 0;

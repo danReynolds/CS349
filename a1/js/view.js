@@ -96,6 +96,13 @@ function viewModule() {
         document.getElementById('graph').className = "show";
       }
     });
+
+    activityModel.addListener(function() {
+      var name = graphModel.getNameOfCurrentlySelectedGraph();
+      if (name != 'activity-table') {
+        renderBarGraph(activityModel, name);
+      }
+    });
   }
   _.extend(GraphView.prototype, AbstractView.prototype);
 
@@ -111,6 +118,13 @@ function viewModule() {
       }
       else {
         _this.hostElement.className = "table table-bordered hide";
+      }
+    });
+
+    activityModel.addListener(function() {
+      var name = graphModel.getNameOfCurrentlySelectedGraph();
+      if (name == 'activity-table') {
+        renderActivityTable(activityModel);
       }
     });
   }
