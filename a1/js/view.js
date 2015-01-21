@@ -11,33 +11,127 @@ function viewModule() {
   var AbstractView = function() {};
 
   _.extend(AbstractView.prototype, {
-    _instantiateInterface: function (templateId, attachToElement) {
+    _instantiateToParent: function (templateId, parentView) {
       var template = document.getElementById(templateId);
-      this.hostElement = document.createElement('div');
-      this.hostElement.innerHTML = template.innerHTML;
-      attachToElement.appendChild(this.hostElement);
+      parentView.hostElement.innerHTML += template.innerHTML
+      this.hostElement = _.last(parentView.hostElement.children);
     }
   });
 
-  var HeaderView = function (attachToElement) {
-    this._instantiateInterface('header_template', attachToElement);
-  };
-  _.extend(HeaderView.prototype, AbstractView.prototype); // so that header view can use instantiateInterface, woohoo inheritance
+  var RootView = function(rootElement) {
+    this.hostElement = rootElement;
+  }
 
-  var NavigationView = function (attachToElement) {
-    this._instantiateInterface('navigation_template', attachToElement);
+  var UtrackContentView = function(parentView) {
+    this._instantiateToParent('utrack_content_template', parentView);
+  }
+  _.extend(UtrackContentView.prototype, AbstractView.prototype);
+
+  var HeaderView = function (parentView) {
+    this._instantiateToParent('header_template', parentView);
+  };
+  _.extend(HeaderView.prototype, AbstractView.prototype);
+
+  var NavigationView = function (parentView) {
+    this._instantiateToParent('navigation_template', parentView);
   };
   _.extend(NavigationView.prototype, AbstractView.prototype);
 
-  var TabsView = function (attachToElement) {
-    this._instantiateInterface('tabs_template', attachToElement);
+  var TabsView = function (parentView) {
+    this._instantiateToParent('tabs_template', parentView);
   };
   _.extend(TabsView.prototype, AbstractView.prototype);
 
+  var ActivityTabView = function(parentView) {
+    this._instantiateToParent('activity_tab_template', parentView);
+  }
+  _.extend(ActivityTabView.prototype, AbstractView.prototype);
+
+  var HistoryTabView = function(parentView) {
+    this._instantiateToParent('history_tab_template', parentView);
+  }
+  _.extend(HistoryTabView.prototype, AbstractView.prototype);
+
+  var AlertView = function(parentView) {
+    this._instantiateToParent('alert_template', parentView);
+  }
+  _.extend(AlertView.prototype, AbstractView.prototype);
+
+  var AddActivityView = function(parentView) {
+    this._instantiateToParent('add_activity_template', parentView);
+  }
+  _.extend(AddActivityView.prototype, AbstractView.prototype);
+
+  var ActivityFormView = function(parentView) {
+    this._instantiateToParent('activity_form_template', parentView);
+  }
+  _.extend(ActivityFormView.prototype, AbstractView.prototype);
+
+  var HealthView = function(parentView) {
+    this._instantiateToParent('health_template', parentView);
+  }
+  _.extend(HealthView.prototype, AbstractView.prototype);
+
+  var SelectAnalyzationView = function(parentView) {
+    this._instantiateToParent('select_analyzation_template', parentView);
+  }
+  _.extend(SelectAnalyzationView.prototype, AbstractView.prototype);
+
+  var DisplayAnalyzationView = function(parentView) {
+    this._instantiateToParent('display_analyzation_template', parentView);
+  }
+  _.extend(DisplayAnalyzationView.prototype, AbstractView.prototype);
+
+  var GraphView = function(parentView, graphModel, activityModel) {
+    this._instantiateToParent('graph_template', parentView);
+
+    var _this = this;
+
+    graphModel.addListener(function(event, date, name) {
+      if (name == 'activity-table') {
+        document.getElementById('graph').className = "hide";
+      }
+      else {
+        renderBarGraph(activityModel, name, "Total Time Spent Per Activity", "Activity", "Time in Minutes");
+        document.getElementById('graph').className = "show";
+      }
+    });
+  }
+  _.extend(GraphView.prototype, AbstractView.prototype);
+
+  var TableView = function(parentView, graphModel, activityModel) {
+    this._instantiateToParent('table_template', parentView);
+
+    var _this = this;
+
+    graphModel.addListener(function(event, date, name) {
+      if (name == 'activity-table') {
+        renderActivityTable(activityModel);
+        _this.hostElement.className = "table table-bordered show";
+      }
+      else {
+        _this.hostElement.className = "table table-bordered hide";
+      }
+    });
+  }
+  _.extend(TableView.prototype, AbstractView.prototype);
+
   return {
+    RootView: RootView,
     HeaderView: HeaderView,
+    UtrackContentView: UtrackContentView,
     NavigationView: NavigationView,
-    TabsView: TabsView
+    TabsView: TabsView,
+    ActivityTabView: ActivityTabView,
+    HistoryTabView: HistoryTabView,
+    AlertView: AlertView,
+    AddActivityView: AddActivityView,
+    ActivityFormView: ActivityFormView,
+    HealthView: HealthView,
+    SelectAnalyzationView: SelectAnalyzationView,
+    DisplayAnalyzationView: DisplayAnalyzationView,
+    GraphView: GraphView,
+    TableView: TableView
   };
 }
 

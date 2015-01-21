@@ -9,16 +9,6 @@
 window.addEventListener('load', function() {
 
   // ========================================
-  // Create view module and objects
-  // ========================================
-
-  var view = viewModule();
-  var content = document.getElementById('utrack-content');
-  var header = new view.HeaderView(document.body)
-  var navigation = new view.NavigationView(content);
-  var tabs = new view.TabsView(content);
-
-  // ========================================
   // Create activity model and add listeners
   // ========================================
 
@@ -34,22 +24,40 @@ window.addEventListener('load', function() {
   });
 
   // ========================================
-  // Create graph moedl and add listeners
+  // Create graph model and add listeners
   // ========================================
   
   var graphModel = new GraphModel();
-  graphModel.addListener(function(event, date, name) {
-    if (name == 'activity-table') {
-      renderActivityTable(activityModel);
-      document.getElementById('graph').className = "hide";
-      document.getElementById(name).className = "table table-bordered show";
-    }
-    else {
-      renderBarGraph(activityModel, name, "Total Time Spent Per Activity", "Activity", "Time in Minutes");
-      document.getElementById('graph').className = "show";
-      document.getElementById('activity-table').className = "table table-bordered hide";
-    }
-  });
+
+  // ========================================
+  // Create view module and objects
+  // ========================================
+
+  var view = viewModule();
+
+  // Set the root view for the app, in this case the body
+  var rootView = new view.RootView(document.body);
+
+  // Create the views
+  var headerView = new view.HeaderView(rootView);
+  var UtrackContentView = new view.UtrackContentView(rootView);
+  var navigationView = new view.NavigationView(UtrackContentView);
+  var tabsView = new view.TabsView(UtrackContentView);
+
+  // Create the views for the Activity Tab
+  var activityTabView = new view.ActivityTabView(tabsView);
+  var alertView = new view.AlertView(activityTabView);
+  var addActivityView = new view.AddActivityView(activityTabView);
+  var ActivityFormView = new view.ActivityFormView(addActivityView);
+  var HealthView = new view.HealthView(addActivityView);
+
+  // Create the views for the History Tab
+  var historyTabView = new view.HistoryTabView(tabsView);
+  var selectAnalyzationView = new view.SelectAnalyzationView(historyTabView);
+  var displayAnalyzationView = new view.DisplayAnalyzationView(historyTabView);
+  var graphView = new view.GraphView(displayAnalyzationView, graphModel, activityModel);
+  var tableView = new view.TableView(displayAnalyzationView, graphModel, activityModel);
+
   graphModel.selectGraph('activity-table');
 
   // ========================================
