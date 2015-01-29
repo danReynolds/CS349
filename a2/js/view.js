@@ -18,7 +18,7 @@ function createViewModule() {
         this.viewType;
         this.imageWrapper = document.createElement("div");
 
-        this.imageModel.addListener(function(imageModel, eventTime) {
+        this.imageModel.addListener(function(imageModel) {
             _this.updateView();
         });
     };
@@ -158,6 +158,16 @@ function createViewModule() {
 
         setFileChooser: function(fileChooser) {
             this.fileChooser = fileChooser;
+            var view;
+
+            if (this.getCurrentView() == GRID_VIEW) {
+                view = "grid";
+            }
+            else {
+                view = "list";
+            }
+
+            this.fileChooser.getElement().className = "file-chooser-wrapper " + view;
             this.collectionDiv.appendChild(fileChooser.getElement());
         },
 
@@ -268,6 +278,16 @@ function createViewModule() {
          */
         setToView: function(viewType) {
             this.viewType = viewType;
+            var view;
+
+            if (viewType == LIST_VIEW) {
+                view = "list";
+            }
+            else {
+                view = "grid";
+            }
+
+            this.fileChooser.getElement().className = "file-chooser-wrapper " + view;
             _.each(this.imageRenderers, function(renderer) {
                 renderer.setToView(viewType);
             });
@@ -281,6 +301,22 @@ function createViewModule() {
             return this.viewType;
         }
     });
+
+
+    // Header Widget
+    var Header = function() {
+        var headerTemplate = document.getElementById('header-template');
+        this.headerDiv = document.createElement("div");
+        this.headerDiv.className = "header";
+        this.headerDiv.appendChild(document.importNode(headerTemplate.content, true));
+    }
+
+    _.extend(Header.prototype, {
+        getElement: function() {
+            return this.headerDiv;
+        }
+    });
+
 
     /**
      * An object representing a DOM element that will render the toolbar to the screen.
@@ -305,9 +341,15 @@ function createViewModule() {
                 elem.addEventListener('click', function(e) {
                     var elem = e.toElement;
                     if (elem.className === "grid") {
+                        elem.className = "grid selected";
+                        elem.parentElement.querySelector('.list').className = "list";
+
                         _this.setToView(GRID_VIEW);
                     }
                     else if (elem.className == "list") {
+                        elem.className = "list selected";
+                        elem.parentElement.querySelector('.grid').className = "grid";
+
                         _this.setToView(LIST_VIEW);
                     }
                 });
@@ -431,7 +473,7 @@ function createViewModule() {
             this.popupDiv.appendChild(document.importNode(popupTemplate.content, true));
             this.popupDiv.querySelector('img').src = this.image;
 
-            this.popupDiv.querySelector('.popup-background').addEventListener('click', function() {
+            this.popupDiv.querySelector('.popup-wrapper .close').addEventListener('click', function() {
                 document.body.removeChild(_this.popupDiv);
             });
 
@@ -515,6 +557,7 @@ function createViewModule() {
         ImageCollectionView: ImageCollectionView,
         Toolbar: Toolbar,
         FileChooser: FileChooser,
+        Header: Header,
 
         LIST_VIEW: LIST_VIEW,
         GRID_VIEW: GRID_VIEW,

@@ -7,6 +7,10 @@ window.addEventListener('load', function() {
     var viewModule = createViewModule();
     var appContainer = document.getElementById('app-container');
 
+    // add header to page
+    var header = new viewModule.Header();
+    appContainer.appendChild(header.getElement());
+
     // add toolbar to top of page
     var toolbar = new viewModule.Toolbar();
     appContainer.appendChild(toolbar.getElement());

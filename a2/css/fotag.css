@@ -1,4 +1,27 @@
 /*=================================*/
+/* Font */
+/*=================================*/
+
+@font-face {
+ font-family: 'Lato';
+ src: url('/fonts/Lato'),
+ url('/fonts/Lato-Light.ttf') format('truetype');
+ font-weight: normal;
+ font-style: normal;
+}
+
+/*=================================*/
+/* Header */
+/*=================================*/
+.header-content h1 {
+  background: rgb(216, 91, 91);
+  padding: 2rem;
+  margin: 0;
+  display: inline-block;
+  box-shadow: 0px 1px 1px rgb(55, 54, 54);
+}
+
+/*=================================*/
 /*Toolbar*/
 /*=================================*/
 
@@ -8,9 +31,13 @@
   height: 4rem;
 }
 
-.rating {
+.toolbar .rating, .toolbar .label {
+  margin-top: 1.2rem;
   float: right;
-  margin-top: 0.5rem;
+}
+
+.toolbar .label {
+  margin-right: 0.5rem;
 }
 
 .toolbar .view-type {
@@ -21,7 +48,8 @@
 
 .view-type li {
   display: inline-block;
-  background: rgb(216, 91, 91);
+  background: white;
+  color: rgb(216, 91, 91);
   border-radius: 3.5rem;
   line-height: 3.5rem;
   height: 3.5rem;
@@ -29,8 +57,18 @@
   text-align: center;
 }
 
+.view-type li + li {
+  margin-left: 0.3rem;
+}
+
 .view-type li:hover {
   background: rgb(213, 119, 119);
+  color: white;
+}
+
+.view-type li.selected {
+  background: rgb(216, 91, 91);
+  color: white;
 }
 
 ul.rating > li {
@@ -50,16 +88,19 @@ ul.rating > li.selected {
 /*Image Wrapper List*/
 /*=================================*/
 
-.image-wrapper-list {
+.image-wrapper-list, .file-chooser-wrapper.list {
   clear: both;
   margin: 0 0 2rem 2.5rem;
 }
 
-.image-wrapper-list ul.info {
+.image-wrapper-list .list-meta-data {
   display: inline-block;
   vertical-align: middle;
-  list-style-type: none;
   margin-left: 1rem;
+}
+
+.image-wrapper-list ul {
+  list-style-type: none;
 }
 
 .image-wrapper-list img {
@@ -68,6 +109,36 @@ ul.rating > li.selected {
 
 .image-wrapper-list .rating {
   float: none;
+}
+
+.file-chooser-wrapper.list .files-input-visible {
+  margin: 0;
+}
+
+.image-wrapper-list .list-meta-data {
+  margin-top: 1rem;
+}
+
+.file-chooser-wrapper.list {
+  box-sizing: border-box;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+@media (max-width: 800px) {
+  .image-wrapper-list .list-meta-data {
+    margin-left: 0;
+    display: block;
+  }
+
+  .image-wrapper-list, .file-chooser-wrapper.list {
+    margin: 1rem 0;
+    text-align: center;
+  }
+
+  .file-chooser-wrapper.list .files-input-visible {
+    margin: 0 auto;
+  }
 }
 
 /*=================================*/
@@ -80,11 +151,11 @@ ul.rating > li.selected {
   text-align: center;
 }
 
-.image-wrapper-grid .name {
-  margin-top: 1rem;
+.image-wrapper-grid .grid-meta-data {
+  margin-top: 1.5rem;
 }
 
-.image-wrapper-grid, .file-chooser-wrapper {
+.image-wrapper-grid, .file-chooser-wrapper.grid {
   width: 33.33%;
   float: left;
   box-sizing: border-box;
@@ -103,6 +174,19 @@ ul.rating > li.selected {
 
 .image-wrapper-grid img:hover, .image-wrapper-list img:hover, .files-input-visible:hover {
   border-color: rgb(213, 119, 119);
+}
+
+@media(max-width: 800px) {
+  .image-wrapper-grid, .file-chooser-wrapper.grid {
+    width: 50%;
+  }
+}
+
+@media(max-width: 575px) {
+  .image-wrapper-grid, .file-chooser-wrapper.grid {
+    width: 100%;
+  }
+
 }
 
 /*=================================*/
@@ -136,23 +220,22 @@ input[type='file'] {
 
 .popup-content {
   position: absolute;
-  margin: auto;
-  top: 0;
+  top: 20vh;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 500px;
-  width: 500px;
   z-index: 1001;
-}
-
-.popup-wrapper {
-  width: 100%;
   text-align: center;
 }
 
+.popup-wrapper {
+  text-align: right;
+  display: inline-block;
+}
+
 .popup-wrapper img {
-  width: 500px;
+  max-width: 80vw;
+  max-height: 50vh;
 }
 
 .popup-background {
@@ -167,6 +250,12 @@ input[type='file'] {
   overflow-x: hidden;
 }
 
+.popup-wrapper .close {
+  font-size: 2rem;
+  cursor: pointer;
+  color: rgb(216, 91, 91);
+}
+
 /*=================================*/
 /*Basic Element Styling*/
 /*=================================*/
@@ -176,6 +265,7 @@ body {
   background: rgb(73, 73, 73);
   color: white;
   margin: 0;
+  font-family: 'Lato', serif;
 }
 
 a {
@@ -185,6 +275,7 @@ a {
 #app-container {
   max-width: 62.5rem;
   margin: 0 auto;
+  padding: 0 1rem;
 }
 
 /*=================================*/

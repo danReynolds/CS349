@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <head lang="en">
     <meta charset="UTF-8">
-    <title>Fotag!</title>
+    <title>Fotag</title>
 
-    <!--
-    All of your CSS must go in css/fotag.css. Do not add styles to individual elements.
-    All of your CSS must be your own -- you may not use third-party CSS, like Bootstrap.
-    -->
     <link rel="stylesheet" href="css/fotag.css"/>
     <style>
         .marking-button {
@@ -23,8 +20,18 @@
 <div id="app-container">
 </div>
 
+<template id="header-template">
+    <div class="header-content">
+        <h1>Fotag</h1>
+    </div>
+</template>
+
 <!-- The template for the toolbar -->
 <template id="toolbar-template">
+    <ul class="view-type">
+        <li class="list"> List </li>
+        <li class="grid selected"> Grid </li>
+    </ul>
     <ul class="rating">
         <li></li>
         <li></li>
@@ -32,48 +39,49 @@
         <li></li>
         <li></li>
     </ul>
-    <ul class="view-type">
-    <li class="list"> List </li>
-    <li class="grid"> Grid </li>
+    <div class="label">Filter by rating</div>
 </template>
 
 <!-- The template for the image renderer in grid mode -->
 <template id="image-wrapper-grid-template">
     <img></img>
-    <div class="name"></div>
-    <div class="date"></div>
-    <ul class="rating">
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-    </ul>
+    <div class="grid-meta-data">
+        <p class="name"></p>
+        <ul class="rating">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
 </template>
 
 <!-- The template for the image renderer in list mode -->
 <template id="image-wrapper-list-template">
     <img></img>
-    <ul class="info">
-        <li>
-            <p class="name"></p>
-        </li>
-        <li>
-            <ul class="rating">
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
-            </ul>
-        </li>
-    </ul>
+    <div class="list-meta-data">
+        <ul class="info">
+            <li>
+                <p class="name"></p>
+            </li>
+            <li>
+                <ul class="rating">
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                </ul>
+            </li>
+        </ul>
 </template>
 
 <!-- The Template for the Popup -->
 <template id="popup-template">
     <div class="popup-content">
         <div class="popup-wrapper">
+            <div class="close">&#x2717</div>
             <img></img>
         </div>
     </div>
