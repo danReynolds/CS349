@@ -7,19 +7,32 @@ window.addEventListener('load', function() {
     var viewModule = createViewModule();
     var appContainer = document.getElementById('app-container');
 
+    // add toolbar to top of page
+    var toolbar = new viewModule.Toolbar();
+    appContainer.appendChild(toolbar.getElement());
+
+    // create image collection model
+    var imageCollectionModel = new modelModule.ImageCollectionModel();
+
+    // set imageCollectionView to imageCollectionModel
+    var imageCollectionView = new viewModule.ImageCollectionView();
+    appContainer.appendChild(imageCollectionView.getElement());
+    imageCollectionView.setImageCollectionModel(imageCollectionModel);
+
+    // add toolbar to imageCollectionView
+    imageCollectionView.setToolBar(toolbar);
+
     // Attach the file chooser to the page. You can choose to put this elsewhere, and style as desired
     var fileChooser = new viewModule.FileChooser();
-    appContainer.appendChild(fileChooser.getElement());
+    imageCollectionView.getElement().appendChild(fileChooser.getElement());
 
     // Demo that we can choose files and save to local storage. This can be replaced, later
     fileChooser.addListener(function(fileChooser, files, eventDate) {
-        var imageCollectionModel = new modelModule.ImageCollectionModel();
         _.each(
             files,
             function(file) {
                 var newDiv = document.createElement('div');
                 var fileInfo = "File name: " + file.name + ", last modified: " + file.lastModifiedDate;
-                newDiv.innerText = fileInfo;
                 appContainer.appendChild(newDiv);
                 imageCollectionModel.addImageModel(
                     new modelModule.ImageModel(
@@ -39,7 +52,6 @@ window.addEventListener('load', function() {
         storedImageCollection.getImageModels(),
         function(imageModel) {
             var imageModelDiv = document.createElement('div');
-            imageModelDiv.innerText = "ImageModel from storage: " + JSON.stringify(imageModel);
             storedImageDiv.appendChild(imageModelDiv);
         }
     );

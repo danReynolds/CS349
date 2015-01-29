@@ -37,6 +37,7 @@ function createModelModule() {
         this.modificationDate = modificationDate;
         this.caption = caption;
         this.rating = rating;
+        this.listeners = [];
     };
 
     _.extend(ImageModel.prototype, {
@@ -48,7 +49,7 @@ function createModelModule() {
          * object indicating the time of the event.
          */
         addListener: function(listener_fn) {
-            // TODO
+           this.listeners.push(listener_fn);
         },
 
         /**
@@ -56,7 +57,9 @@ function createModelModule() {
          * @param listener_fn
          */
         removeListener: function(listener_fn) {
-            // TODO
+            return this.listeners = _.filter(this.listeners, function(l) {
+                return l !== listener_fn;
+            });
         },
 
         /**
@@ -72,7 +75,12 @@ function createModelModule() {
          * @param caption A string representing a user caption.
          */
         setCaption: function(caption) {
-            // TODO
+            var _this = this;
+            this.caption = caption;
+
+            _.each(this.listeners, function(listener) {
+                listener.call(this, _this, new Date());
+            });
         },
 
         /**
@@ -80,7 +88,10 @@ function createModelModule() {
          * If no rating has been given, should return 0.
          */
         getRating: function() {
-            return this.rating;
+            if (this.rating >= 1)
+                return this.rating;
+            else
+                return 0;
         },
 
         /**
@@ -88,7 +99,15 @@ function createModelModule() {
          * @param rating An integer in the range [0,5] (where a 0 indicates the user is clearing their rating)
          */
         setRating: function(rating) {
-            // TODO
+            var _this = this;
+            if (rating >= 0 || rating <= 5) {
+                this.rating = rating;
+
+                _.each(this.listeners, function(listener) {
+                    listener.call(this, _this, new Date());
+                });
+            }
+
         },
 
         /**
@@ -111,6 +130,7 @@ function createModelModule() {
      */
     var ImageCollectionModel = function() {
         this.imageModels = [];
+        this.listeners = [];
     };
 
     _.extend(ImageCollectionModel.prototype, {
@@ -128,7 +148,7 @@ function createModelModule() {
          *                    time when the change occurred.
          */
         addListener: function(listener_fn) {
-            // TODO
+            this.listeners.push(listener_fn);
         },
 
         /**
@@ -136,7 +156,9 @@ function createModelModule() {
          * @param listener_fn
          */
         removeListener: function(listener_fn) {
-            // TODO
+            return this.listeners = _.filter(this.listeners, function(l) {
+                return l !== listener_fn;
+            });
         },
 
         /**
@@ -146,8 +168,22 @@ function createModelModule() {
          * @param imageModel
          */
         addImageModel: function(imageModel) {
+            var _this = this;
             this.imageModels.push(imageModel);
-            // TODO: See contract above
+
+            _.each(this.listeners, function(listener) {
+                listener.call(this, IMAGE_ADDED_TO_COLLECTION_EVENT, _this, imageModel, new Date());
+            });
+
+            // If the image model ever updates, inform all of the collection listeners, currently noone is watching this
+            // since the only listener of the collectionmodel is added in the setImageCollectionModel and we only care about add/vs remove there
+            
+            // the imagemodels add a handler during their init to update themselves when the underlying model changes
+            imageModel.addListener(function(imagemodel, eventTime) {
+                _.each(_this.listeners, function(listener) {
+                    listener.call(this, IMAGE_META_DATA_CHANGED_EVENT, _this, imagemodel, eventTime);
+                });
+            });
         },
 
         /**
@@ -156,7 +192,21 @@ function createModelModule() {
          * @param imageModel
          */
         removeImageModel: function(imageModel) {
-            // TODO
+            var _this = this;
+
+            this.imageModels = _.filter(this.imageModel, function(l) {
+                return l !== imageModel;
+            });
+
+            _.each(this.listeners, function(listener) {
+                listener.call(this, IMAGE_REMOVED_FROM_COLLECTION_EVENT, _this, imageModel, new Date());
+            });
+
+            imageModel.removeListener(function(imagemodel, eventTime) {
+                _.each(_this.listeners, function(listener) {
+                    listener.call(_this, IMAGE_META_DATA_CHANGED_EVENT, _this, imagemodel, eventTime);
+                });
+            });
         },
 
         /**

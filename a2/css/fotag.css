@@ -1,1 +1,198 @@
-/* Put any additional CSS here */
+/*=================================*/
+/*Toolbar*/
+/*=================================*/
+
+.toolbar {
+  margin-top: 2rem;
+  width: 100%;
+  height: 4rem;
+}
+
+.rating {
+  float: right;
+}
+
+.toolbar .view-type {
+  float: left;
+  margin-left: 1rem;
+  cursor: pointer;
+}
+
+.view-type li {
+  display: inline-block;
+  background: rgb(216, 91, 91);
+  border-radius: 60px;
+  height: 55px;
+  width: 60px;
+  text-align: center;
+  line-height: 55px;
+}
+
+.view-type li:hover {
+  background: rgb(213, 119, 119);
+}
+
+.view-type li + li:before {
+  height: 10px;
+  color: white;
+}
+
+ul.rating > li {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border: 1.25rem solid transparent;
+    border-bottom: 0.6rem solid white;
+    position: relative;
+    top: -1.25rem;
+    cursor: pointer;
+}
+
+ul.rating > li:after {
+  content: '';
+  position: absolute;
+  left: -1.25rem; top: 0.55rem;
+  width: 0;
+  height: 0;
+  border: 1.25rem solid transparent;
+  border-top: 1.9rem solid white;
+  cursor: pointer;
+}
+
+ul.rating > li.selected {
+  border-bottom-color: rgb(240, 97, 97);
+}
+
+ul.rating > li.selected:after {
+  border-top-color: rgb(240, 97, 97);
+}
+
+/*=================================*/
+/*Image Wrapper List*/
+/*=================================*/
+
+.image-wrapper-list {
+  clear: both;
+}
+
+/*=================================*/
+/*Image Wrapper Grid*/
+/*=================================*/
+
+.image-wrapper-grid .rating {
+  float: none;
+  clear: both;
+  text-align: center;
+}
+
+.image-wrapper-grid {
+  width: 33.33%;
+  float: left;
+  box-sizing: border-box;
+  padding: 1rem;
+  text-align: center;
+}
+
+.image-wrapper-grid img, .image-wrapper-list img {
+  height: 15rem;
+  width: 15rem;
+  border: 0.4rem solid white;
+  border-radius: 15rem;
+  cursor: pointer;
+}
+
+/*=================================*/
+/*File Input*/
+/*=================================*/
+
+.files-input {
+  width: 33.33%;
+  float: left;
+  box-sizing: border-box;
+  padding: 1rem;
+  border: 2px dashed white;
+  border-radius: 5px;
+  padding: 7rem;
+  text-align: center;
+  margin: 1rem 0;
+  height: 15rem;
+  border-radius: 15rem;
+  box-sizing: border-box;
+}
+
+/*=================================*/
+/*Popup*/
+/*=================================*/
+
+.popup-content {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 500px;
+  width: 500px;
+  z-index: 1001;
+}
+
+.popup-wrapper {
+  width: 100%;
+  text-align: center;
+}
+
+.popup-wrapper img {
+  width: 500px;
+}
+
+.popup-background {
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+  background: rgba(37, 37, 37, 0.9);
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  overflow-x: hidden;
+}
+
+/*=================================*/
+/*Basic Element Styling*/
+/*=================================*/
+
+body {
+  overflow-x: hidden;
+  background: rgb(73, 73, 73);
+  color: white;
+  margin: 0;
+}
+
+a {
+  color: white;
+}
+
+#app-container {
+  max-width: 62.5rem;
+  margin: 0 auto;
+}
+
+/*=================================*/
+/*Dan's Framework
+/*=================================*/
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 62.5rem;
+  margin: 0 auto;
+}
+
+.container:after{
+    clear: both;
+    content: "";
+    display: block;
+}

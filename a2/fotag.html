@@ -20,20 +20,63 @@
 </head>
 <body>
 
-<!-- This header can be replaced -->
-<h1>Fotag!</h1>
-Import, organize, and rate your photos!
-
 <div id="app-container">
-    <!--
-         An attachment point to place all of your dynamically created content. Do not remove or
-         rename this div.
-    -->
 </div>
+
+<!-- The template for the toolbar -->
+<template id="toolbar-template">
+    <ul class="rating">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+    <ul class="view-type">
+    <li class="list"> List </li>
+    <li class="grid"> Grid </li>
+</template>
+
+<!-- The template for the image renderer in grid mode -->
+<template id="image-wrapper-grid-template">
+    <img></img>
+    <div class="name"></div>
+    <div class="date"></div>
+    <ul class="rating">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+</template>
+
+<!-- The template for the image renderer in list mode -->
+<template id="image-wrapper-list-template">
+    <ul>
+    <li>
+        <img></img>
+    </li>
+    <li>
+        <div class="name"></div>
+    </li>
+    </ul>
+</template>
+
+<!-- The Template for the Popup -->
+<template id="popup-template">
+    <div class="popup-content">
+        <div class="popup-wrapper">
+            <img></img>
+        </div>
+    </div>
+    <div class="popup-background">
+    </div>
+</template>
 
 <!-- A template for a file chooser, to select multiple files. See FileChooser in view.js. -->
 <template id="file-chooser">
-    <input type="file" class="files-input" name="file_results[]" multiple />
+    <input type="file" class="files-input"/>
     <output id="list"></output>
 </template>
 
