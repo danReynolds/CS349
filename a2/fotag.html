@@ -53,13 +53,20 @@
 
 <!-- The template for the image renderer in list mode -->
 <template id="image-wrapper-list-template">
-    <ul>
-    <li>
-        <img></img>
-    </li>
-    <li>
-        <div class="name"></div>
-    </li>
+    <img></img>
+    <ul class="info">
+        <li>
+            <p class="name"></p>
+        </li>
+        <li>
+            <ul class="rating">
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </li>
     </ul>
 </template>
 
@@ -76,7 +83,10 @@
 
 <!-- A template for a file chooser, to select multiple files. See FileChooser in view.js. -->
 <template id="file-chooser">
-    <input type="file" class="files-input"/>
+    <input type="file" class='files-input'/>
+    <div class="files-input-visible"/>
+        <div class='file-label'>Add a file</div>
+    </div>
     <output id="list"></output>
 </template>
 

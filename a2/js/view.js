@@ -38,14 +38,10 @@ function createViewModule() {
                 this.imageWrapper.className = "image-wrapper-list";
                 imageWrapperTemplate = document.getElementById('image-wrapper-list-template');
             }
-            else {
-                // TODO remove
-                alert("error");
-            }
+
             imageWrapper.appendChild(document.importNode(imageWrapperTemplate.content, true));
             imageWrapper.querySelector('img').src = this.imageModel.getPath();
             imageWrapper.querySelector('.name').innerHTML = this.imageModel.getPath();
-
 
             this.imageWrapper.innerHTML = imageWrapper.innerHTML;
 
@@ -56,7 +52,7 @@ function createViewModule() {
             });
 
             var rating = this.imageModel.getRating();
-            _.each(this.imageWrapper.querySelectorAll('li'), function(elem, index, list) {
+            _.each(this.imageWrapper.querySelectorAll('.rating li'), function(elem, index, list) {
                 elem.addEventListener('click', function(e) {
                     if (_this.getImageModel().getRating() == index + 1) {
                         _this.getImageModel().setRating(0);
@@ -145,6 +141,7 @@ function createViewModule() {
         this.toolbar;
         this.imageRenderers = [];
         this.viewType = GRID_VIEW;
+        this.fileChooser;
 
         this._init();
     };
@@ -152,10 +149,16 @@ function createViewModule() {
     _.extend(ImageCollectionView.prototype, {
 
         _init: function() {
+            var _this = this;
             this.rendererFactory = new ImageRendererFactory();
             var collectionTemplate = document.getElementById('collection-template');
             this.collectionDiv = document.createElement('div');
             this.collectionDiv.className = "container";
+        },
+
+        setFileChooser: function(fileChooser) {
+            this.fileChooser = fileChooser;
+            this.collectionDiv.appendChild(fileChooser.getElement());
         },
 
         setToolBar: function(toolbar) {
@@ -172,9 +175,10 @@ function createViewModule() {
                         return (rating >= toolbar.ratingFilter || rating === 0);
                     });
 
-                    _this.collectionDiv.innerHTML = "";
+                    _this.collectionDiv.innerHTML = '';
+                    _this.collectionDiv.appendChild(_this.fileChooser.getElement());
                     _.each(validRenderers, function(renderer) {
-                        _this.collectionDiv.appendChild(renderer.getElement());
+                        _this.collectionDiv.insertBefore(renderer.getElement(), _this.fileChooser.getElement());
                     });
                 }
             });
@@ -237,7 +241,7 @@ function createViewModule() {
                     var newRenderer = _this.rendererFactory.createImageRenderer(imageModel);
                     _this.imageRenderers.push(newRenderer);
                     newRenderer.setToView(_this.getCurrentView());
-                    _this.collectionDiv.appendChild(newRenderer.getElement());
+                    _this.collectionDiv.insertBefore(newRenderer.getElement(), _this.collectionDiv.querySelector('.file-chooser-wrapper'));
                 }
                 else if (eventType == 'IMAGE_REMOVED_FROM_COLLECTION_EVENT') {
                     var removedRenderer = _.find(_this.imageRenderers, function(renderer) {
@@ -309,7 +313,7 @@ function createViewModule() {
                 });
             });
 
-            _.each(this.toolbarDiv.querySelectorAll('ul.rating'), function(elem) {
+            _.each(this.toolbarDiv.querySelectorAll('ul.rating li'), function(elem) {
                 elem.addEventListener('click', function(e) {
                     var elem = e.toElement;
                     var elemIndex = _.indexOf(elem.parentElement.children, elem);
@@ -449,9 +453,16 @@ function createViewModule() {
         _init: function() {
             var self = this;
             this.fileChooserDiv = document.createElement('div');
+            this.fileChooserDiv.className = "file-chooser-wrapper";
             var fileChooserTemplate = document.getElementById('file-chooser');
             this.fileChooserDiv.appendChild(document.importNode(fileChooserTemplate.content, true));
             var fileChooserInput = this.fileChooserDiv.querySelector('.files-input');
+            var fileChooserInputVisible = this.fileChooserDiv.querySelector('.files-input-visible');
+
+            fileChooserInputVisible.addEventListener('click', function(evt) {
+                fileChooserInput.click();
+            });
+
             fileChooserInput.addEventListener('change', function(evt) {
                 var files = evt.target.files;
                 var eventDate = new Date();

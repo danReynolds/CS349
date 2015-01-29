@@ -24,7 +24,7 @@ window.addEventListener('load', function() {
 
     // Attach the file chooser to the page. You can choose to put this elsewhere, and style as desired
     var fileChooser = new viewModule.FileChooser();
-    imageCollectionView.getElement().appendChild(fileChooser.getElement());
+    imageCollectionView.setFileChooser(fileChooser);
 
     // Demo that we can choose files and save to local storage. This can be replaced, later
     fileChooser.addListener(function(fileChooser, files, eventDate) {

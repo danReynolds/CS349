@@ -10,6 +10,7 @@
 
 .rating {
   float: right;
+  margin-top: 0.5rem;
 }
 
 .toolbar .view-type {
@@ -21,50 +22,28 @@
 .view-type li {
   display: inline-block;
   background: rgb(216, 91, 91);
-  border-radius: 60px;
-  height: 55px;
-  width: 60px;
+  border-radius: 3.5rem;
+  line-height: 3.5rem;
+  height: 3.5rem;
+  width: 3.5rem;
   text-align: center;
-  line-height: 55px;
 }
 
 .view-type li:hover {
   background: rgb(213, 119, 119);
 }
 
-.view-type li + li:before {
-  height: 10px;
-  color: white;
-}
-
 ul.rating > li {
     display: inline-block;
     width: 0;
     height: 0;
-    border: 1.25rem solid transparent;
-    border-bottom: 0.6rem solid white;
-    position: relative;
-    top: -1.25rem;
+    border: 0.5rem solid rgba(255, 255, 255, 1);
+    border-radius: 0.5rem;
     cursor: pointer;
 }
 
-ul.rating > li:after {
-  content: '';
-  position: absolute;
-  left: -1.25rem; top: 0.55rem;
-  width: 0;
-  height: 0;
-  border: 1.25rem solid transparent;
-  border-top: 1.9rem solid white;
-  cursor: pointer;
-}
-
 ul.rating > li.selected {
-  border-bottom-color: rgb(240, 97, 97);
-}
-
-ul.rating > li.selected:after {
-  border-top-color: rgb(240, 97, 97);
+  border-color: rgb(240, 97, 97);
 }
 
 /*=================================*/
@@ -73,6 +52,22 @@ ul.rating > li.selected:after {
 
 .image-wrapper-list {
   clear: both;
+  margin: 0 0 2rem 2.5rem;
+}
+
+.image-wrapper-list ul.info {
+  display: inline-block;
+  vertical-align: middle;
+  list-style-type: none;
+  margin-left: 1rem;
+}
+
+.image-wrapper-list img {
+  vertical-align: middle;
+}
+
+.image-wrapper-list .rating {
+  float: none;
 }
 
 /*=================================*/
@@ -85,7 +80,11 @@ ul.rating > li.selected:after {
   text-align: center;
 }
 
-.image-wrapper-grid {
+.image-wrapper-grid .name {
+  margin-top: 1rem;
+}
+
+.image-wrapper-grid, .file-chooser-wrapper {
   width: 33.33%;
   float: left;
   box-sizing: border-box;
@@ -93,31 +92,42 @@ ul.rating > li.selected:after {
   text-align: center;
 }
 
-.image-wrapper-grid img, .image-wrapper-list img {
+.image-wrapper-grid img, .image-wrapper-list img, .files-input-visible {
   height: 15rem;
   width: 15rem;
-  border: 0.4rem solid white;
+  border: 0.3rem solid rgb(207, 207, 207);
+  border-style: inset;
   border-radius: 15rem;
   cursor: pointer;
+}
+
+.image-wrapper-grid img:hover, .image-wrapper-list img:hover, .files-input-visible:hover {
+  border-color: rgb(213, 119, 119);
 }
 
 /*=================================*/
 /*File Input*/
 /*=================================*/
 
-.files-input {
-  width: 33.33%;
-  float: left;
-  box-sizing: border-box;
-  padding: 1rem;
-  border: 2px dashed white;
-  border-radius: 5px;
-  padding: 7rem;
-  text-align: center;
-  margin: 1rem 0;
-  height: 15rem;
-  border-radius: 15rem;
-  box-sizing: border-box;
+.files-input-visible {
+  border-style: dashed;
+  margin: 0 auto;
+  position: relative;
+}
+
+input[type='file'] {
+  display: none;
+}
+
+.file-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  height: 1rem;
+  width: 5rem;
 }
 
 /*=================================*/
@@ -187,6 +197,7 @@ ul {
 }
 
 .container {
+  padding-top: 2rem;
   max-width: 62.5rem;
   margin: 0 auto;
 }
