@@ -43,6 +43,8 @@ function createViewModule() {
             imageWrapper.querySelector('img').src = this.imageModel.getPath();
             imageWrapper.querySelector('.name').innerHTML = this.imageModel.getPath();
             imageWrapper.querySelector('.caption').innerHTML = this.imageModel.getCaption();
+            var date = this.imageModel.getModificationDate();
+            imageWrapper.querySelector('.date').innerHTML = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
 
             this.imageWrapper.innerHTML = imageWrapper.innerHTML;
 

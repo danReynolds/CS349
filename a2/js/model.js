@@ -67,7 +67,12 @@ function createModelModule() {
          * user has not supplied a caption for the image.
          */
         getCaption: function() {
-            return this.caption;
+            if (_.isUndefined(this.caption)) {
+                return "";
+            }
+            else {
+                return this.caption;
+            }
         },
 
         /**
@@ -77,6 +82,7 @@ function createModelModule() {
         setCaption: function(caption) {
             var _this = this;
             this.caption = caption;
+            this.modificationDate = new Date();
 
             _.each(this.listeners, function(listener) {
                 listener.call(this, _this, new Date());
@@ -102,6 +108,7 @@ function createModelModule() {
             var _this = this;
             if (rating >= 0 || rating <= 5) {
                 this.rating = rating;
+                this.modificationDate = new Date();
 
                 _.each(this.listeners, function(listener) {
                     listener.call(this, _this, new Date());
@@ -175,13 +182,14 @@ function createModelModule() {
                 listener.call(this, IMAGE_ADDED_TO_COLLECTION_EVENT, _this, imageModel, new Date());
             });
 
-            // If the image model ever updates, inform all of the collection listeners, currently noone is watching this
-            // since the only listener of the collectionmodel is added in the setImageCollectionModel and we only care about add/vs remove there
-            
+            // update local storage
+            imageModel.addListener(function(imageModel, eventTime) {
+                storeImageCollectionModel(_this);
+            });
+
             // the imagemodels add a handler during their init to update themselves when the underlying model changes
             imageModel.addListener(function(imagemodel, eventTime) {
                 _.each(_this.listeners, function(listener) {
-                    storeImageCollectionModel(_this);
                     listener.call(this, IMAGE_META_DATA_CHANGED_EVENT, _this, imagemodel, eventTime);
                 });
             });
@@ -203,10 +211,16 @@ function createModelModule() {
                 listener.call(this, IMAGE_REMOVED_FROM_COLLECTION_EVENT, _this, imageModel, new Date());
             });
 
+            // How to do?
+
             imageModel.removeListener(function(imagemodel, eventTime) {
                 _.each(_this.listeners, function(listener) {
                     listener.call(_this, IMAGE_META_DATA_CHANGED_EVENT, _this, imagemodel, eventTime);
                 });
+            });
+
+            imageModel.removeListener(function(imagemodel, eventTime) {
+                storeImageCollectionModel(_this);
             });
         },
 
