@@ -16,7 +16,7 @@ window.addEventListener('load', function() {
     appContainer.appendChild(toolbar.getElement());
 
     // create image collection model
-    var imageCollectionModel = new modelModule.ImageCollectionModel();
+    var imageCollectionModel = new modelModule.loadImageCollectionModel();
 
     // set imageCollectionView to imageCollectionModel
     var imageCollectionView = new viewModule.ImageCollectionView();
@@ -49,15 +49,4 @@ window.addEventListener('load', function() {
         );
         modelModule.storeImageCollectionModel(imageCollectionModel);
     });
-    // Demo retrieval
-    var storedImageCollection = modelModule.loadImageCollectionModel();
-    var storedImageDiv = document.createElement('div');
-    _.each(
-        storedImageCollection.getImageModels(),
-        function(imageModel) {
-            var imageModelDiv = document.createElement('div');
-            storedImageDiv.appendChild(imageModelDiv);
-        }
-    );
-    appContainer.appendChild(storedImageDiv);
 });

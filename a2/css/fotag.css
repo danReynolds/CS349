@@ -4,7 +4,7 @@
 
 @font-face {
  font-family: 'Lato';
- src: url('/fonts/Lato'),
+ src: url('/fonts/Lato-Light.ttf'),
  url('/fonts/Lato-Light.ttf') format('truetype');
  font-weight: normal;
  font-style: normal;
@@ -34,6 +34,7 @@
 .toolbar .rating, .toolbar .label {
   margin-top: 1.2rem;
   float: right;
+  line-height: 0.8rem;
 }
 
 .toolbar .label {
@@ -55,6 +56,7 @@
   height: 3.5rem;
   width: 3.5rem;
   text-align: center;
+  position: relative;
 }
 
 .view-type li + li {
@@ -84,6 +86,19 @@ ul.rating > li.selected {
   border-color: rgb(240, 97, 97);
 }
 
+svg {
+  position: absolute;
+  top: 10px;
+  margin: auto;
+  left: 20%;
+  fill: rgb(73, 73, 73);
+}
+
+svg.svg-grid {
+  top: 13px;
+  left: 23%;
+}
+
 /*=================================*/
 /*Image Wrapper List*/
 /*=================================*/
@@ -97,6 +112,10 @@ ul.rating > li.selected {
   display: inline-block;
   vertical-align: middle;
   margin-left: 1rem;
+}
+
+.image-wrapper-list .list-meta-data .caption {
+  width: 10rem;
 }
 
 .image-wrapper-list ul {
@@ -125,10 +144,16 @@ ul.rating > li.selected {
   text-align: center;
 }
 
+
+
 @media (max-width: 800px) {
   .image-wrapper-list .list-meta-data {
     margin-left: 0;
     display: block;
+  }
+
+  .image-wrapper-list .list-meta-data .caption {
+    width: initial;
   }
 
   .image-wrapper-list, .file-chooser-wrapper.list {
@@ -140,6 +165,7 @@ ul.rating > li.selected {
     margin: 0 auto;
   }
 }
+
 
 /*=================================*/
 /*Image Wrapper Grid*/
@@ -153,6 +179,13 @@ ul.rating > li.selected {
 
 .image-wrapper-grid .grid-meta-data {
   margin-top: 1.5rem;
+}
+
+.grid-meta-data .caption, .list-meta-data .caption {
+  height: 1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .image-wrapper-grid, .file-chooser-wrapper.grid {
@@ -228,8 +261,17 @@ input[type='file'] {
   text-align: center;
 }
 
+.popup-wrapper .caption {
+  display: inline-block;
+  margin-top: 0.2rem;
+  height: 5rem;
+  box-sizing: border-box;
+  width: 100%;
+  color: rgb(116, 116, 116);
+}
+
 .popup-wrapper {
-  text-align: right;
+  text-align: center;
   display: inline-block;
 }
 
@@ -250,10 +292,13 @@ input[type='file'] {
   overflow-x: hidden;
 }
 
-.popup-wrapper .close {
-  font-size: 2rem;
-  cursor: pointer;
-  color: rgb(216, 91, 91);
+.popup-wrapper .button-group li {
+  display: inline-block;
+}
+
+.popup-wrapper .caption-wrapper {
+  width: 100%;
+  text-align: right;
 }
 
 /*=================================*/
@@ -297,4 +342,36 @@ ul {
     clear: both;
     content: "";
     display: block;
+}
+
+.button {
+  border:1px solid #241d13;
+  display:inline-block;
+  cursor:pointer;
+  color:#ffffff;
+  font-size:15px;
+  padding:9px 23px;
+  text-decoration:none;
+  background-color: rgb(216, 91, 91);
+}
+
+.button:hover {
+  background: rgb(213, 119, 119);
+}
+
+.button:active {
+  position:relative;
+  top:1px;
+}
+
+.button.close {
+  background: rgb(73, 73, 73);
+}
+
+.button.close:hover {
+  background: rgb(95, 95, 95);
+}
+
+textarea {
+  border-radius: 3px;
 }

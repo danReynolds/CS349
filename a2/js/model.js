@@ -181,6 +181,7 @@ function createModelModule() {
             // the imagemodels add a handler during their init to update themselves when the underlying model changes
             imageModel.addListener(function(imagemodel, eventTime) {
                 _.each(_this.listeners, function(listener) {
+                    storeImageCollectionModel(_this);
                     listener.call(this, IMAGE_META_DATA_CHANGED_EVENT, _this, imagemodel, eventTime);
                 });
             });

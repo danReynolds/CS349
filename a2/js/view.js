@@ -42,13 +42,14 @@ function createViewModule() {
             imageWrapper.appendChild(document.importNode(imageWrapperTemplate.content, true));
             imageWrapper.querySelector('img').src = this.imageModel.getPath();
             imageWrapper.querySelector('.name').innerHTML = this.imageModel.getPath();
+            imageWrapper.querySelector('.caption').innerHTML = this.imageModel.getCaption();
 
             this.imageWrapper.innerHTML = imageWrapper.innerHTML;
 
             // Add Event Listeners
 
             this.imageWrapper.querySelector('img').addEventListener('click', function(e) {
-                new Popup(e.toElement.src);
+                new Popup(_this.getImageModel());
             });
 
             var rating = this.imageModel.getRating();
@@ -228,6 +229,13 @@ function createViewModule() {
             });
         },
 
+        addRenderer: function(model) {
+            var newRenderer = this.rendererFactory.createImageRenderer(model);
+            this.imageRenderers.push(newRenderer);
+            newRenderer.setToView(this.getCurrentView());
+            this.collectionDiv.insertBefore(newRenderer.getElement(), this.collectionDiv.querySelector('.file-chooser-wrapper'));
+        },
+
         /**
          * Returns the ImageCollectionModel represented by this view.
          */
@@ -246,12 +254,15 @@ function createViewModule() {
             var _this = this;
             this.imageCollection = imageCollectionModel;
 
+            // Remove old renderers and create new
+            this.imageRenderers = [];
+            _.each(this.imageCollection.getImageModels(), function(model) {
+                _this.addRenderer(model);
+            });
+
             this.imageCollection.addListener(function(eventType, imageModelCollection, imageModel, eventDate) {
                 if (eventType == 'IMAGE_ADDED_TO_COLLECTION_EVENT') {
-                    var newRenderer = _this.rendererFactory.createImageRenderer(imageModel);
-                    _this.imageRenderers.push(newRenderer);
-                    newRenderer.setToView(_this.getCurrentView());
-                    _this.collectionDiv.insertBefore(newRenderer.getElement(), _this.collectionDiv.querySelector('.file-chooser-wrapper'));
+                    _this.addRenderer(imageModel);
                 }
                 else if (eventType == 'IMAGE_REMOVED_FROM_COLLECTION_EVENT') {
                     var removedRenderer = _.find(_this.imageRenderers, function(renderer) {
@@ -339,16 +350,15 @@ function createViewModule() {
 
             _.each(this.toolbarDiv.querySelectorAll('ul.view-type li'), function(elem) {
                 elem.addEventListener('click', function(e) {
-                    var elem = e.toElement;
-                    if (elem.className === "grid") {
-                        elem.className = "grid selected";
-                        elem.parentElement.querySelector('.list').className = "list";
+                    if (this.className === "grid") {
+                        this.className = "grid selected";
+                        this.parentElement.querySelector('.list').className = "list";
 
                         _this.setToView(GRID_VIEW);
                     }
-                    else if (elem.className == "list") {
-                        elem.className = "list selected";
-                        elem.parentElement.querySelector('.grid').className = "grid";
+                    else if (this.className == "list") {
+                        this.className = "list selected";
+                        this.parentElement.querySelector('.grid').className = "grid";
 
                         _this.setToView(LIST_VIEW);
                     }
@@ -459,8 +469,8 @@ function createViewModule() {
      * An object that will allow the user to display a full size image.
      * @constructor
      */
-     var Popup = function(src) {
-        this.image = src;
+     var Popup = function(imageModel) {
+        this.imageModel = imageModel;
         this._init();
      }
 
@@ -471,9 +481,16 @@ function createViewModule() {
             this.popupDiv = document.createElement("div");
             this.popupDiv.className = "popup";
             this.popupDiv.appendChild(document.importNode(popupTemplate.content, true));
-            this.popupDiv.querySelector('img').src = this.image;
+            this.popupDiv.querySelector('img').src = this.imageModel.getPath();
+            var caption = this.popupDiv.querySelector('.caption');
+            caption.value = this.imageModel.getCaption();
 
             this.popupDiv.querySelector('.popup-wrapper .close').addEventListener('click', function() {
+                document.body.removeChild(_this.popupDiv);
+            });
+
+            this.popupDiv.querySelector('.popup-wrapper .save').addEventListener('click', function(e) {
+                _this.imageModel.setCaption(caption.value);
                 document.body.removeChild(_this.popupDiv);
             });
 

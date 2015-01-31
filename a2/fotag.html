@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html>
+<!-- When a page does not specify a viewport, mobile browsers will render that page at a fallback width ranging from 800 to 1024 CSS pixels. The page scale factor is adjusted so that the page fits on the display, forcing users to zoom before they can interact with the page.
+ -->
+<!-- page should match the screen's width in device independent pixels, reflowing the content -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <head lang="en">
     <meta charset="UTF-8">
@@ -29,8 +32,33 @@
 <!-- The template for the toolbar -->
 <template id="toolbar-template">
     <ul class="view-type">
-        <li class="list"> List </li>
-        <li class="grid selected"> Grid </li>
+        <li class="grid selected">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="svg-grid" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve">
+            <path d="M281.3,47.4c0-16.6-13.4-30-30-30H49.3c-16.6,0-30,13.4-30,30v202.1c0,16.6,13.4,30,30,30h202.1c16.6,0,30-13.4,30-30V47.4z  "/>
+            <path d="M631,47.4c0-16.6-13.4-30-30-30H399c-16.6,0-30,13.4-30,30v202.1c0,16.6,13.4,30,30,30H601c16.6,0,30-13.4,30-30V47.4z"/>
+            <path d="M980.7,47.4c0-16.6-13.4-30-30-30H748.7c-16.6,0-30,13.4-30,30v202.1c0,16.6,13.4,30,30,30h202.1c16.6,0,30-13.4,30-30V47.4  z"/>
+            <path d="M281.3,399c0-16.6-13.4-30-30-30H49.3c-16.6,0-30,13.4-30,30V601c0,16.6,13.4,30,30,30h202.1c16.6,0,30-13.4,30-30V399z"/>
+            <path d="M631,399c0-16.6-13.4-30-30-30H399c-16.6,0-30,13.4-30,30V601c0,16.6,13.4,30,30,30H601c16.6,0,30-13.4,30-30V399z"/>
+            <path d="M980.7,399c0-16.6-13.4-30-30-30H748.7c-16.6,0-30,13.4-30,30V601c0,16.6,13.4,30,30,30h202.1c16.6,0,30-13.4,30-30V399z"/>
+            <path d="M251.3,720.5H49.3c-16.6,0-30,13.4-30,30v202.1c0,16.6,13.4,30,30,30h202.1c16.6,0,30-13.4,30-30V750.5  C281.3,734,267.9,720.5,251.3,720.5z"/>
+            <path d="M601,720.5H399c-16.6,0-30,13.4-30,30v202.1c0,16.6,13.4,30,30,30H601c16.6,0,30-13.4,30-30V750.5  C631,734,617.6,720.5,601,720.5z"/>
+            <path d="M950.7,720.5H748.7c-16.6,0-30,13.4-30,30v202.1c0,16.6,13.4,30,30,30h202.1c16.6,0,30-13.4,30-30V750.5  C980.7,734,967.3,720.5,950.7,720.5z"/>
+            </svg>
+        </li>
+        <li class="list">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="svg-list" x="0px" y="0px" width="35px" height="35px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+            <g>
+                <circle cx="120.297" cy="136" r="39.081"/>
+                <circle cx="120.297" cy="256" r="39.081"/>
+                <circle cx="120.297" cy="376" r="39.081"/>
+                <g>
+                    <path d="M425.785,101.75H194.797c-2.757,0-5,2.243-5,5v58.5c0,2.757,2.243,5,5,5h230.988c2.757,0,5-2.243,5-5v-58.5    C430.785,103.993,428.542,101.75,425.785,101.75z"/>
+                    <path d="M425.785,221.75H194.797c-2.757,0-5,2.243-5,5v58.5c0,2.757,2.243,5,5,5h230.988c2.757,0,5-2.243,5-5v-58.5    C430.785,223.993,428.542,221.75,425.785,221.75z"/>
+                    <path d="M425.785,341.75H194.797c-2.757,0-5,2.243-5,5v58.5c0,2.757,2.243,5,5,5h230.988c2.757,0,5-2.243,5-5v-58.5    C430.785,343.993,428.542,341.75,425.785,341.75z"/>
+                </g>
+            </g>
+            </svg>
+        </li>
     </ul>
     <ul class="rating">
         <li></li>
@@ -46,6 +74,7 @@
 <template id="image-wrapper-grid-template">
     <img></img>
     <div class="grid-meta-data">
+        <p class="caption"></p>
         <p class="name"></p>
         <ul class="rating">
             <li></li>
@@ -63,6 +92,7 @@
     <div class="list-meta-data">
         <ul class="info">
             <li>
+                <p class="caption"></p>
                 <p class="name"></p>
             </li>
             <li>
@@ -81,8 +111,18 @@
 <template id="popup-template">
     <div class="popup-content">
         <div class="popup-wrapper">
-            <div class="close">&#x2717</div>
             <img></img>
+            <div class="caption-wrapper">
+                <textarea class="caption" type="text" placeholder="Enter image caption"></textarea>
+                <ul class="button-group">
+                    <li>
+                        <button class="button save">Save and close</button>
+                    </li>
+                    <li>
+                        <button class="button close">Close</button>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
     <div class="popup-background">
