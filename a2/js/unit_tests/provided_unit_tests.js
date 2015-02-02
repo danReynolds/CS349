@@ -130,9 +130,7 @@ describe('ImageCollectionModel', function() {
     imageCollectionModel.addListener(listener2);
     imageCollectionModel.addImageModel(imageModel);
     imageCollectionModel.removeImageModel(imageModel);
-    expect(imageCollectionModel.listeners.length).to.equal(0);
-
-    // how to remove based on function?
+    expect(imageModel.listeners.length).to.equal(0);
   })
 
   it('should return all image models of collection', function() {
