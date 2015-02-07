@@ -17,10 +17,11 @@ function createViewModule() {
         this.imageModel = imageModel;
         this.viewType;
         this.imageWrapper = document.createElement("div");
-
-        this.imageModel.addListener(function(imageModel) {
+        this.imageModelListener = function(imageModel) {
             _this.updateView();
-        });
+        };
+
+        this.imageModel.addListener(this.imageModelListener);
     };
 
     _.extend(ImageRenderer.prototype, {
@@ -146,6 +147,31 @@ function createViewModule() {
         this.viewType = GRID_VIEW;
         this.fileChooser;
 
+        var _this = this;
+
+        // Listener to be added to the imageCollection assigned to it
+        this.imageCollectionListener = function(eventType, imageModelCollection, imageModel, eventDate) {
+            if (eventType == 'IMAGE_ADDED_TO_COLLECTION_EVENT') {
+                _this.addRenderer(imageModel);
+            }
+            else if (eventType == 'IMAGE_REMOVED_FROM_COLLECTION_EVENT') {
+                var removedRenderer = _.find(_this.imageRenderers, function(renderer) {
+                    return renderer.getImageModel() == imageModel;
+                })
+                _this.collectionDiv.removeChild(removedRenderer.getElement());
+            }
+            // After the renderer has been updated, if it has too few stars, hide it.
+            // This works because the listener for updating the renderer is run before this listener
+            else if (eventType == 'IMAGE_META_DATA_CHANGED_EVENT') {
+                var modifiedRenderer = _.find(_this.imageRenderers, function(renderer) {
+                    return renderer.getImageModel() == imageModel;
+                })
+                if (imageModel.getRating() != 0 && imageModel.getRating() < _this.toolbar.getCurrentRatingFilter()) {
+                    _this.collectionDiv.removeChild(modifiedRenderer.getElement());
+                }
+            }
+        };
+
         this._init();
     };
 
@@ -251,38 +277,25 @@ function createViewModule() {
          * any changes to the given model.
          */
         setImageCollectionModel: function(imageCollectionModel) {
-            // TODO remove current listeners for imageCollection
+            // Remove the listener the imageCollectionView added to the collection
+            if (this.imageCollection != undefined) {
+                this.imageCollection.removeListener(this.imageCollectionListener);
+            }
 
             var _this = this;
             this.imageCollection = imageCollectionModel;
 
             // Remove old renderers and create new
+            _.each(this.imageRenderers, function(renderer) {
+                _this.collectionDiv.removeChild(renderer.getElement());
+                renderer.getImageModel().removeListener(renderer.imageModelListener);
+            })
             this.imageRenderers = [];
             _.each(this.imageCollection.getImageModels(), function(model) {
                 _this.addRenderer(model);
             });
 
-            this.imageCollection.addListener(function(eventType, imageModelCollection, imageModel, eventDate) {
-                if (eventType == 'IMAGE_ADDED_TO_COLLECTION_EVENT') {
-                    _this.addRenderer(imageModel);
-                }
-                else if (eventType == 'IMAGE_REMOVED_FROM_COLLECTION_EVENT') {
-                    var removedRenderer = _.find(_this.imageRenderers, function(renderer) {
-                        return renderer.getImageModel() == imageModel;
-                    })
-                    _this.collectionDiv.removeChild(removedRenderer.getElement());
-                }
-                // After the renderer has been updated, if it has too few stars, hide it.
-                // This works because the listener for updating the renderer is run before this listener
-                else if (eventType == 'IMAGE_META_DATA_CHANGED_EVENT') {
-                    var modifiedRenderer = _.find(_this.imageRenderers, function(renderer) {
-                        return renderer.getImageModel() == imageModel;
-                    })
-                    if (imageModel.getRating() < _this.toolbar.getCurrentRatingFilter()) {
-                        _this.collectionDiv.removeChild(modifiedRenderer.getElement());
-                    }
-                }
-            });
+            this.imageCollection.addListener(this.imageCollectionListener);
         },
 
         /**
@@ -486,14 +499,18 @@ function createViewModule() {
             this.popupDiv.querySelector('img').src = this.imageModel.getPath();
             var caption = this.popupDiv.querySelector('.caption');
             caption.value = this.imageModel.getCaption();
+            var container = document.querySelector('#app-container');
+            container.style.display = "none";
 
             this.popupDiv.querySelector('.popup-wrapper .close').addEventListener('click', function() {
                 document.body.removeChild(_this.popupDiv);
+                container.style.display = "block";
             });
 
             this.popupDiv.querySelector('.popup-wrapper .save').addEventListener('click', function(e) {
                 _this.imageModel.setCaption(caption.value);
                 document.body.removeChild(_this.popupDiv);
+                container.style.display = "block";
             });
 
             document.body.appendChild(this.popupDiv);

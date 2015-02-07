@@ -38,7 +38,6 @@ function createModelModule() {
         this.caption = caption;
         this.rating = rating;
         this.listeners = [];
-        this.collectionListeners = [];
     };
 
     _.extend(ImageModel.prototype, {
@@ -139,6 +138,20 @@ function createModelModule() {
     var ImageCollectionModel = function() {
         this.imageModels = [];
         this.listeners = [];
+
+        var _this = this;
+
+        var function1 = function(imageModel, eventTime) {
+            storeImageCollectionModel(_this);
+        }
+
+        var function2 = function(imagemodel, eventTime) {
+            _.each(_this.listeners, function(listener) {
+                listener.call(this, IMAGE_META_DATA_CHANGED_EVENT, _this, imagemodel, eventTime);
+            })
+        }
+
+        this.imageModelListeners = [function1, function2];
     };
 
     _.extend(ImageCollectionModel.prototype, {
@@ -183,23 +196,9 @@ function createModelModule() {
                 listener.call(this, IMAGE_ADDED_TO_COLLECTION_EVENT, _this, imageModel, new Date());
             });
 
-            var function1 = function(imageModel, eventTime) {
-                storeImageCollectionModel(_this);
-            };
-
-            var function2 = function(imagemodel, eventTime) {
-                _.each(_this.listeners, function(listener) {
-                    listener.call(this, IMAGE_META_DATA_CHANGED_EVENT, _this, imagemodel, eventTime);
-                });
-            };
-
-            imageModel.collectionListeners.push([this, function1, function2]);
-
-            // update local storage
-            imageModel.addListener(function1);
-
-            // the imagemodels add a handler during their init to update themselves when the underlying model changes
-            imageModel.addListener(function2);
+            _.each(this.imageModelListeners, function(listener) {
+                imageModel.listeners.push(listener);
+            })                
         },
 
         /**
@@ -218,15 +217,7 @@ function createModelModule() {
                 listener.call(this, IMAGE_REMOVED_FROM_COLLECTION_EVENT, _this, imageModel, new Date());
             });
 
-            var removedCollectionListener = _.find(imageModel.collectionListeners, function(cl) {
-                return cl[0] == _this;
-            });
-
-            imageModel.collectionListeners = _.filter(imageModel.collectionListeners, function(listener) {
-                return listener != removedCollectionListener;
-            });
-
-            _.each(_.last(removedCollectionListener, 2), function(listener) {
+            _.each(this.imageModelListeners, function(listener) {
                 imageModel.removeListener(listener);
             })
 
