@@ -36,12 +36,12 @@ window.addEventListener('load', function() {
             files,
             function(file) {
                 var newDiv = document.createElement('div');
-                var fileInfo = "File name: " + file.name + ", last modified: " + file.lastModifiedDate;
+                var fileInfo = "File name: " + file.name + ", last modified: " + new Date();
                 appContainer.appendChild(newDiv);
                 imageCollectionModel.addImageModel(
                     new modelModule.ImageModel(
                         '/images/' + file.name,
-                        file.lastModifiedDate,
+                        new Date(),
                         '',
                         0
                     ));

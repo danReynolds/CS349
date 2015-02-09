@@ -1,39 +1,12 @@
 10
 
 dir
-1623
+2340
 svn://assignments.student.cs.uwaterloo.ca:6002/cs349_repo/djreynol/a2
 svn://assignments.student.cs.uwaterloo.ca:6002/cs349_repo
 
 
 
-2015-01-26T18:45:01.968691Z
-1612
-q73li
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-a7518d2b-bc7f-4e60-b1eb-02bd93e3a2b9
-
-fotag.html
-file
-2062
-
-
-
-2015-02-02T16:33:27.142704Z
-531a3f394674cdefadaeac80062c07ce
 2015-02-08T00:02:23.216984Z
 2062
 djreynol
@@ -51,57 +24,7 @@ djreynol
 
 
 
-
-
-
-
-
-
-
-6536
-
-unit_tests.html
-file
-
-
-
-
-2015-01-31T18:57:08.869564Z
-2ad006af5e4bacd805678f4dcf3df572
-2015-01-26T18:45:01.968691Z
-1612
-q73li
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-929
-
-images
-dir
-
-assignment_spec_images
-dir
-
-css
-dir
+a7518d2b-bc7f-4e60-b1eb-02bd93e3a2b9
 
 fonts
 dir
@@ -176,4 +99,81 @@ q73li
 
 
 23731
+
+fotag.html
+file
+
+
+
+
+2015-02-02T16:33:27.142704Z
+531a3f394674cdefadaeac80062c07ce
+2015-02-08T00:02:23.216984Z
+2062
+djreynol
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+6536
+
+unit_tests.html
+file
+
+
+
+
+2015-01-31T18:57:08.869564Z
+2ad006af5e4bacd805678f4dcf3df572
+2015-01-26T18:45:01.968691Z
+1612
+q73li
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+929
+
+images
+dir
+
+assignment_spec_images
+dir
+
+css
+dir
 

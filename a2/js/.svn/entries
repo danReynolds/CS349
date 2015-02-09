@@ -1,15 +1,15 @@
 10
 
 dir
-1623
+2340
 svn://assignments.student.cs.uwaterloo.ca:6002/cs349_repo/djreynol/a2/js
 svn://assignments.student.cs.uwaterloo.ca:6002/cs349_repo
 
 
 
-2015-01-26T18:45:01.968691Z
-1612
-q73li
+2015-02-08T00:02:23.216984Z
+2062
+djreynol
 
 
 
@@ -26,15 +26,9 @@ q73li
 
 a7518d2b-bc7f-4e60-b1eb-02bd93e3a2b9
 
-ext
-dir
-
-unit_tests
-dir
-
 view.js
 file
-2062
+
 
 
 
@@ -102,14 +96,14 @@ q73li
 
 fotag.js
 file
-2062
+2341
 
 
 
-2015-02-07T23:56:34.607784Z
-c3e2d63ef6687aa71510d5c20cc8b3ba
-2015-02-08T00:02:23.216984Z
-2062
+2015-02-09T04:16:42.731986Z
+4e4704a310f5b2d1591f8159eb7fd3fa
+2015-02-09T04:25:56.613131Z
+2341
 djreynol
 
 
@@ -132,18 +126,18 @@ djreynol
 
 
 
-2006
+2141
 
 model.js
 file
-2062
+2341
 
 
 
-2015-02-07T23:35:43.943886Z
-55afe8f54d2a2d80bbd31cbf44b75db2
-2015-02-08T00:02:23.216984Z
-2062
+2015-02-09T04:20:36.930115Z
+8b20fa3250179611b01796be385f5d72
+2015-02-09T04:25:56.613131Z
+2341
 djreynol
 
 
@@ -166,5 +160,11 @@ djreynol
 
 
 
-10309
+10032
+
+ext
+dir
+
+unit_tests
+dir
 
