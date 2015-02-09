@@ -121,8 +121,7 @@ describe('ImageCollectionModel', function() {
     imageCollectionModel.addListener(listener);
     imageCollectionModel.addListener(listener2);
     imageCollectionModel.addImageModel(imageModel);
-    expect(imageModel.listeners.length).to.equal(2); // first listener notifies each collection listener that image model changes,
-    // second listener re-saves collection model to local storage.
+    expect(imageModel.listeners.length).to.equal(1); // listener notifies each collection listener that image model changes
   })
 
   it('should remove an image model', function() {

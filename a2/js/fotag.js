@@ -49,4 +49,8 @@ window.addEventListener('load', function() {
         );
         modelModule.storeImageCollectionModel(imageCollectionModel);
     });
+
+    window.addEventListener("beforeunload", function() {
+        modelModule.storeImageCollectionModel(imageCollectionModel);
+    });
 });

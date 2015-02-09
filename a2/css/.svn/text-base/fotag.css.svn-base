@@ -1,1 +1,376 @@
-/* Put any additional CSS here */
+/*=================================*/
+/* Font */
+/*=================================*/
+
+@font-face {
+ font-family: 'Lato';
+ src: url('/fonts/Lato-Light.ttf'),
+ url('/fonts/Lato-Light.ttf') format('truetype');
+ font-weight: normal;
+ font-style: normal;
+}
+
+/*=================================*/
+/* Header */
+/*=================================*/
+.header-content h1 {
+  background: rgb(216, 91, 91);
+  padding: 2rem;
+  margin: 0;
+  display: inline-block;
+  box-shadow: 0px 1px 1px rgb(55, 54, 54);
+}
+
+/*=================================*/
+/*Toolbar*/
+/*=================================*/
+
+.toolbar {
+  margin-top: 2rem;
+  width: 100%;
+  height: 4rem;
+}
+
+.toolbar .rating, .toolbar .label {
+  margin-top: 1.2rem;
+  float: right;
+  line-height: 0.8rem;
+}
+
+.toolbar .label {
+  margin-right: 0.5rem;
+}
+
+.toolbar .view-type {
+  float: left;
+  margin-left: 1rem;
+  cursor: pointer;
+}
+
+.view-type li {
+  display: inline-block;
+  background: white;
+  color: rgb(216, 91, 91);
+  border-radius: 3.5rem;
+  line-height: 3.5rem;
+  height: 3.5rem;
+  width: 3.5rem;
+  text-align: center;
+  position: relative;
+}
+
+.view-type li + li {
+  margin-left: 0.3rem;
+}
+
+.view-type li:hover {
+  background: rgb(213, 119, 119);
+  color: white;
+}
+
+.view-type li.selected {
+  background: rgb(216, 91, 91);
+  color: white;
+}
+
+ul.rating > li {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border: 0.5rem solid rgba(255, 255, 255, 1);
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+ul.rating > li.selected {
+  border-color: rgb(240, 97, 97);
+}
+
+svg {
+  position: absolute;
+  top: 10px;
+  margin: auto;
+  left: 20%;
+  fill: rgb(73, 73, 73);
+}
+
+svg.svg-grid {
+  top: 13px;
+  left: 23%;
+}
+
+/*=================================*/
+/*Image Wrapper List*/
+/*=================================*/
+
+.image-wrapper-list, .file-chooser-wrapper.list {
+  clear: both;
+  margin: 0 0 2rem 2.5rem;
+}
+
+.image-wrapper-list .list-meta-data {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 1rem;
+}
+
+.image-wrapper-list .list-meta-data .caption {
+  width: 10rem;
+}
+
+.image-wrapper-list ul {
+  list-style-type: none;
+}
+
+.image-wrapper-list img {
+  vertical-align: middle;
+}
+
+.image-wrapper-list .rating {
+  float: none;
+}
+
+.file-chooser-wrapper.list .files-input-visible {
+  margin: 0;
+}
+
+.image-wrapper-list .list-meta-data {
+  margin-top: 1rem;
+}
+
+.file-chooser-wrapper.list {
+  box-sizing: border-box;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+
+@media (max-width: 800px) {
+  .image-wrapper-list .list-meta-data {
+    margin-left: 0;
+    display: block;
+  }
+
+  .image-wrapper-list .list-meta-data .caption {
+    width: initial;
+  }
+
+  .image-wrapper-list, .file-chooser-wrapper.list {
+    margin: 1rem 0;
+    text-align: center;
+  }
+
+  .file-chooser-wrapper.list .files-input-visible {
+    margin: 0 auto;
+  }
+}
+
+
+/*=================================*/
+/*Image Wrapper Grid*/
+/*=================================*/
+
+.image-wrapper-grid .rating {
+  float: none;
+  clear: both;
+  text-align: center;
+}
+
+.image-wrapper-grid .grid-meta-data {
+  margin-top: 1.5rem;
+}
+
+.grid-meta-data .caption, .list-meta-data .caption {
+  height: 1.2rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.image-wrapper-grid, .file-chooser-wrapper.grid {
+  width: 33.33%;
+  float: left;
+  box-sizing: border-box;
+  padding: 1rem;
+  text-align: center;
+}
+
+.image-wrapper-grid img, .image-wrapper-list img, .files-input-visible {
+  height: 15rem;
+  width: 15rem;
+  border: 0.3rem solid rgb(207, 207, 207);
+  border-style: inset;
+  border-radius: 15rem;
+  cursor: pointer;
+}
+
+.image-wrapper-grid img:hover, .image-wrapper-list img:hover, .files-input-visible:hover {
+  border-color: rgb(213, 119, 119);
+}
+
+@media(max-width: 800px) {
+  .image-wrapper-grid, .file-chooser-wrapper.grid {
+    width: 50%;
+  }
+}
+
+@media(max-width: 575px) {
+  .image-wrapper-grid, .file-chooser-wrapper.grid {
+    width: 100%;
+  }
+
+}
+
+/*=================================*/
+/*File Input*/
+/*=================================*/
+
+.files-input-visible {
+  border-style: dashed;
+  margin: 0 auto;
+  position: relative;
+}
+
+input[type='file'] {
+  display: none;
+}
+
+.file-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  height: 1.2rem;
+  width: 5rem;
+}
+
+/*=================================*/
+/*Popup*/
+/*=================================*/
+
+.popup-content {
+  position: absolute;
+  top: 20vh;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1001;
+  text-align: center;
+}
+
+.popup-wrapper .caption {
+  display: inline-block;
+  margin: 0.4rem 0;
+  height: 5rem;
+  box-sizing: border-box;
+  width: 100%;
+  color: rgb(116, 116, 116);
+}
+
+.popup-wrapper {
+  text-align: center;
+  display: inline-block;
+}
+
+.popup-wrapper img {
+  max-width: 80vw;
+  max-height: 50vh;
+}
+
+.popup-background {
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+  background: rgba(37, 37, 37, 0.9);
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  overflow-x: hidden;
+}
+
+.popup-wrapper .button-group li {
+  display: inline-block;
+}
+
+.popup-wrapper .caption-wrapper {
+  width: 100%;
+  text-align: right;
+}
+
+/*=================================*/
+/*Basic Element Styling*/
+/*=================================*/
+
+body {
+  overflow-x: hidden;
+  background: rgb(73, 73, 73);
+  color: white;
+  margin: 0;
+  font-family: 'Lato', serif;
+}
+
+a {
+  color: white;
+}
+
+#app-container {
+  max-width: 62.5rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/*=================================*/
+/*Dan's Framework
+/*=================================*/
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  padding-top: 2rem;
+  max-width: 62.5rem;
+  margin: 0 auto;
+}
+
+.container:after{
+    clear: both;
+    content: "";
+    display: block;
+}
+
+.button {
+  border:1px solid #241d13;
+  display:inline-block;
+  cursor:pointer;
+  color:#ffffff;
+  font-size:15px;
+  padding:9px 23px;
+  text-decoration:none;
+  background-color: rgb(216, 91, 91);
+}
+
+.button:hover {
+  background: rgb(213, 119, 119);
+}
+
+.button:active {
+  position:relative;
+  top:1px;
+}
+
+.button.close {
+  background: rgb(73, 73, 73);
+}
+
+.button.close:hover {
+  background: rgb(95, 95, 95);
+}
+
+textarea {
+  border-radius: 3px;
+}

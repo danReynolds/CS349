@@ -141,17 +141,13 @@ function createModelModule() {
 
         var _this = this;
 
-        var function1 = function(imageModel, eventTime) {
-            storeImageCollectionModel(_this);
-        }
-
-        var function2 = function(imagemodel, eventTime) {
+        var modelListener = function(imagemodel, eventTime) {
             _.each(_this.listeners, function(listener) {
                 listener.call(this, IMAGE_META_DATA_CHANGED_EVENT, _this, imagemodel, eventTime);
             })
         }
 
-        this.imageModelListeners = [function1, function2];
+        this.imageModelListener = modelListener;
     };
 
     _.extend(ImageCollectionModel.prototype, {
@@ -196,9 +192,7 @@ function createModelModule() {
                 listener.call(this, IMAGE_ADDED_TO_COLLECTION_EVENT, _this, imageModel, new Date());
             });
 
-            _.each(this.imageModelListeners, function(listener) {
-                imageModel.listeners.push(listener);
-            })                
+            imageModel.listeners.push(this.imageModelListener);
         },
 
         /**
@@ -217,9 +211,7 @@ function createModelModule() {
                 listener.call(this, IMAGE_REMOVED_FROM_COLLECTION_EVENT, _this, imageModel, new Date());
             });
 
-            _.each(this.imageModelListeners, function(listener) {
-                imageModel.removeListener(listener);
-            })
+            imageModel.removeListener(this.imageModelListener);
 
         },
 
