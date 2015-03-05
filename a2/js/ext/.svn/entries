@@ -1,7 +1,7 @@
 10
 
 dir
-2340
+2997
 svn://assignments.student.cs.uwaterloo.ca:6002/cs349_repo/djreynol/a2/js/ext
 svn://assignments.student.cs.uwaterloo.ca:6002/cs349_repo
 
@@ -25,40 +25,6 @@ q73li
 
 
 a7518d2b-bc7f-4e60-b1eb-02bd93e3a2b9
-
-chai.js
-file
-
-
-
-
-2015-01-31T18:45:38.725601Z
-1d3ef3d46da0ffa5e912ba301674645b
-2015-01-26T18:45:01.968691Z
-1612
-q73li
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-121700
 
 sinon.js
 file
@@ -195,4 +161,38 @@ q73li
 
 
 47632
+
+chai.js
+file
+
+
+
+
+2015-01-31T18:45:38.725601Z
+1d3ef3d46da0ffa5e912ba301674645b
+2015-01-26T18:45:01.968691Z
+1612
+q73li
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+121700
 

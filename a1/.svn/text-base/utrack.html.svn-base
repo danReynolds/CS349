@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>UTrack</title>
+    <link rel="stylesheet" href="css/ext/bootstrap.css"/>
+    <link rel="stylesheet" href="css/utrack.css"/>
+</head>
+
+<body>
+  <!-- Header -->
+  <template id='header_template'>
+    <div class="header">
+      <h1> UTrack </h1>
+    </div>
+  </template>
+
+  <!-- Content -->
+  <template id="utrack_content_template">
+    <div id="utrack-content">
+
+      <!-- Navigation -->
+      <template id='navigation_template'>
+        <div class="row nav">
+          <ul>
+            <li class="active tab" id="activity-tab">
+              Add Activity
+            </li>
+            <li class="tab" id="history-tab">
+              Activity History
+            </li>
+          </ul>
+        </div>
+      </template>
+
+      <!-- Tabs -->
+      <template id='tabs_template'>
+        <div class="row">
+
+          <!-- New Activity Tab -->
+          <template id="activity_tab_template">
+            <div class="container" id="activity">
+
+              <!-- Alerts -->
+              <template id="alert_template">
+                <div class="hide" id='alert-wrapper'>
+                  <div id="alert-type" class="alert" role="alert">
+                    <div class="close">&#x2715;</div>
+                    <div id="alert-content"></div>
+                  </div>
+                </div>
+              </template>
+
+              <!-- Adding of Actitivty -->
+              <template id="add_activity_template">
+                <div class="row add-activity"</div>
+
+                  <!-- Activity Form -->
+                  <template id="activity_form_template">
+                    <div class="col-md-6">
+                      <form id='activity-form'>
+                        <div class="form-group">
+                          <label for="activity">Select an Activity</label>
+                          <select class="form-control" id="activity-select">
+                            <option value="Assignments">Assignments</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Side Projects">Side Projects</option>
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label for="energy">Energy Level (1-5)</label>
+                          <input class="form-control track-health" id="energy" placeholder="How good did you feel?">
+                        </div>
+                        <div class="form-group">
+                          <label for="stress">Stress Level (1-5)</label>
+                          <input id="stress" class="form-control track-health" placeholder="How stressed did you feel?">
+                        </div>
+                        <div class="form-group">
+                          <label for="happiness">Happiness Level (1-5)</label>
+                          <input id="happiness" class="form-control track-health" placeholder="How happy did it make you?">
+                        </div>
+                        <div class="form-group">
+                          <label for="time">Time Spent (minutes)</label>
+                          <input id="time" class="form-control" placeholder="How long did you do it?">
+                        </div>
+                        <button type="button" id="back" class="btn btn-default">Back</button>
+                        <button type="button" id="next" class="btn btn-primary active">Next</button>
+                        <button type="button" id="finish" class="btn btn-secondary">Track it!</button>
+                      </form>
+                    </div>
+                  </template>
+
+                  <!-- Health Bar -->
+                  <template id="health_template">
+                    <div class="col-md-6 text-center">
+                      <!-- Health Status -->
+                      <h1 id="health-status"> Health Rating </h1>
+                      <progress id="progress" max="100" value="0"></progress>
+                    </div>
+                  </template>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <!-- History Tab -->
+          <template id="history_tab_template">
+            <div class="container" id="history">
+              <div class="row">
+
+                <!-- Select Activity Analysis -->
+                <template id="select_analyzation_template">
+                  <div class="col-md-6">
+                    <h1> Analyze Your Activities </h1>
+                    <form role="form">
+                      <div class="radio">
+                        <label><input type="radio" class="toggle-graph" name="graph" value="activity-table" checked="checked">Activity Table</label>
+                      </div>
+                      <div class="radio">
+                        <label><input type="radio" class="toggle-graph" value="activity-graph" name="graph">Activity Time Graph</label>
+                      </div>
+                      <div class="radio">
+                        <label><input type="radio" class="toggle-graph" value="duration-graph" name="graph">Activity Duration Graph</label>
+                      </div>
+                    </form>
+                  </div>
+                </template>
+
+                <!-- Display Area For Analyzed Data -->
+                <template id="display_analyzation_template">
+                  <div class="col-md-6">
+                  
+                    <!-- Graph  -->
+                    <template id="graph_template">
+                      <canvas id="graph" height="300" width="300">
+                      </canvas>
+                    </template>
+
+                    <!-- Table  -->
+                    <template id="table_template">
+                      <table class="table table-bordered" id="activity-table">
+                        <thead>
+                          <tr>
+                            <th>Activity</th>
+                            <th>Time Spent in Activity (min)</th>
+                          </tr>
+                        </thead>
+                        <tbody id="activity-table-body">
+                        </tbody>
+                      </table>
+                    </template>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+        </div>
+      </template>
+    </div>
+  </template>
+
+<script src="js/ext/underscore.js"></script>
+<script src="js/model.js"></script>
+<script src="js/view.js"></script>
+<script src="js/utrack.js"></script>
+</body>
+</html>
