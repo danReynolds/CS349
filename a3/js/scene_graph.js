@@ -3,6 +3,11 @@
 /**
  * A function that creates and returns the scene graph classes and constants.
  */
+
+CanvasRenderingContext2D.prototype.setAffineTransform = function(transform) {
+    this.setTransform(transform.getScaleX(), transform.getShearY(), transform.getShearX(), transform.getScaleY(), transform.getTranslateX(), transform.getTranslateY());
+};
+
 function createSceneGraphModule() {
 
     // Part names. Use these to name your different nodes

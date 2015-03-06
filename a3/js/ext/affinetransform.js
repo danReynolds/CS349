@@ -42,12 +42,12 @@
  * knowledge of the underlying matrix (as opposed to say simply performing
  * matrix multiplication).
  *
- * @param {number=} opt_m00 The m00 coordinate of the transform.
- * @param {number=} opt_m10 The m10 coordinate of the transform.
- * @param {number=} opt_m01 The m01 coordinate of the transform.
- * @param {number=} opt_m11 The m11 coordinate of the transform.
- * @param {number=} opt_m02 The m02 coordinate of the transform.
- * @param {number=} opt_m12 The m12 coordinate of the transform.
+ * @param {number=} opt_m00 The m00 scaling factor in x coordinate of the transform.
+ * @param {number=} opt_m10 The m10 shear factor in y coordinate of the transform.
+ * @param {number=} opt_m01 The m01 shear factory in x coordinate of the transform.
+ * @param {number=} opt_m11 The m11 scaling factor in y coordinate of the transform.
+ * @param {number=} opt_m02 The m02 translation factor in x coordinate of the transform.
+ * @param {number=} opt_m12 The m12 translation factor in y coordinate of the transform.
  * @constructor
  * @final
  */
