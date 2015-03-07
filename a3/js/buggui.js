@@ -17,15 +17,28 @@ window.addEventListener('load', function() {
 
     var transform = new AffineTransform();
 
-    // Setup car
-    var carNode = new sceneGraphModule.CarNode();
-    // Set car starting position
-    carNode.startPositionTransform = transform.setToTranslation(50, 50);
+    var attrs = {
+      HEIGHT: 100,
+      WIDTH: 50
+    }
 
-    // Setup Front Section
-    var frontSection = new sceneGraphModule.frontSection();
-    frontSection.startPositionTransform = transform.
+    // Setup car
+    var carNode = new sceneGraphModule.CarNode(AffineTransform.getTranslateInstance(200, 100), attrs);
+    
+    // Setup Bumpers of car
+    var frontBumperNode = new sceneGraphModule.BumperNode(AffineTransform.getTranslateInstance(0, attrs.HEIGHT/2), sceneGraphModule.FRONT_BUMPER, attrs);
+    var rearBumperNode = new sceneGraphModule.BumperNode(AffineTransform.getTranslateInstance(0, -attrs.HEIGHT/2), sceneGraphModule.REAR_BUMPER, attrs);
+    
+    // Setup Axles of car
+    var frontAxle = new sceneGraphModule.AxleNode(AffineTransform.getTranslateInstance(0, 0), sceneGraphModule.FRONT_AXLE_PART, attrs);
+    var rearAxle = new sceneGraphModule.AxleNode(AffineTransform.getTranslateInstance(0, 0), sceneGraphModule.REAR_AXLE_PART, attrs);
+
+    carNode.addChild(frontBumperNode);
+    carNode.addChild(rearBumperNode);
+    carNode.addChild(frontAxle);
+    carNode.addChild(rearAxle);
+    carNode.render(context);
 
     // Setup Rear Section
-    var rearSection = new sceneGraphModule.rearSection();
+    // var rearSection = new sceneGraphModule.rearSection();
 });

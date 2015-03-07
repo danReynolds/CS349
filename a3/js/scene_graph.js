@@ -5,7 +5,7 @@
  */
 
 CanvasRenderingContext2D.prototype.setAffineTransform = function(transform) {
-    this.setTransform(transform.getScaleX(), transform.getShearY(), transform.getShearX(), transform.getScaleY(), transform.getTranslateX(), transform.getTranslateY());
+    this.transform(transform.getScaleX(), transform.getShearY(), transform.getShearX(), transform.getScaleY(), transform.getTranslateX(), transform.getTranslateY());
 };
 
 function createSceneGraphModule() {
@@ -99,8 +99,10 @@ function createSceneGraphModule() {
 
     });
 
-    var CarNode = function() {
-        this.initGraphNode(new AffineTransform(), CAR_PART)
+    var CarNode = function(startPosition, attrs) {
+        this.initGraphNode(startPosition, CAR_PART);
+
+        this.attrs = attrs;
     };
 
     _.extend(CarNode.prototype, GraphNode.prototype, {
@@ -108,8 +110,8 @@ function createSceneGraphModule() {
         render: function(context) {
             context.save();
             context.setAffineTransform(this.startPositionTransform);
-            
 
+            context.fillRect(-this.attrs.WIDTH / 2, -this.attrs.HEIGHT / 2, this.attrs.WIDTH, this.attrs.HEIGHT);
             _.each(this.children, function(c) {
                 c.render(context);
             });
@@ -126,7 +128,7 @@ function createSceneGraphModule() {
     /**
      * Node for the front and back sections of the car
      */
-    var ChassisNode = function(sectionName) {
+    var ChassisNode = function(startPosition, sectionName) {
         this.initGraphNode(new AffineTransform(), sectionName);
     };
 
@@ -135,7 +137,9 @@ function createSceneGraphModule() {
         render: function(context) {
             context.save();
             context.setAffineTransform(this.startPositionTransform);
+
             context.restore();
+
         },
 
         // Overrides parent method
@@ -147,8 +151,13 @@ function createSceneGraphModule() {
     /**
      * Node for the front and back bumpers of the car
      */
-    var BumperNode = function(bumperName) {
-        this.initGraphNode(new AffineTransform(), bumperName);
+    var BumperNode = function(startPosition, bumperName, attrs) {
+        this.initGraphNode(startPosition, bumperName);
+
+        this.attrs = {
+            HEIGHT: 5,
+            WIDTH: attrs.WIDTH
+        }
     };
 
     _.extend(BumperNode.prototype, GraphNode.prototype, {
@@ -156,6 +165,15 @@ function createSceneGraphModule() {
         render: function(context) {
             context.save();
             context.setAffineTransform(this.startPositionTransform);
+
+            if (this.nodeName == FRONT_BUMPER) {
+                context.fillStyle="#FF0000";
+                context.fillRect(-this.attrs.WIDTH / 2, 0, this.attrs.WIDTH, this.attrs.HEIGHT);
+            }
+            else {
+                context.fillStyle="#adadad";
+                context.fillRect(-this.attrs.WIDTH / 2, -this.attrs.HEIGHT, this.attrs.WIDTH, this.attrs.HEIGHT);
+            }
             context.restore();
         },
 
@@ -169,15 +187,29 @@ function createSceneGraphModule() {
      * @param axlePartName Which axle this node represents
      * @constructor
      */
-    var AxleNode = function(axlePartName) {
-        this.initGraphNode(new AffineTransform(), axlePartName);
-        // TODO
+    var AxleNode = function(startPosition, axlePartName, attrs) {
+        this.initGraphNode(startPosition, axlePartName);
+        
+        this.attrs = {
+            HEIGHT: 5,
+            WIDTH: 75
+        }
     };
 
     _.extend(AxleNode.prototype, GraphNode.prototype, {
         // Overrides parent method
         render: function(context) {
-            // TODO
+            context.save();
+
+            if (this.nodeName == FRONT_AXLE_PART) {
+                context.setAffineTransform(AffineTransform.getTranslateInstance(0, 30));
+                context.fillRect(-this.attrs.WIDTH/2, 0, this.attrs.WIDTH, this.attrs.HEIGHT);
+            }
+            else {
+                context.setAffineTransform(AffineTransform.getTranslateInstance(0, -30));
+                context.fillRect(-this.attrs.WIDTH/2, 0, this.attrs.WIDTH, this.attrs.HEIGHT);
+            }
+            context.restore();
         },
 
         // Overrides parent method
@@ -212,6 +244,7 @@ function createSceneGraphModule() {
     return {
         GraphNode: GraphNode,
         CarNode: CarNode,
+        BumperNode: BumperNode,
         AxleNode: AxleNode,
         TireNode: TireNode,
         CAR_PART: CAR_PART,
