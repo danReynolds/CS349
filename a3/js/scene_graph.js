@@ -48,6 +48,10 @@ function createSceneGraphModule() {
             // has been applied
             this.objectTransform = new AffineTransform();
 
+            this.parent;
+
+            this.mousedown = undefined;
+
             // Any child nodes of this node
             this.children = {};
 
@@ -56,6 +60,7 @@ function createSceneGraphModule() {
 
         addChild: function(graphNode) {
             this.children[graphNode.nodeName] = graphNode;
+            graphNode.parent = this;
         },
 
         /**
@@ -86,7 +91,9 @@ function createSceneGraphModule() {
          * @param context
          */
         render: function(context) {
-            // TODO: Should be overridden by subclass
+            _.each(this.children, function(c) {
+                c.render(context);
+            });
         },
 
         /**
@@ -94,24 +101,29 @@ function createSceneGraphModule() {
          * transformed correctly prior to performing the hit test.
          */
         pointInObject: function(point) {
-            // TODO: There are ways to handle this query here, but you may find it easier to handle in subclasses
+            _.each(this.children, function(c) {
+                c.pointInObject(point);
+            });
         }
 
     });
 
-    var CarNode = function(startPosition, attrs) {
+    var CarNode = function(startPosition) {
         this.initGraphNode(startPosition, CAR_PART);
 
-        this.attrs = attrs;
+        this.attrs = {
+            BASE_HEIGHT: 100,
+            BASE_WIDTH: 50
+        }
     };
 
     _.extend(CarNode.prototype, GraphNode.prototype, {
         // Overrides parent method
         render: function(context) {
             context.save();
-            context.setAffineTransform(this.startPositionTransform);
+            context.setAffineTransform(this.startPositionTransform.concatenate(this.objectTransform));
 
-            context.fillRect(-this.attrs.WIDTH / 2, -this.attrs.HEIGHT / 2, this.attrs.WIDTH, this.attrs.HEIGHT);
+            context.fillRect(-this.attrs.BASE_WIDTH / 2, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
             _.each(this.children, function(c) {
                 c.render(context);
             });
@@ -121,42 +133,22 @@ function createSceneGraphModule() {
 
         // Overrides parent method
         pointInObject: function(point) {
-            // TODO
-        }
-    });
-
-    /**
-     * Node for the front and back sections of the car
-     */
-    var ChassisNode = function(startPosition, sectionName) {
-        this.initGraphNode(new AffineTransform(), sectionName);
-    };
-
-    _.extend(ChassisNode.prototype, GraphNode.prototype, {
-        // Overrides parent method
-        render: function(context) {
-            context.save();
-            context.setAffineTransform(this.startPositionTransform);
-
-            context.restore();
-
-        },
-
-        // Overrides parent method
-        pointInObject: function(point) {
-            // TODO
+            var _this = this;
+            var inversePoint = point.clone().concatenate(_this.startPositionTransform.createInverse());
+            _.each(this.children, function(c) {
+                c.pointInObject(inversePoint);
+            });
         }
     });
 
     /**
      * Node for the front and back bumpers of the car
      */
-    var BumperNode = function(startPosition, bumperName, attrs) {
+    var BumperNode = function(startPosition, bumperName) {
         this.initGraphNode(startPosition, bumperName);
 
         this.attrs = {
-            HEIGHT: 5,
-            WIDTH: attrs.WIDTH
+            BASE_HEIGHT: 5
         }
     };
 
@@ -168,18 +160,41 @@ function createSceneGraphModule() {
 
             if (this.nodeName == FRONT_BUMPER) {
                 context.fillStyle="#FF0000";
-                context.fillRect(-this.attrs.WIDTH / 2, 0, this.attrs.WIDTH, this.attrs.HEIGHT);
+                context.fillRect(-this.parent.attrs.BASE_WIDTH / 2, 0, this.parent.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
             }
             else {
                 context.fillStyle="#adadad";
-                context.fillRect(-this.attrs.WIDTH / 2, -this.attrs.HEIGHT, this.attrs.WIDTH, this.attrs.HEIGHT);
+                context.fillRect(-this.parent.attrs.BASE_WIDTH / 2, 0, this.parent.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
             }
             context.restore();
         },
 
         // Overrides parent method
         pointInObject: function(point) {
-            // TODO
+            var _this = this;
+            if (this.mousedown) {
+                var difference = point.getTranslateY() - this.mousedown;
+                this.parent.objectTransform.translate(0, difference);
+                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                this.parent.render(canvas.getContext('2d'));
+                this.mousedown = point.getTranslateY();
+            }
+            else if ( point.getTranslateY() > this.startPositionTransform.getTranslateY() + this.attrs.BASE_HEIGHT || point.getTranslateY() < this.startPositionTransform.getTranslateY()) {
+                return
+            }
+
+            else if (point.getTranslateX() < -this.parent.attrs.BASE_WIDTH / 2 || point.getTranslateX() > this.parent.attrs.BASE_WIDTH / 2) {
+                return;
+            }
+            else {
+                q('#canvas').addEventListener('mousemove', function(e) {
+                });
+                q('#canvas').addEventListener('mouseup', function(e) {
+                    this.mousedown = undefined;
+                    this.parent.pointInObject(canvasTranslation(canvas, e));
+                });
+                this.mousedown = point.getTranslateY();
+            }
         }
     });
 
@@ -187,12 +202,12 @@ function createSceneGraphModule() {
      * @param axlePartName Which axle this node represents
      * @constructor
      */
-    var AxleNode = function(startPosition, axlePartName, attrs) {
+    var AxleNode = function(startPosition, axlePartName) {
         this.initGraphNode(startPosition, axlePartName);
         
         this.attrs = {
-            HEIGHT: 5,
-            WIDTH: 75
+            BASE_HEIGHT: 5,
+            BASE_WIDTH: 75
         }
     };
 
@@ -200,15 +215,8 @@ function createSceneGraphModule() {
         // Overrides parent method
         render: function(context) {
             context.save();
-
-            if (this.nodeName == FRONT_AXLE_PART) {
-                context.setAffineTransform(AffineTransform.getTranslateInstance(0, 30));
-                context.fillRect(-this.attrs.WIDTH/2, 0, this.attrs.WIDTH, this.attrs.HEIGHT);
-            }
-            else {
-                context.setAffineTransform(AffineTransform.getTranslateInstance(0, -30));
-                context.fillRect(-this.attrs.WIDTH/2, 0, this.attrs.WIDTH, this.attrs.HEIGHT);
-            }
+            context.setAffineTransform(this.startPositionTransform);
+            context.fillRect(-this.attrs.BASE_WIDTH/2, 0, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
             context.restore();
         },
 
