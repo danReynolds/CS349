@@ -18,6 +18,10 @@ function createSceneGraphModule() {
     var FRONT_RIGHT_TIRE_PART = 'FRONT_RIGHT_TIRE_PART';
     var BACK_LEFT_TIRE_PART = 'BACK_LEFT_TIRE_PART';
     var BACK_RIGHT_TIRE_PART = 'BACK_RIGHT_TIRE_PART';
+    var FRONT_BUMPER = 'FRONT_BUMPER';
+    var REAR_BUMPER = 'REAR_BUMPER';
+    var FRONT_SECTION = 'FRONT_SECTION';
+    var REAR_SECTION = 'REAR_SECTION';
 
     var GraphNode = function() {
     };
@@ -102,7 +106,57 @@ function createSceneGraphModule() {
     _.extend(CarNode.prototype, GraphNode.prototype, {
         // Overrides parent method
         render: function(context) {
+            context.save();
+            context.setAffineTransform(this.startPositionTransform);
+            
+
+            _.each(this.children, function(c) {
+                c.render(context);
+            });
+
+            context.restore();
+        },
+
+        // Overrides parent method
+        pointInObject: function(point) {
             // TODO
+        }
+    });
+
+    /**
+     * Node for the front and back sections of the car
+     */
+    var ChassisNode = function(sectionName) {
+        this.initGraphNode(new AffineTransform(), sectionName);
+    };
+
+    _.extend(ChassisNode.prototype, GraphNode.prototype, {
+        // Overrides parent method
+        render: function(context) {
+            context.save();
+            context.setAffineTransform(this.startPositionTransform);
+            context.restore();
+        },
+
+        // Overrides parent method
+        pointInObject: function(point) {
+            // TODO
+        }
+    });
+
+    /**
+     * Node for the front and back bumpers of the car
+     */
+    var BumperNode = function(bumperName) {
+        this.initGraphNode(new AffineTransform(), bumperName);
+    };
+
+    _.extend(BumperNode.prototype, GraphNode.prototype, {
+        // Overrides parent method
+        render: function(context) {
+            context.save();
+            context.setAffineTransform(this.startPositionTransform);
+            context.restore();
         },
 
         // Overrides parent method
@@ -166,6 +220,10 @@ function createSceneGraphModule() {
         FRONT_LEFT_TIRE_PART: FRONT_LEFT_TIRE_PART,
         FRONT_RIGHT_TIRE_PART: FRONT_RIGHT_TIRE_PART,
         BACK_LEFT_TIRE_PART: BACK_LEFT_TIRE_PART,
-        BACK_RIGHT_TIRE_PART: BACK_RIGHT_TIRE_PART
+        BACK_RIGHT_TIRE_PART: BACK_RIGHT_TIRE_PART,
+        FRONT_BUMPER: FRONT_BUMPER,
+        REAR_BUMPER: REAR_BUMPER,
+        FRONT_SECTION: FRONT_SECTION,
+        REAR_SECTION: REAR_SECTION
     };
 }
