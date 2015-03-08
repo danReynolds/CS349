@@ -121,9 +121,10 @@ function createSceneGraphModule() {
         // Overrides parent method
         render: function(context) {
             context.save();
-            context.setAffineTransform(this.startPositionTransform.concatenate(this.objectTransform));
+            context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
             context.fillRect(-this.attrs.BASE_WIDTH / 2, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
+
             _.each(this.children, function(c) {
                 c.render(context);
             });
@@ -134,10 +135,37 @@ function createSceneGraphModule() {
         // Overrides parent method
         pointInObject: function(point) {
             var _this = this;
-            var inversePoint = point.clone().concatenate(_this.startPositionTransform.createInverse());
+
+            // Generate inverse
+            point.concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
+
             _.each(this.children, function(c) {
-                c.pointInObject(inversePoint);
+                c.pointInObject(point);
             });
+
+            if (mousedown != undefined) {
+                var diffX = point.getTranslateX() - mousedown.getTranslateX();
+                var diffY = point.getTranslateY() - mousedown.getTranslateY();
+                q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                _this.objectTransform.translate(diffX, diffY);
+                _this.render(q("#canvas").getContext('2d'));
+            }
+
+            else if (point.getTranslateY() > this.attrs.BASE_HEIGHT / 2 || point.getTranslateY() < -this.attrs.BASE_HEIGHT / 2) {
+                return;
+            }
+
+            else if (point.getTranslateX() < -this.attrs.BASE_WIDTH / 2 || point.getTranslateX() > this.attrs.BASE_WIDTH / 2) {
+                return;
+            }
+
+            else if (mousedown == undefined) {
+                mousedown = point;
+                q("#canvas").addEventListener('mousemove', blah=function(e) {
+                    _this.pointInObject(canvasTranslation(canvas, e));
+                    console.log("what");
+                });
+            }
         }
     });
 
@@ -156,7 +184,7 @@ function createSceneGraphModule() {
         // Overrides parent method
         render: function(context) {
             context.save();
-            context.setAffineTransform(this.startPositionTransform);
+            context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
             if (this.nodeName == FRONT_BUMPER) {
                 context.fillStyle="#FF0000";
@@ -171,15 +199,7 @@ function createSceneGraphModule() {
 
         // Overrides parent method
         pointInObject: function(point) {
-            var _this = this;
-            if (this.mousedown) {
-                var difference = point.getTranslateY() - this.mousedown;
-                this.parent.objectTransform.translate(0, difference);
-                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-                this.parent.render(canvas.getContext('2d'));
-                this.mousedown = point.getTranslateY();
-            }
-            else if ( point.getTranslateY() > this.startPositionTransform.getTranslateY() + this.attrs.BASE_HEIGHT || point.getTranslateY() < this.startPositionTransform.getTranslateY()) {
+            if ( point.getTranslateY() > this.startPositionTransform.getTranslateY() + this.attrs.BASE_HEIGHT || point.getTranslateY() < this.startPositionTransform.getTranslateY()) {
                 return
             }
 
@@ -187,13 +207,11 @@ function createSceneGraphModule() {
                 return;
             }
             else {
-                q('#canvas').addEventListener('mousemove', function(e) {
-                });
-                q('#canvas').addEventListener('mouseup', function(e) {
-                    this.mousedown = undefined;
-                    this.parent.pointInObject(canvasTranslation(canvas, e));
-                });
-                this.mousedown = point.getTranslateY();
+               this.parent.objectTransform.scale(1,1.2);
+               var context = canvas.getContext('2d');
+               context.clearRect(0, 0, canvas.height, canvas.width);
+               this.parent.render(context);
+               alert("Clicked " + this.nodeName);
             }
         }
     });
@@ -215,7 +233,7 @@ function createSceneGraphModule() {
         // Overrides parent method
         render: function(context) {
             context.save();
-            context.setAffineTransform(this.startPositionTransform);
+            context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
             context.fillRect(-this.attrs.BASE_WIDTH/2, 0, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
             context.restore();
         },

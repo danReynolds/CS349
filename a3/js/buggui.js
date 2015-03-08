@@ -5,6 +5,9 @@ function q(identifier) {
   return document.querySelector(identifier);
 }
 
+var blah;
+var mousedown;
+
 function canvasTranslation(canvas, e) {
     var canvasBounds = canvas.getBoundingClientRect();
     var x = e.clientX - canvasBounds.left;
@@ -26,12 +29,17 @@ window.addEventListener('load', function() {
       sceneGraph.pointInObject(canvasTranslation(canvas, e));
     });
 
+    q("#canvas").addEventListener('mouseup', function(e) {
+        q("#canvas").removeEventListener('mousemove', blah);
+        mousedown = undefined;
+    });
+
     // Setup car
     var carNode = new sceneGraphModule.CarNode(AffineTransform.getTranslateInstance(200, 200));
-    
+
     // Setup Bumpers of car
     var frontBumperNode = new sceneGraphModule.BumperNode(AffineTransform.getTranslateInstance(0, carNode.attrs.BASE_HEIGHT / 2), sceneGraphModule.FRONT_BUMPER);
-    var rearBumperNode = new sceneGraphModule.BumperNode(AffineTransform.getTranslateInstance(0, -carNode.attrs.BASE_HEIGHT / 2), sceneGraphModule.REAR_BUMPER);
+    var rearBumperNode = new sceneGraphModule.BumperNode(AffineTransform.getTranslateInstance(0, -carNode.attrs.BASE_HEIGHT / 2 - 5), sceneGraphModule.REAR_BUMPER);
     
     // Setup Axles of car
     var frontAxle = new sceneGraphModule.AxleNode(AffineTransform.getTranslateInstance(0, carNode.attrs.BASE_HEIGHT / 2 - 15), sceneGraphModule.FRONT_AXLE_PART);
