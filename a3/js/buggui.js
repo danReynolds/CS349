@@ -13,7 +13,7 @@ function canvasTranslation(canvas, e) {
     var x = e.clientX - canvasBounds.left;
     var y = e.clientY - canvasBounds.top;
 
-    return AffineTransform.getTranslateInstance(x, y);
+    return { x: x, y: y };
 }
 
 function pointInBox(point, top, right, bottom, left) {
@@ -35,30 +35,28 @@ window.addEventListener('load', function() {
     var sceneGraph = new sceneGraphModule.GraphNode();
     sceneGraph.initGraphNode(new AffineTransform(), "SCENE_GRAPH");
 
+
+    // Setup car
+    var carNode = new sceneGraphModule.CarNode(AffineTransform.getTranslateInstance(200, 200));
+
     q('#canvas').addEventListener('mousedown', function(e) {
       sceneGraph.pointInObject(canvasTranslation(canvas, e));
     });
 
     q("#canvas").addEventListener('mouseup', function(e) {
-        q("#canvas").removeEventListener('mousemove', mouseMove);
-        mousedown = undefined;
+       carNode.moving = false;
+       carNode.scalingX = false;
     });
 
-    // Setup car
-    var carNode = new sceneGraphModule.CarNode(AffineTransform.getTranslateInstance(200, 200));
-
-    // Setup Bumpers of car
-    var frontBumperNode = new sceneGraphModule.BumperNode(AffineTransform.getTranslateInstance(0, -carNode.attrs.BASE_HEIGHT / 2 - 5), sceneGraphModule.FRONT_BUMPER);
-    var rearBumperNode = new sceneGraphModule.BumperNode(AffineTransform.getTranslateInstance(0, carNode.attrs.BASE_HEIGHT / 2), sceneGraphModule.REAR_BUMPER);
-    
-    // Setup Axles of car
-    var frontAxle = new sceneGraphModule.AxleNode(AffineTransform.getTranslateInstance(0, -carNode.attrs.BASE_HEIGHT / 2 + 10), sceneGraphModule.FRONT_AXLE_PART);
-    var rearAxle = new sceneGraphModule.AxleNode(AffineTransform.getTranslateInstance(0, carNode.attrs.BASE_HEIGHT / 2 - 15), sceneGraphModule.REAR_AXLE_PART);
-
-    carNode.addChild(frontBumperNode);
-    carNode.addChild(rearBumperNode);
-    carNode.addChild(frontAxle);
-    carNode.addChild(rearAxle);
+    q("#canvas").addEventListener('mousemove', function(e) {
+        var point = canvasTranslation(canvas, e);
+        if (carNode.moving) {
+          carNode.move(point);
+        }
+        else if(carNode.scalingX) {
+          carNode.scale(point);
+        }
+    });
 
     sceneGraph.addChild(carNode);
     sceneGraph.render(context);

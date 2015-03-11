@@ -20,6 +20,8 @@ function createSceneGraphModule() {
     var BACK_RIGHT_TIRE_PART = 'BACK_RIGHT_TIRE_PART';
     var FRONT_BUMPER = 'FRONT_BUMPER';
     var REAR_BUMPER = 'REAR_BUMPER';
+    var LEFT_BUMPER = 'LEFT_BUMPER';
+    var RIGHT_BUMPER = 'RIGHT_BUMPER';
     var FRONT_SECTION = 'FRONT_SECTION';
     var REAR_SECTION = 'REAR_SECTION';
 
@@ -48,7 +50,9 @@ function createSceneGraphModule() {
             // has been applied
             this.objectTransform = new AffineTransform();
 
-            this.parent;
+            this.scaleTransform = new AffineTransform();
+            this.translationTransform = new AffineTransform();
+            this.rotateTransform = new AffineTransform();
 
             this.mousedown = undefined;
 
@@ -111,24 +115,46 @@ function createSceneGraphModule() {
     var CarNode = function(startPosition) {
         this.initGraphNode(startPosition, CAR_PART);
 
+        this.moving = false;
+        this.scalingX = false;
+
         this.attrs = {
             BASE_HEIGHT: 100,
             BASE_WIDTH: 50
         }
+
+        // Setup Bumpers of car
+        var frontBumper = new BumperNode(AffineTransform.getTranslateInstance(0, -this.attrs.BASE_HEIGHT / 2 - 5), FRONT_BUMPER);
+        var rearBumper = new BumperNode(AffineTransform.getTranslateInstance(0, this.attrs.BASE_HEIGHT / 2), REAR_BUMPER);
+        var leftBumper = new BumperNode(AffineTransform.getTranslateInstance(-this.attrs.BASE_WIDTH / 2 -5, 0), LEFT_BUMPER);
+        var rightBumper = new BumperNode(AffineTransform.getTranslateInstance(this.attrs.BASE_WIDTH / 2, 0), RIGHT_BUMPER);
+        
+        // Setup Axles of car
+        var frontAxle = new AxleNode(AffineTransform.getTranslateInstance(0, -this.attrs.BASE_HEIGHT / 2 + 10), FRONT_AXLE_PART);
+        var rearAxle = new AxleNode(AffineTransform.getTranslateInstance(0, this.attrs.BASE_HEIGHT / 2 - 15), BACK_AXLE_PART);
+        
+        this.addChild(frontBumper);
+        this.addChild(leftBumper);
+        this.addChild(rightBumper);
+        this.addChild(rearBumper);
+        this.addChild(frontAxle);
+        this.addChild(rearAxle);
     };
 
     _.extend(CarNode.prototype, GraphNode.prototype, {
         // Overrides parent method
         render: function(context) {
+            this.objectTransform.copyFrom(this.scaleTransform);
+
             context.save();
-            context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform.clone()));
+            context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
             context.fillRect(-this.attrs.BASE_WIDTH / 2, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
             
             // Remove scaling going down
             context.restore();
             context.save();
-            context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform.clone().scale(1, 1 / this.objectTransform.getScaleY())));
+            context.setAffineTransform(this.startPositionTransform);
 
             _.each(this.children, function(c) {
                 c.render(context);
@@ -138,37 +164,55 @@ function createSceneGraphModule() {
         },
 
         // Overrides parent method
-        pointInObject: function(point) {
+        pointInObject: function(coords) {
             var _this = this;
 
+            var point = AffineTransform.getTranslateInstance(coords.x, coords.y);
+
             // Generate inverse
-            var transformWithoutScale = this.objectTransform.clone();
-            transformWithoutScale.m11_ = 1;
-            var inversePoint = point.clone().concatenate(transformWithoutScale.concatenate(this.startPositionTransform).createInverse());
+            var inversePoint = point.clone().concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
+            coords.x = inversePoint.getTranslateX();
+            coords.y = inversePoint.getTranslateY();
 
             _.each(this.children, function(c) {
-                c.pointInObject(inversePoint);
+                c.pointInObject(coords);
             });
-
-            if (this.mousedown != undefined) {
-                var diffX = inversePoint.getTranslateX() - this.mousedown.getTranslateX();
-                var diffY = inversePoint.getTranslateY() - this.mousedown.getTranslateY();
-                q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-                _this.objectTransform.translate(diffX, diffY);
-                _this.render(q("#canvas").getContext('2d'));
-            }
 
             if (!pointInBox(inversePoint, -this.attrs.BASE_HEIGHT / 2 * this.objectTransform.getScaleY(), this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2 * this.objectTransform.getScaleY(), -this.attrs.BASE_WIDTH / 2)) {
                 return false;
             }
 
-            else if (this.mousedown == undefined) {
-                console.log(_this.nodeName + " Clicked");
-                this.mousedown = inversePoint;
-                q("#canvas").addEventListener('mousemove', mouseMove=function(e) {
-                    _this.pointInObject(canvasTranslation(canvas, e));
-                });
-            }
+            console.log('Clicked ' + this.nodeName);
+            
+            this.moving = true;
+
+            return true;      
+        },
+
+        move: function(point) {
+            this.startPositionTransform.setToTranslation(point.x, point.y);
+            q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            this.render(q("#canvas").getContext('2d'));
+        },
+
+        scale: function(coords) {
+            var point = AffineTransform.getTranslateInstance(coords.x, coords.y);
+
+            // Generate inverse
+            var inversePoint = point.clone().concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
+            
+            // Scale Car
+            var scaleY = inversePoint.getTranslateY() / (this.attrs.BASE_HEIGHT / 2);
+            this.scaleTransform = new AffineTransform();
+            this.scaleTransform.setToScale(1, scaleY);
+
+            // Translate appropriate children
+            this.children[REAR_BUMPER].translationTransform.setToTranslation(0, inversePoint.getTranslateY() - this.attrs.BASE_HEIGHT / 2);
+            this.children[FRONT_BUMPER].translationTransform.setToTranslation(0, (inversePoint.getTranslateY() - this.attrs.BASE_HEIGHT / 2) * -1);
+
+            q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            this.render(q("#canvas").getContext('2d'));
+            console.log("Scaling");
         }
     });
 
@@ -179,7 +223,7 @@ function createSceneGraphModule() {
         this.initGraphNode(startPosition, bumperName);
 
         this.attrs = {
-            BASE_HEIGHT: 5
+            THICKNESS: 5
         }
     };
 
@@ -187,51 +231,44 @@ function createSceneGraphModule() {
         // Overrides parent method
         render: function(context) {
             context.save();
+            this.objectTransform.copyFrom(this.translationTransform);
+
             context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
             if (this.nodeName == FRONT_BUMPER) {
                 context.fillStyle="#FF0000";
-                context.fillRect(-this.parent.attrs.BASE_WIDTH / 2, 0, this.parent.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
+                context.fillRect(-this.parent.attrs.BASE_WIDTH / 2, 0, this.parent.attrs.BASE_WIDTH, this.attrs.THICKNESS);
             }
-            else {
+            else if (this.nodeName == REAR_BUMPER) {
                 context.fillStyle="#adadad";
-                context.fillRect(-this.parent.attrs.BASE_WIDTH / 2, 0, this.parent.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
+                context.fillRect(-this.parent.attrs.BASE_WIDTH / 2, 0, this.parent.attrs.BASE_WIDTH, this.attrs.THICKNESS);
+            }
+            else if (this.nodeName == LEFT_BUMPER) {
+                context.fillStyle="#0BC8E1";
+                context.fillRect(0, -this.parent.attrs.BASE_HEIGHT / 2, this.attrs.THICKNESS, this.parent.attrs.BASE_HEIGHT);
+            }
+            else if (this.nodeName == RIGHT_BUMPER) {
+                context.fillStyle="#0BC8E1";
+                context.fillRect(0, -this.parent.attrs.BASE_HEIGHT / 2, this.attrs.THICKNESS, this.parent.attrs.BASE_HEIGHT);
             }
             context.restore();
         },
 
         // Overrides parent method
-        pointInObject: function(point) {
+        pointInObject: function(coords) {
+            var _this = this;
+
+            var point = AffineTransform.getTranslateInstance(coords.x, coords.y);
 
             // Generate inverse
             var inversePoint = point.clone().concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
 
-            if (this.mousedown != undefined) {
-                var diffX = inversePoint.getTranslateX() - this.mousedown.getTranslateX();
-                var diffY = inversePoint.getTranslateY() - this.mousedown.getTranslateY();
-                q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-                _this.objectTransform.translate(diffX, diffY);
-                _this.render(q("#canvas").getContext('2d'));
-            }
-            
             if (!pointInBox(inversePoint, 0, this.parent.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT, -this.parent.attrs.BASE_WIDTH / 2)) {
                 return false;
             }
 
-            else if (this.mousedown == undefined) {
-                console.log(_this.nodeName + " Clicked");
-                this.mousedown = inversePoint;
-                q("#canvas").addEventListener('mousemove', mouseMove=function(e) {
-                    _this.pointInObject(canvasTranslation(canvas, e));
-                });
-            }
-
-           // this.parent.objectTransform.scale(1,4);
-           // this.objectTransform.translate(0,this.startPositionTransform.clone().concatenate(this.objectTransform).getTranslateY() * 3);
-           // var context = canvas.getContext('2d');
-           // context.clearRect(0, 0, canvas.height, canvas.width);
-           // this.parent.render(context);
-           // console.log("Clicked " + this.nodeName);
+           this.parent.scalingX = true;
+           console.log("Clicked " + this.nodeName);
         }
     });
 
