@@ -5,7 +5,7 @@ function q(identifier) {
   return document.querySelector(identifier);
 }
 
-var blah;
+var mouseMove;
 var mousedown;
 
 function canvasTranslation(canvas, e) {
@@ -14,6 +14,16 @@ function canvasTranslation(canvas, e) {
     var y = e.clientY - canvasBounds.top;
 
     return AffineTransform.getTranslateInstance(x, y);
+}
+
+function pointInBox(point, top, right, bottom, left) {
+  if (point.getTranslateY() > bottom || point.getTranslateY() < top) {
+    return false;
+  }
+  else if (point.getTranslateX() < left || point.getTranslateX() > right) {
+    return false;
+  }
+  return true;
 }
 
 window.addEventListener('load', function() {
@@ -30,7 +40,7 @@ window.addEventListener('load', function() {
     });
 
     q("#canvas").addEventListener('mouseup', function(e) {
-        q("#canvas").removeEventListener('mousemove', blah);
+        q("#canvas").removeEventListener('mousemove', mouseMove);
         mousedown = undefined;
     });
 
@@ -38,12 +48,12 @@ window.addEventListener('load', function() {
     var carNode = new sceneGraphModule.CarNode(AffineTransform.getTranslateInstance(200, 200));
 
     // Setup Bumpers of car
-    var frontBumperNode = new sceneGraphModule.BumperNode(AffineTransform.getTranslateInstance(0, carNode.attrs.BASE_HEIGHT / 2), sceneGraphModule.FRONT_BUMPER);
-    var rearBumperNode = new sceneGraphModule.BumperNode(AffineTransform.getTranslateInstance(0, -carNode.attrs.BASE_HEIGHT / 2 - 5), sceneGraphModule.REAR_BUMPER);
+    var frontBumperNode = new sceneGraphModule.BumperNode(AffineTransform.getTranslateInstance(0, -carNode.attrs.BASE_HEIGHT / 2 - 5), sceneGraphModule.FRONT_BUMPER);
+    var rearBumperNode = new sceneGraphModule.BumperNode(AffineTransform.getTranslateInstance(0, carNode.attrs.BASE_HEIGHT / 2), sceneGraphModule.REAR_BUMPER);
     
     // Setup Axles of car
-    var frontAxle = new sceneGraphModule.AxleNode(AffineTransform.getTranslateInstance(0, carNode.attrs.BASE_HEIGHT / 2 - 15), sceneGraphModule.FRONT_AXLE_PART);
-    var rearAxle = new sceneGraphModule.AxleNode(AffineTransform.getTranslateInstance(0, -carNode.attrs.BASE_HEIGHT / 2 + 10), sceneGraphModule.REAR_AXLE_PART);
+    var frontAxle = new sceneGraphModule.AxleNode(AffineTransform.getTranslateInstance(0, -carNode.attrs.BASE_HEIGHT / 2 + 10), sceneGraphModule.FRONT_AXLE_PART);
+    var rearAxle = new sceneGraphModule.AxleNode(AffineTransform.getTranslateInstance(0, carNode.attrs.BASE_HEIGHT / 2 - 15), sceneGraphModule.REAR_AXLE_PART);
 
     carNode.addChild(frontBumperNode);
     carNode.addChild(rearBumperNode);
