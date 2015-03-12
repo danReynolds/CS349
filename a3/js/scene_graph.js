@@ -334,20 +334,6 @@ function createSceneGraphModule() {
             q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
             this.render(q("#canvas").getContext('2d'));
             console.log("Scaling Y");
-        },
-
-        scaleAxle: function(point) {
-           var _this = this;
-
-           var point = AffineTransform.getTranslateInstance(coords.x, coords.y);
-
-           // Generate inverse
-           var inversePoint = point.clone().concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
-           coords.x = inversePoint.getTranslateX();
-           coords.y = inversePoint.getTranslateY();
-           
-           this.children[FRONT_AXLE_PART].scaleAxle();
-           this.children[BACK_AXLE_PART].scaleAxle();
         }
     });
 
@@ -506,6 +492,12 @@ function createSceneGraphModule() {
             _.each(this.children, function(c) {
                 c.manipulate(childPoint);
             });
+        },
+
+        stopManipulate: function() {
+            _.each(this.children, function(c) {
+                c.stopManipulate();
+            })
         }
     });
 
@@ -572,6 +564,10 @@ function createSceneGraphModule() {
         
             if (this.scalingAxle) {
                 console.log("hey");
+                this.parent.scaleTransform.setToScale((this.parent.parent.scaleTransform.getScaleX() * this.parent.parent.attrs.BASE_WIDTH + this.parent.attrs.BASE_AXLE_OFFSET + invMatrixFromPoint.getTranslateX()) / this.parent.attrs.BASE_WIDTH, 1);
+                console.log("here");
+                q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                this.parent.parent.render(q("#canvas").getContext('2d'));
             }
         },
 
