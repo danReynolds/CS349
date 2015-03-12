@@ -157,6 +157,7 @@ function createSceneGraphModule() {
     _.extend(CarNode.prototype, GraphNode.prototype, {
         // Overrides parent method
         render: function(context) {
+            var _this = this;
             this.objectTransform.copyFrom(this.scaleTransform);
 
             context.save();
@@ -194,7 +195,15 @@ function createSceneGraphModule() {
             context.globalCompositeOperation = 'destination-over';
 
             _.each(this.children, function(c) {
-                c.render(context);
+                if (c.nodeName == REAR_BUMPER) {
+                    context.save();
+                    context.setAffineTransform(_this.scaleTransform);
+                    c.render(context);
+                    context.restore();
+                }
+                else {
+                    c.render(context);
+                }
             });
 
             context.restore();
@@ -293,7 +302,7 @@ function createSceneGraphModule() {
 
             // scale FRONT AND REAR bumpers
             this.children[FRONT_BUMPER].scaleTransform.setToScale(scaleX, 1);
-            this.children[REAR_BUMPER].scaleTransform.setToScale(scaleX, 1);
+            // this.children[REAR_BUMPER].scaleTransform.setToScale(scaleX, 1);
 
             // Scale TOP and BOTTOM axles
             this.children[FRONT_AXLE_PART].scaleTransform.setToScale((scaleX * this.attrs.BASE_WIDTH + this.children[FRONT_AXLE_PART].attrs.BASE_AXLE_OFFSET) / this.children[FRONT_AXLE_PART].attrs.BASE_WIDTH, 1);
