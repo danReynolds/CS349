@@ -46,6 +46,7 @@ window.addEventListener('load', function() {
     q("#canvas").addEventListener('mouseup', function(e) {
        carNode.moving = false;
        carNode.scalingX = false;
+       carNode.scalingY = false;
     });
 
     q("#canvas").addEventListener('mousemove', function(e) {
@@ -54,7 +55,10 @@ window.addEventListener('load', function() {
           carNode.move(point);
         }
         else if(carNode.scalingX) {
-          carNode.scale(point);
+          carNode.scaleX(point);
+        }
+        else if (carNode.scalingY) {
+          carNode.scaleY(point);
         }
     });
 
