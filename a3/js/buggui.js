@@ -46,26 +46,12 @@ window.addEventListener('load', function() {
     });
 
     q("#canvas").addEventListener('mouseup', function(e) {
-       carNode.moving = false;
-       carNode.scalingX = false;
-       carNode.scalingY = false;
-       carNode.scalingAxle = false;
+       carNode.stopManipulate();
     });
 
     q("#canvas").addEventListener('mousemove', function(e) {
         var point = canvasTranslation(canvas, e);
-        if (carNode.moving) {
-          carNode.move(point);
-        }
-        else if(carNode.scalingX) {
-          carNode.scaleX(point);
-        }
-        else if (carNode.scalingY) {
-          carNode.scaleY(point);
-        }
-        else if (carNode.scalingAxle) {
-          carNode.scaleAxle();
-        }
+        carNode.manipulate(point);
     });
 
     sceneGraph.addChild(carNode);
