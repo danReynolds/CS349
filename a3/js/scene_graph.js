@@ -157,7 +157,6 @@ function createSceneGraphModule() {
     _.extend(CarNode.prototype, GraphNode.prototype, {
         // Overrides parent method
         render: function(context) {
-            var _this = this;
             this.objectTransform.copyFrom(this.scaleTransform);
 
             context.save();
@@ -195,15 +194,7 @@ function createSceneGraphModule() {
             context.globalCompositeOperation = 'destination-over';
 
             _.each(this.children, function(c) {
-                if (c.nodeName == REAR_BUMPER) {
-                    context.save();
-                    context.setAffineTransform(_this.scaleTransform);
-                    c.render(context);
-                    context.restore();
-                }
-                else {
-                    c.render(context);
-                }
+                c.render(context);
             });
 
             context.restore();
@@ -302,7 +293,7 @@ function createSceneGraphModule() {
 
             // scale FRONT AND REAR bumpers
             this.children[FRONT_BUMPER].scaleTransform.setToScale(scaleX, 1);
-            // this.children[REAR_BUMPER].scaleTransform.setToScale(scaleX, 1);
+            this.children[REAR_BUMPER].scaleTransform.setToScale(scaleX, 1);
 
             // Scale TOP and BOTTOM axles
             this.children[FRONT_AXLE_PART].scaleTransform.setToScale((scaleX * this.attrs.BASE_WIDTH + this.children[FRONT_AXLE_PART].attrs.BASE_AXLE_OFFSET) / this.children[FRONT_AXLE_PART].attrs.BASE_WIDTH, 1);
@@ -572,9 +563,7 @@ function createSceneGraphModule() {
             childPoint.y = invMatrixFromPoint.getTranslateY();
         
             if (this.scalingAxle) {
-                console.log("hey");
                 this.parent.scaleTransform.setToScale((this.parent.parent.scaleTransform.getScaleX() * this.parent.parent.attrs.BASE_WIDTH + this.parent.attrs.BASE_AXLE_OFFSET + invMatrixFromPoint.getTranslateX()) / this.parent.attrs.BASE_WIDTH, 1);
-                console.log("here");
                 q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
                 this.parent.parent.render(q("#canvas").getContext('2d'));
             }
