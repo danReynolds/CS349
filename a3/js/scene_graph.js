@@ -154,12 +154,36 @@ function createSceneGraphModule() {
             context.save();
             context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
+            context.fillStyle="red";
             context.fillRect(-this.attrs.BASE_WIDTH / 2, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
+            
+            context.beginPath();
+            context.arc(-this.attrs.BASE_WIDTH / 8, -this.attrs.BASE_HEIGHT / 2.3, 5, 0, 2 * Math.PI, false);
+            context.arc(this.attrs.BASE_WIDTH / 8, -this.attrs.BASE_HEIGHT / 2.3, 5, 0, 2 * Math.PI, false);
+            context.fillStyle = 'yellow';
+            context.fill();
+            context.lineWidth = 5;
+
+            context.beginPath();
+            context.arc(-this.attrs.BASE_WIDTH / 8, this.attrs.BASE_HEIGHT / 2.3, 5, 0, 2 * Math.PI, false);
+            context.arc(this.attrs.BASE_WIDTH / 8, this.attrs.BASE_HEIGHT / 2.3, 5, 0, 2 * Math.PI, false);
+            context.fillStyle = 'white';
+            context.fill();
+            context.lineWidth = 3;
+
+            context.fillStyle="#FFFFFF";
+            context.fillRect(-this.attrs.BASE_WIDTH / 4, -this.attrs.BASE_HEIGHT / 3, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 4);
+            context.fillRect(-this.attrs.BASE_WIDTH / 4, this.attrs.BASE_HEIGHT / 12, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 4);
+            
+            context.fillStyle="#282828";
+            context.strokeRect(-this.attrs.BASE_WIDTH / 4, this.attrs.BASE_HEIGHT / 12, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 4);
+            context.strokeRect(-this.attrs.BASE_WIDTH / 4, -this.attrs.BASE_HEIGHT / 3, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 4);
             
             // Remove scaling going down
             context.restore();
             context.save();
             context.setAffineTransform(this.startPositionTransform);
+            context.globalCompositeOperation = 'destination-over';
 
             _.each(this.children, function(c) {
                 c.render(context);
@@ -276,6 +300,20 @@ function createSceneGraphModule() {
             q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
             this.render(q("#canvas").getContext('2d'));
             console.log("Scaling Y");
+        },
+
+        scaleAxle: function(point) {
+           var _this = this;
+
+           var point = AffineTransform.getTranslateInstance(coords.x, coords.y);
+
+           // Generate inverse
+           var inversePoint = point.clone().concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
+           coords.x = inversePoint.getTranslateX();
+           coords.y = inversePoint.getTranslateY();
+           
+           this.children[FRONT_AXLE_PART].scaleAxle();
+           this.children[BACK_AXLE_PART].scaleAxle();
         }
     });
 
@@ -299,19 +337,19 @@ function createSceneGraphModule() {
             context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
             if (this.nodeName == FRONT_BUMPER) {
-                context.fillStyle="#FF0000";
+                context.fillStyle="#312812";
                 context.fillRect(-this.parent.attrs.BASE_WIDTH / 2, 0, this.parent.attrs.BASE_WIDTH, this.attrs.THICKNESS);
             }
             else if (this.nodeName == REAR_BUMPER) {
-                context.fillStyle="#adadad";
+                context.fillStyle="#312812";
                 context.fillRect(-this.parent.attrs.BASE_WIDTH / 2, 0, this.parent.attrs.BASE_WIDTH, this.attrs.THICKNESS);
             }
             else if (this.nodeName == LEFT_BUMPER) {
-                context.fillStyle="#0BC8E1";
+                context.fillStyle="#312812";
                 context.fillRect(0, -this.parent.attrs.BASE_HEIGHT / 2, this.attrs.THICKNESS, this.parent.attrs.BASE_HEIGHT);
             }
             else if (this.nodeName == RIGHT_BUMPER) {
-                context.fillStyle="#0BC8E1";
+                context.fillStyle="#312812";
                 context.fillRect(0, -this.parent.attrs.BASE_HEIGHT / 2, this.attrs.THICKNESS, this.parent.attrs.BASE_HEIGHT);
             }
             context.restore();
@@ -354,7 +392,7 @@ function createSceneGraphModule() {
      */
     var AxleNode = function(startPosition, axlePartName) {
         this.initGraphNode(startPosition, axlePartName);
-        
+
         this.attrs = {
             BASE_HEIGHT: 5,
             BASE_WIDTH: 75,
@@ -382,6 +420,7 @@ function createSceneGraphModule() {
             context.save();
             context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
+            context.fillStyle="red";
             context.fillRect(-this.attrs.BASE_WIDTH/2, 0, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
             context.restore();
 
@@ -412,6 +451,13 @@ function createSceneGraphModule() {
             });
 
             // The axle doesn't do anything so it just passes the event down to its children
+        },
+
+        scale: function(coords) {
+            var point = AffineTransform.getTranslateInstance(coords.x, coords.y);
+
+            // Generate inverse
+            var inversePoint = point.clone().concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
         }
     });
 
@@ -444,6 +490,7 @@ function createSceneGraphModule() {
             this.objectTransform.setToTranslation(this.translationTransform.getTranslateX(), this.translationTransform.getTranslateY());
 
             context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
+            context.globalCompositeOperation = 'source-over';
 
             context.fillStyle="#282828";
             context.fillRect(-this.attrs.BASE_WIDTH / 2, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
@@ -460,6 +507,8 @@ function createSceneGraphModule() {
             var inversePoint = point.clone().concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
 
             if (pointInBox(inversePoint, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2, -this.attrs.BASE_WIDTH / 2)) {
+                this.scalingAxle = true;
+
                 console.log("Clicked " + this.nodeName);
             }
         }

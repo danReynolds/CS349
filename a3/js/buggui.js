@@ -38,6 +38,8 @@ window.addEventListener('load', function() {
 
     // Setup car
     var carNode = new sceneGraphModule.CarNode(AffineTransform.getTranslateInstance(200, 200));
+    var frontAxle = carNode.children[sceneGraphModule.FRONT_AXLE_PART];
+    var rearAxle = carNode.children[sceneGraphModule.BACK_AXLE_PART];
 
     q('#canvas').addEventListener('mousedown', function(e) {
       sceneGraph.pointInObject(canvasTranslation(canvas, e));
@@ -47,6 +49,7 @@ window.addEventListener('load', function() {
        carNode.moving = false;
        carNode.scalingX = false;
        carNode.scalingY = false;
+       carNode.scalingAxle = false;
     });
 
     q("#canvas").addEventListener('mousemove', function(e) {
@@ -59,6 +62,9 @@ window.addEventListener('load', function() {
         }
         else if (carNode.scalingY) {
           carNode.scaleY(point);
+        }
+        else if (carNode.scalingAxle) {
+          carNode.scaleAxle();
         }
     });
 
