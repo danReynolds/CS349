@@ -217,7 +217,7 @@ function createSceneGraphModule() {
             var invPointScaling = _.clone(point);
             invPointScaling = applyMatrixToPoint(inverseMatrixScaling, invPointScaling);
 
-            console.log(invPoint.x + " " + invPoint.y);
+            console.log(point.x + " " + point.y);
             console.log(invPointScaling.x + " " + invPointScaling.y);
 
             _.each(this.children, function(c) {
@@ -474,8 +474,8 @@ function createSceneGraphModule() {
             BASE_HEIGHT: 5,
             BASE_WIDTH: 90,
             WIDTH: 90,
-            MIN_WIDTH: 75,
-            MAX_WIDTH: 150
+            MIN_WIDTH: 90,
+            MAX_WIDTH: 220
         }
 
         // Setup Tires of car
@@ -601,8 +601,8 @@ function createSceneGraphModule() {
 
             context.fillStyle="#282828";
             context.fillRect(-this.attrs.BASE_WIDTH / 2, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
-            context.fillStyle="blue";
-            context.fillRect(-this.attrs.BASE_WIDTH / 2, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT / 8);
+            context.fillStyle="yellow";
+            context.fillRect(-this.attrs.BASE_WIDTH / 2, -this.attrs.BASE_HEIGHT / 6, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT / 4);
             context.restore();
         },
 
@@ -619,9 +619,13 @@ function createSceneGraphModule() {
             invPoint = applyMatrixToPoint(inverseMatrix, invPoint);
 
             if (pointInBox(invPoint, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2, -this.attrs.BASE_WIDTH / 2)) {
-                this.scalingAxle = true;
 
-                if (this.nodeName == FRONT_LEFT_TIRE_PART || this.nodeName == FRONT_RIGHT_TIRE_PART) {
+                if (pointInBox(invPoint, -this.attrs.BASE_HEIGHT / 6, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 4, -this.attrs.BASE_WIDTH / 2)) {
+                    if (this.nodeName == FRONT_LEFT_TIRE_PART || this.nodeName == FRONT_RIGHT_TIRE_PART) {
+                        this.scalingAxle = true;
+                    }
+                }
+                else {
                     this.rotating = true;
                 }
 
@@ -630,11 +634,11 @@ function createSceneGraphModule() {
         },
 
         rotate: function(point) {
-            console.log((Math.atan2(point.y * -1, point.x * -1) - Math.PI / 2) * 180 / Math.PI);
+            // console.log((Math.atan2(point.y * -1, point.x * -1) - Math.PI / 2) * 180 / Math.PI);
             var angle = Math.atan2(point.y * -1, point.x * -1) - Math.PI / 2;
             
-            if (angle > Math.PI / 4 || angle < -Math.PI / 4) {
-                console.log("Angle Limit");
+            console.log(angle);
+            if (!(angle <= Math.PI / 4 && angle >= -Math.PI / 4 || angle >= -Math.PI - Math.PI / 4 && angle <= -Math.PI + Math.PI / 4)) {
                 return;
             }
             _.each(this.parent.children, function(c) {
@@ -661,11 +665,15 @@ function createSceneGraphModule() {
             invPoint = applyMatrixToPoint(inverseMatrix, invPoint);
 
             if (this.scalingAxle) {
-                console.log("POINT: " + point.x);
                 var newWidth = Math.abs(point.x) * 2;
 
+                console.log("POINT: " + point.x);
+                console.log("NEWWIDTH: " + newWidth);
+                console.log("MAX WIDTH: " + this.parent.attrs.MAX_WIDTH);
+
                 if (newWidth <= this.parent.attrs.MAX_WIDTH && newWidth >= this.parent.attrs.MIN_WIDTH) {
-                    this.parent.attrs.WIDTH = Math.abs(point.x) * 2;
+                    this.parent.parent.children[FRONT_AXLE_PART].attrs.WIDTH = Math.abs(point.x) * 2;
+                    this.parent.parent.children[BACK_AXLE_PART].attrs.WIDTH = Math.abs(point.x) * 2;
                 }
                 
                 else {
