@@ -573,6 +573,9 @@ function createSceneGraphModule() {
         this.initGraphNode(new AffineTransform(), tirePartName);
 
         this.startPositionTransform = startPositionTransform;
+
+        this.rotating = false;
+        this.scalingAxle = false;
         
         this.attrs = {
             BASE_WIDTH: 10,
@@ -591,13 +594,15 @@ function createSceneGraphModule() {
             // Set its translationX to the equivalent of how much the axle scaled
             this.translationTransform.setToTranslation(this.startPositionTransform.getTranslateX() * (this.parent.scaleTransform.getScaleX() - 1), this.translationTransform.getTranslateY());
 
-            this.objectTransform.setToTranslation(this.translationTransform.getTranslateX(), this.translationTransform.getTranslateY());
+            this.objectTransform.copyFrom(this.translationTransform).concatenate(this.rotationTransform);
 
             context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
             context.globalCompositeOperation = 'source-over';
 
             context.fillStyle="#282828";
             context.fillRect(-this.attrs.BASE_WIDTH / 2, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
+            context.fillStyle="blue";
+            context.fillRect(-this.attrs.BASE_WIDTH / 2, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT / 8);
             context.restore();
         },
 
@@ -616,16 +621,42 @@ function createSceneGraphModule() {
             if (pointInBox(invPoint, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2, -this.attrs.BASE_WIDTH / 2)) {
                 this.scalingAxle = true;
 
+                if (this.nodeName == FRONT_LEFT_TIRE_PART || this.nodeName == FRONT_RIGHT_TIRE_PART) {
+                    this.rotating = true;
+                }
+
                 console.log("Clicked " + this.nodeName);
             }
+        },
+
+        rotate: function(point) {
+            console.log((Math.atan2(point.y * -1, point.x * -1) - Math.PI / 2) * 180 / Math.PI);
+            var angle = Math.atan2(point.y * -1, point.x * -1) - Math.PI / 2;
+            
+            if (angle > Math.PI / 4 || angle < -Math.PI / 4) {
+                console.log("Angle Limit");
+                return;
+            }
+            _.each(this.parent.children, function(c) {
+                if (c.nodeName == FRONT_RIGHT_TIRE_PART || c.nodeName == FRONT_LEFT_TIRE_PART) {
+                    c.rotationTransform.setToRotation(angle, 0, 0);
+                }
+            });
+
+            q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            this.render(q("#canvas").getContext('2d'));
         },
 
         manipulate: function(point) {
             var _this = this;
             var matrix = new AffineTransform();
 
-            var inverseMatrix = matrix.clone().concatenate(this.startPositionTransform.clone().concatenate(this.objectTransform).createInverse());
+            var matrixFromPoint = new AffineTransform();
 
+            // Generate inverse
+            var inverseMatrix = matrixFromPoint.clone().concatenate(this.startPositionTransform.clone().createInverse());
+            
+            // Get the point to pass down to child nodes
             var invPoint = _.clone(point);
             invPoint = applyMatrixToPoint(inverseMatrix, invPoint);
 
@@ -633,17 +664,24 @@ function createSceneGraphModule() {
                 console.log("POINT: " + point.x);
                 var newWidth = Math.abs(point.x) * 2;
 
-                if (newWidth > this.parent.attrs.MAX_WIDTH || newWidth < this.parent.attrs.MIN_WIDTH) {
+                if (newWidth <= this.parent.attrs.MAX_WIDTH && newWidth >= this.parent.attrs.MIN_WIDTH) {
+                    this.parent.attrs.WIDTH = Math.abs(point.x) * 2;
+                }
+                
+                else {
                     console.log("At width boundary");
-                    return;
                 }
 
-                this.parent.attrs.WIDTH = Math.abs(point.x) * 2;
+            }
+
+            if (this.rotating) {
+                this.rotate(invPoint);
             }
         },
 
         stopManipulate: function() {
             this.scalingAxle = false;
+            this.rotating = false;
         }
     });
 
