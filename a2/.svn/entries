@@ -1,15 +1,15 @@
 10
 
 dir
-2340
+3405
 svn://assignments.student.cs.uwaterloo.ca:6002/cs349_repo/djreynol/a2
 svn://assignments.student.cs.uwaterloo.ca:6002/cs349_repo
 
 
 
-2015-02-08T00:02:23.216984Z
-2062
-djreynol
+2015-03-12T19:10:29.028019Z
+3203
+iportuga
 
 
 
@@ -25,9 +25,6 @@ djreynol
 
 
 a7518d2b-bc7f-4e60-b1eb-02bd93e3a2b9
-
-fonts
-dir
 
 README.txt
 file
@@ -170,6 +167,40 @@ q73li
 
 images
 dir
+
+a2marks.xls
+file
+
+
+
+
+2015-03-13T17:38:59.609603Z
+ce16d02d65fa580d613225a57fdba3ed
+2015-03-12T19:10:29.028019Z
+3203
+iportuga
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+29184
 
 assignment_spec_images
 dir

@@ -1,7 +1,7 @@
 10
 
 dir
-2340
+3405
 svn://assignments.student.cs.uwaterloo.ca:6002/cs349_repo/djreynol/a2/images
 svn://assignments.student.cs.uwaterloo.ca:6002/cs349_repo
 
@@ -25,40 +25,6 @@ q73li
 
 
 a7518d2b-bc7f-4e60-b1eb-02bd93e3a2b9
-
-GOPR0069-small.jpg
-file
-
-
-
-
-2015-01-31T18:45:34.904614Z
-b755c6d89da8ceafc65ad85669fc69ba
-2015-01-26T18:45:01.968691Z
-1612
-q73li
-has-props
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-36228
 
 GOPR0042-small.jpg
 file
@@ -263,4 +229,38 @@ has-props
 
 
 32215
+
+GOPR0069-small.jpg
+file
+
+
+
+
+2015-01-31T18:45:34.904614Z
+b755c6d89da8ceafc65ad85669fc69ba
+2015-01-26T18:45:01.968691Z
+1612
+q73li
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+36228
 
