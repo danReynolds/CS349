@@ -16,11 +16,20 @@ function canvasTranslation(canvas, e) {
     return { x: x, y: y };
 }
 
+function applyMatrixToPoint(matrix, point) {
+  var pointCopy = _.clone(point);
+  var transformedPoint = {
+    x: pointCopy.x * matrix.m00_ + pointCopy.y * matrix.m01_ + matrix.m02_,
+    y: pointCopy.x * matrix.m10_ + pointCopy.y * matrix.m11_ + matrix.m12_
+  };
+  return transformedPoint;
+}
+
 function pointInBox(point, top, right, bottom, left) {
-  if (point.getTranslateY() > bottom || point.getTranslateY() < top) {
+  if (point.y > bottom || point.y< top) {
     return false;
   }
-  else if (point.getTranslateX() < left || point.getTranslateX() > right) {
+  else if (point.x < left || point.x > right) {
     return false;
   }
   return true;

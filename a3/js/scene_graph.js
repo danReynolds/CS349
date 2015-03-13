@@ -52,7 +52,7 @@ function createSceneGraphModule() {
 
             this.scaleTransform = new AffineTransform();
             this.translationTransform = new AffineTransform();
-            this.rotateTransform = new AffineTransform();
+            this.rotationTransform = new AffineTransform();
 
             this.mousedown = undefined;
 
@@ -126,6 +126,8 @@ function createSceneGraphModule() {
         this.moving = false;
         this.scalingX = false;
         this.scalingY = false;
+        this.rotatingFront = false;
+        this.rotatingBack = false;
 
         this.attrs = {
             BASE_HEIGHT: 100,
@@ -157,7 +159,8 @@ function createSceneGraphModule() {
     _.extend(CarNode.prototype, GraphNode.prototype, {
         // Overrides parent method
         render: function(context) {
-            this.objectTransform.copyFrom(this.scaleTransform);
+            // The translation transform is never used, why make the line unnecessarily long?
+            this.objectTransform.copyFrom(this.rotationTransform).concatenate(this.scaleTransform);
 
             context.save();
             context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
@@ -187,10 +190,10 @@ function createSceneGraphModule() {
             context.strokeRect(-this.attrs.BASE_WIDTH / 4, this.attrs.BASE_HEIGHT / 12, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 4);
             context.strokeRect(-this.attrs.BASE_WIDTH / 4, -this.attrs.BASE_HEIGHT / 3, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 4);
             
-            // Remove scaling going down
             context.restore();
             context.save();
-            context.setAffineTransform(this.startPositionTransform);
+            // Remove scaling going down, so only rotation applies
+            context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.rotationTransform));
             context.globalCompositeOperation = 'destination-over';
 
             _.each(this.children, function(c) {
@@ -201,58 +204,87 @@ function createSceneGraphModule() {
         },
 
         // Overrides parent method
-        pointInObject: function(coords) {
+        pointInObject: function(point) {
             var _this = this;
 
-            var point = AffineTransform.getTranslateInstance(coords.x, coords.y);
+            // Generate inverse, no children care about scaling
+            var inverseMatrix = this.startPositionTransform.clone().concatenate(this.rotationTransform).concatenate(this.translationTransform).createInverse();
+            var inverseMatrixScaling = this.startPositionTransform.clone().concatenate(this.objectTransform).createInverse();
 
-            // Generate inverse
-            var inversePoint = point.clone().concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
-            coords.x = inversePoint.getTranslateX();
-            coords.y = inversePoint.getTranslateY();
+            var invPoint = _.clone(point);
+            invPoint = applyMatrixToPoint(inverseMatrix, invPoint);
+
+            var invPointScaling = _.clone(point);
+            invPointScaling = applyMatrixToPoint(inverseMatrixScaling, invPointScaling);
+
+            console.log(invPoint.x + " " + invPoint.y);
+            console.log(invPointScaling.x + " " + invPointScaling.y);
 
             _.each(this.children, function(c) {
-                c.pointInObject(coords);
+                c.pointInObject(invPoint);
             });
 
-            if (!pointInBox(inversePoint, -this.attrs.BASE_HEIGHT / 2 * this.objectTransform.getScaleY(), this.attrs.BASE_WIDTH / 2 * this.objectTransform.getScaleX(), this.attrs.BASE_HEIGHT / 2 * this.objectTransform.getScaleY(), -this.attrs.BASE_WIDTH / 2 * this.objectTransform.getScaleX())) {
-                return false;
+            if (pointInBox(invPointScaling, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2, -this.attrs.BASE_WIDTH / 2)) {
+                console.log('Clicked ' + this.nodeName +  " AT " + point.x + " " + point.y);
+                
+                // Check if we clicked in the front area for rotation
+                if (pointInBox(invPointScaling, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH / 2, -this.attrs.BASE_HEIGHT / 4, -this.attrs.BASE_WIDTH / 2)) {
+                    console.log("Rotation front area");
+                    this.rotatingFront = true;
+                }
+                // Check if we clicked in the back area for rotation
+                else if (pointInBox(invPointScaling, this.attrs.BASE_HEIGHT / 4, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2, -this.attrs.BASE_WIDTH / 2)) {
+                    console.log("Rotation back area");
+                    this.rotatingBack = true;
+                }
+                else {
+                    this.moving = true;
+                }
             }
 
-            console.log('Clicked ' + this.nodeName);
-            
-            this.moving = true;
-
-            return true;      
         },
 
         manipulate: function(point) {
 
-            var matrixFromPoint = AffineTransform.getTranslateInstance(point.x, point.y);
+            var matrixFromPoint = new AffineTransform();
 
             // Generate inverse
-            var invMatrixFromPoint = matrixFromPoint.clone().concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
+            var inverseMatrix = matrixFromPoint.clone().concatenate(this.startPositionTransform.clone().createInverse());
+            var inverseMatrixWithRotate = matrixFromPoint.clone().concatenate(this.startPositionTransform.clone().concatenate(this.rotationTransform).createInverse());
             
             // Get the point to pass down to child nodes
-            var childPoint = _.clone(point);
-            childPoint.x = invMatrixFromPoint.getTranslateX();
-            childPoint.y = invMatrixFromPoint.getTranslateY();
+            var invPoint = _.clone(point);
+            invPoint = applyMatrixToPoint(inverseMatrix, invPoint);
 
-            // Scale Car
-            invMatrixFromPoint.setToTranslation(Math.abs(invMatrixFromPoint.getTranslateX()), Math.abs(invMatrixFromPoint.getTranslateY()));
+            var invPointWithRotate = _.clone(point);
+            invPointWithRotate = applyMatrixToPoint(inverseMatrixWithRotate, invPointWithRotate);
 
             if (this.moving) {
-              this.move(point);
+                this.move(point);
             }
-            else if(this.scalingX) {
-              this.scaleX(invMatrixFromPoint);
+            else if (this.scalingX) {
+                invPointWithRotate.x = Math.abs(invPointWithRotate.x);
+                invPointWithRotate.y = Math.abs(invPointWithRotate.y);
+                this.scaleX(invPointWithRotate);
             }
             else if (this.scalingY) {
-              this.scaleY(invMatrixFromPoint);
+                invPointWithRotate.x = Math.abs(invPointWithRotate.x);
+                invPointWithRotate.y = Math.abs(invPointWithRotate.y);
+                this.scaleY(invPointWithRotate);
+            }
+            else if (this.rotatingFront) {
+                invPoint.x = invPoint.x * -1;
+                invPoint.y = invPoint.y * -1;
+                this.rotateFront(invPoint);
+            }
+            else if (this.rotatingBack) {
+                invPoint.x = invPoint.x;
+                invPoint.y = invPoint.y;
+                this.rotateBack(invPoint);
             }
 
             _.each(this.children, function(c) {
-                c.manipulate(childPoint);
+                c.manipulate(invPointWithRotate);
             });
         },
 
@@ -260,10 +292,32 @@ function createSceneGraphModule() {
             this.moving = false;
             this.scalingX = false;
             this.scalingY = false;
+            this.rotatingFront = false;
+            this.rotatingBack = false;
 
             _.each(this.children, function(c) {
                 c.stopManipulate();
             });
+        },
+
+        rotateFront: function(point) {
+            console.log("X: " + point.x);
+            console.log("Y: " + point.y);
+            console.log(Math.atan2(point.y, point.x));
+            this.rotationTransform.setToRotation(Math.atan2(point.y, point.x) - Math.PI / 2, 0, 0);
+
+            q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            this.render(q("#canvas").getContext('2d'));
+        },
+
+        rotateBack: function(point) {
+            console.log("X: " + point.x);
+            console.log("Y: " + point.y);
+            console.log(Math.atan2(point.y, point.x));
+            this.rotationTransform.setToRotation(Math.atan2(point.y, point.x) - Math.PI / 2, 0, 0);
+
+            q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            this.render(q("#canvas").getContext('2d'));
         },
 
         move: function(point) {
@@ -272,8 +326,8 @@ function createSceneGraphModule() {
             this.render(q("#canvas").getContext('2d'));
         },
 
-        scaleX: function(matrix) {
-            var scaleX = matrix.getTranslateX() / (this.attrs.BASE_WIDTH / 2);
+        scaleX: function(point) {
+            var scaleX = point.x / (this.attrs.BASE_WIDTH / 2);
 
             if (scaleX * this.attrs.BASE_WIDTH > this.attrs.MAX_WIDTH) {
                 console.log("At max width");
@@ -288,24 +342,24 @@ function createSceneGraphModule() {
             this.scaleTransform = this.scaleTransform.setToScale(scaleX, this.scaleTransform.getScaleY());
 
             // Translate LEFT and RIGHT bumpers
-            this.children[LEFT_BUMPER].translationTransform.setToTranslation((matrix.getTranslateX() - this.attrs.BASE_WIDTH / 2) * -1, 0);
-            this.children[RIGHT_BUMPER].translationTransform.setToTranslation(matrix.getTranslateX() - this.attrs.BASE_WIDTH / 2, 0);
+            this.children[LEFT_BUMPER].translationTransform.setToTranslation((point.x - this.attrs.BASE_WIDTH / 2) * -1, 0);
+            this.children[RIGHT_BUMPER].translationTransform.setToTranslation(point.x - this.attrs.BASE_WIDTH / 2, 0);
 
             // scale FRONT AND REAR bumpers
             this.children[FRONT_BUMPER].scaleTransform.setToScale(scaleX, 1);
             this.children[REAR_BUMPER].scaleTransform.setToScale(scaleX, 1);
 
             // Scale TOP and BOTTOM axles
-            this.children[FRONT_AXLE_PART].scaleTransform.setToScale((scaleX * this.attrs.BASE_WIDTH + this.children[FRONT_AXLE_PART].attrs.BASE_AXLE_OFFSET) / this.children[FRONT_AXLE_PART].attrs.BASE_WIDTH, 1);
-            this.children[BACK_AXLE_PART].scaleTransform.setToScale((scaleX * this.attrs.BASE_WIDTH + this.children[BACK_AXLE_PART].attrs.BASE_AXLE_OFFSET) / this.children[BACK_AXLE_PART].attrs.BASE_WIDTH, 1);
+            this.children[FRONT_AXLE_PART].scaleTransform.setToScale(((this.children[FRONT_AXLE_PART].attrs.WIDTH / 2) + point.x - this.attrs.BASE_WIDTH / 2) / (this.children[FRONT_AXLE_PART].attrs.WIDTH / 2), 1);
+            this.children[BACK_AXLE_PART].scaleTransform.setToScale(((this.children[BACK_AXLE_PART].attrs.WIDTH / 2) + point.x - this.attrs.BASE_WIDTH / 2) / (this.children[BACK_AXLE_PART].attrs.WIDTH / 2), 1);
 
             q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
             this.render(q("#canvas").getContext('2d'));
             console.log("Scaling X");
         },
 
-        scaleY: function(matrix) {
-            var scaleY = matrix.getTranslateY() / (this.attrs.BASE_HEIGHT / 2);
+        scaleY: function(point) {
+            var scaleY = point.y / (this.attrs.BASE_HEIGHT / 2);
 
             if (scaleY * this.attrs.BASE_HEIGHT > this.attrs.MAX_HEIGHT) {
                 console.log("At max height");
@@ -324,12 +378,12 @@ function createSceneGraphModule() {
             this.children[RIGHT_BUMPER].scaleTransform.setToScale(1, scaleY);
 
             // Translate TOP and BOTTOM axles
-            this.children[BACK_AXLE_PART].translationTransform.setToTranslation(0, matrix.getTranslateY() - this.attrs.BASE_HEIGHT / 2);
-            this.children[FRONT_AXLE_PART].translationTransform.setToTranslation(0, (matrix.getTranslateY() - this.attrs.BASE_HEIGHT / 2) * -1);
+            this.children[BACK_AXLE_PART].translationTransform.setToTranslation(0, point.y - this.attrs.BASE_HEIGHT / 2);
+            this.children[FRONT_AXLE_PART].translationTransform.setToTranslation(0, (point.y - this.attrs.BASE_HEIGHT / 2) * -1);
 
             // Translate TOP and BOTTOM bumpers
-            this.children[REAR_BUMPER].translationTransform.setToTranslation(0, matrix.getTranslateY() - this.attrs.BASE_HEIGHT / 2);
-            this.children[FRONT_BUMPER].translationTransform.setToTranslation(0, (matrix.getTranslateY() - this.attrs.BASE_HEIGHT / 2) * -1);
+            this.children[REAR_BUMPER].translationTransform.setToTranslation(0, point.y - this.attrs.BASE_HEIGHT / 2);
+            this.children[FRONT_BUMPER].translationTransform.setToTranslation(0, (point.y - this.attrs.BASE_HEIGHT / 2) * -1);
 
             q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
             this.render(q("#canvas").getContext('2d'));
@@ -376,16 +430,19 @@ function createSceneGraphModule() {
         },
 
         // Overrides parent method
-        pointInObject: function(coords) {
+        pointInObject: function(point) {
             var _this = this;
 
-            var point = AffineTransform.getTranslateInstance(coords.x, coords.y);
+            var matrix = new AffineTransform();
 
             // Generate inverse
-            var inversePoint = point.clone().concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
+            var inverseMatrix = matrix.clone().concatenate(this.startPositionTransform.clone().concatenate(this.objectTransform).createInverse());
+
+            var invPoint = _.clone(point);
+            invPoint = applyMatrixToPoint(inverseMatrix, invPoint);
 
             if (this.nodeName == FRONT_BUMPER || this.nodeName == REAR_BUMPER) {
-                if (pointInBox(inversePoint, 0, this.parent.attrs.BASE_WIDTH / 2 * this.objectTransform.getScaleX(), this.attrs.THICKNESS, -this.parent.attrs.BASE_WIDTH / 2 * this.objectTransform.getScaleX())) {
+                if (pointInBox(invPoint, 0, this.parent.attrs.BASE_WIDTH / 2, this.attrs.THICKNESS, -this.parent.attrs.BASE_WIDTH / 2)) {
                     console.log("Clicked " + this.nodeName);
                     this.parent.scalingY = true;
                 }
@@ -394,7 +451,7 @@ function createSceneGraphModule() {
                 }
             }
             else {
-                if (pointInBox(inversePoint, -this.parent.attrs.BASE_HEIGHT / 2 * this.objectTransform.getScaleY(), this.attrs.THICKNESS, this.parent.attrs.BASE_HEIGHT / 2 * this.objectTransform.getScaleY(), 0)) {
+                if (pointInBox(invPoint, -this.parent.attrs.BASE_HEIGHT / 2, this.attrs.THICKNESS, this.parent.attrs.BASE_HEIGHT / 2, 0)) {
                     console.log("Clicked " + this.nodeName);
                     this.parent.scalingX = true;
                     return false;
@@ -415,18 +472,20 @@ function createSceneGraphModule() {
 
         this.attrs = {
             BASE_HEIGHT: 5,
-            BASE_WIDTH: 75,
-            BASE_AXLE_OFFSET: 30
+            BASE_WIDTH: 90,
+            WIDTH: 90,
+            MIN_WIDTH: 75,
+            MAX_WIDTH: 150
         }
 
         // Setup Tires of car
         if (this.nodeName == FRONT_AXLE_PART) {
-            var leftTire = new TireNode(AffineTransform.getTranslateInstance(-this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2), FRONT_LEFT_TIRE_PART);
-            var rightTire = new TireNode(AffineTransform.getTranslateInstance(this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2), FRONT_RIGHT_TIRE_PART);
+            var leftTire = new TireNode(AffineTransform.getTranslateInstance(-this.attrs.WIDTH / 2, this.attrs.BASE_HEIGHT / 2), FRONT_LEFT_TIRE_PART);
+            var rightTire = new TireNode(AffineTransform.getTranslateInstance(this.attrs.WIDTH / 2, this.attrs.BASE_HEIGHT / 2), FRONT_RIGHT_TIRE_PART);
         }
         else {
-            var leftTire = new TireNode(AffineTransform.getTranslateInstance(-this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2), BACK_LEFT_TIRE_PART);
-            var rightTire = new TireNode(AffineTransform.getTranslateInstance(this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2), BACK_RIGHT_TIRE_PART);
+            var leftTire = new TireNode(AffineTransform.getTranslateInstance(-this.attrs.WIDTH / 2, this.attrs.BASE_HEIGHT / 2), BACK_LEFT_TIRE_PART);
+            var rightTire = new TireNode(AffineTransform.getTranslateInstance(this.attrs.WIDTH / 2, this.attrs.BASE_HEIGHT / 2), BACK_RIGHT_TIRE_PART);
         }
         this.addChild(leftTire);
         this.addChild(rightTire);
@@ -441,7 +500,7 @@ function createSceneGraphModule() {
             context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
             context.fillStyle="red";
-            context.fillRect(-this.attrs.BASE_WIDTH/2, 0, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
+            context.fillRect(-this.attrs.WIDTH / 2, 0, this.attrs.WIDTH, this.attrs.BASE_HEIGHT);
             context.restore();
 
             context.save();
@@ -458,40 +517,45 @@ function createSceneGraphModule() {
         pointInObject: function(point) {
             var _this = this;
 
-            var matrixFromPoint = AffineTransform.getTranslateInstance(point.x, point.y);
-            var childPoint = _.clone(point);
+            var matrixFromPoint = new AffineTransform();
 
             // Generate inverse
-            var invMatrixFromPoint = matrixFromPoint.clone().concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
-            childPoint.x = invMatrixFromPoint.getTranslateX();
-            childPoint.y = invMatrixFromPoint.getTranslateY();
+            var inverseMatrix = matrixFromPoint.clone().concatenate(this.startPositionTransform.clone().concatenate(this.translationTransform).createInverse());
+            
+            var invPoint = _.clone(point);
+            invPoint = applyMatrixToPoint(inverseMatrix, invPoint);
 
             _.each(this.children, function(c) {
-                c.pointInObject(childPoint);
+                c.pointInObject(invPoint);
             });
 
             // The axle doesn't do anything so it just passes the event down to its children
         },
 
-        scale: function(coords) {
-            var point = AffineTransform.getTranslateInstance(coords.x, coords.y);
-
-            // Generate inverse
-            var inversePoint = point.clone().concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
-        },
-
         manipulate: function(point) {
-            var matrixFromPoint = AffineTransform.getTranslateInstance(point.x, point.y);
-            var childPoint = _.clone(point);
+            var matrix = new AffineTransform();
 
             // Generate inverse
-            var invMatrixFromPoint = matrixFromPoint.clone().concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
-            childPoint.x = invMatrixFromPoint.getTranslateX();
-            childPoint.y = invMatrixFromPoint.getTranslateY();
+            var inverseMatrix = matrix.clone().concatenate(this.startPositionTransform.clone().concatenate(this.objectTransform).createInverse());
+            var invPoint = _.clone(point);
+            invPoint = applyMatrixToPoint(inverseMatrix, invPoint);
 
             _.each(this.children, function(c) {
-                c.manipulate(childPoint);
+                c.manipulate(invPoint);
             });
+
+            if (this.nodeName == FRONT_AXLE_PART) {
+                this.children[FRONT_LEFT_TIRE_PART].startPositionTransform.setToTranslation(-this.attrs.WIDTH / 2, this.children[FRONT_LEFT_TIRE_PART].startPositionTransform.getTranslateY());
+                this.children[FRONT_RIGHT_TIRE_PART].startPositionTransform.setToTranslation(this.attrs.WIDTH / 2, this.children[FRONT_RIGHT_TIRE_PART].startPositionTransform.getTranslateY());
+            }
+
+            else {
+                this.children[BACK_LEFT_TIRE_PART].startPositionTransform.setToTranslation(-this.attrs.WIDTH / 2, this.children[BACK_LEFT_TIRE_PART].startPositionTransform.getTranslateY());
+                this.children[BACK_RIGHT_TIRE_PART].startPositionTransform.setToTranslation(this.attrs.WIDTH / 2, this.children[BACK_RIGHT_TIRE_PART].startPositionTransform.getTranslateY());
+            }
+
+            q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            this.parent.parent.render(q("#canvas").getContext('2d'));
         },
 
         stopManipulate: function() {
@@ -538,15 +602,18 @@ function createSceneGraphModule() {
         },
 
         // Overrides parent method
-        pointInObject: function(coords) {
+        pointInObject: function(point) {
             var _this = this;
 
-            var point = AffineTransform.getTranslateInstance(coords.x, coords.y);
+            var matrix = new AffineTransform();
 
             // Generate inverse
-            var inversePoint = point.clone().concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
+            var inverseMatrix = matrix.clone().concatenate(this.startPositionTransform.clone().concatenate(this.objectTransform).createInverse());
 
-            if (pointInBox(inversePoint, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2, -this.attrs.BASE_WIDTH / 2)) {
+            var invPoint = _.clone(point);
+            invPoint = applyMatrixToPoint(inverseMatrix, invPoint);
+
+            if (pointInBox(invPoint, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2, -this.attrs.BASE_WIDTH / 2)) {
                 this.scalingAxle = true;
 
                 console.log("Clicked " + this.nodeName);
@@ -554,18 +621,24 @@ function createSceneGraphModule() {
         },
 
         manipulate: function(point) {
-            var matrixFromPoint = AffineTransform.getTranslateInstance(point.x, point.y);
-            var childPoint = _.clone(point);
+            var _this = this;
+            var matrix = new AffineTransform();
 
-            // Generate inverse
-            var invMatrixFromPoint = matrixFromPoint.clone().concatenate(this.objectTransform.clone().concatenate(this.startPositionTransform).createInverse());
-            childPoint.x = invMatrixFromPoint.getTranslateX();
-            childPoint.y = invMatrixFromPoint.getTranslateY();
-        
+            var inverseMatrix = matrix.clone().concatenate(this.startPositionTransform.clone().concatenate(this.objectTransform).createInverse());
+
+            var invPoint = _.clone(point);
+            invPoint = applyMatrixToPoint(inverseMatrix, invPoint);
+
             if (this.scalingAxle) {
-                this.parent.scaleTransform.setToScale((this.parent.parent.scaleTransform.getScaleX() * this.parent.parent.attrs.BASE_WIDTH + this.parent.attrs.BASE_AXLE_OFFSET + invMatrixFromPoint.getTranslateX()) / this.parent.attrs.BASE_WIDTH, 1);
-                q("#canvas").getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-                this.parent.parent.render(q("#canvas").getContext('2d'));
+                console.log("POINT: " + point.x);
+                var newWidth = Math.abs(point.x) * 2;
+
+                if (newWidth > this.parent.attrs.MAX_WIDTH || newWidth < this.parent.attrs.MIN_WIDTH) {
+                    console.log("At width boundary");
+                    return;
+                }
+
+                this.parent.attrs.WIDTH = Math.abs(point.x) * 2;
             }
         },
 
