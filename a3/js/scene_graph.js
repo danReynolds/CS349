@@ -38,7 +38,7 @@ function createSceneGraphModule() {
          * local, object-centric coordinate system.
          * @param nodeName The name of the node. Useful for debugging, but also used to uniquely identify each node
          */
-        initGraphNode: function(startPositionTransform, nodeName) {
+        initGraphNode: function(nodeName, startPositionTransform) {
 
             this.nodeName = nodeName;
 
@@ -121,7 +121,7 @@ function createSceneGraphModule() {
     });
 
     var CarNode = function(startPosition) {
-        this.initGraphNode(startPosition, CAR_PART);
+        this.initGraphNode(CAR_PART, startPosition);
 
         this.moving = false;
         this.scalingX = false;
@@ -139,14 +139,14 @@ function createSceneGraphModule() {
         }
 
         // Setup Bumpers of car
-        var frontBumper = new BumperNode(AffineTransform.getTranslateInstance(0, -this.attrs.BASE_HEIGHT / 2 - 5), FRONT_BUMPER);
-        var rearBumper = new BumperNode(AffineTransform.getTranslateInstance(0, this.attrs.BASE_HEIGHT / 2), REAR_BUMPER);
-        var leftBumper = new BumperNode(AffineTransform.getTranslateInstance(-this.attrs.BASE_WIDTH / 2 - 5, 0), LEFT_BUMPER);
-        var rightBumper = new BumperNode(AffineTransform.getTranslateInstance(this.attrs.BASE_WIDTH / 2, 0), RIGHT_BUMPER);
+        var frontBumper = new BumperNode(FRONT_BUMPER, AffineTransform.getTranslateInstance(0, -this.attrs.BASE_HEIGHT / 2 - 5));
+        var rearBumper = new BumperNode(REAR_BUMPER, AffineTransform.getTranslateInstance(0, this.attrs.BASE_HEIGHT / 2));
+        var leftBumper = new BumperNode(LEFT_BUMPER, AffineTransform.getTranslateInstance(-this.attrs.BASE_WIDTH / 2 - 5, 0));
+        var rightBumper = new BumperNode(RIGHT_BUMPER, AffineTransform.getTranslateInstance(this.attrs.BASE_WIDTH / 2, 0));
         
         // Setup Axles of car
-        var frontAxle = new AxleNode(AffineTransform.getTranslateInstance(0, -this.attrs.BASE_HEIGHT / 2 + 10), FRONT_AXLE_PART);
-        var rearAxle = new AxleNode(AffineTransform.getTranslateInstance(0, this.attrs.BASE_HEIGHT / 2 - 15), BACK_AXLE_PART);
+        var frontAxle = new AxleNode(FRONT_AXLE_PART, AffineTransform.getTranslateInstance(0, -this.attrs.BASE_HEIGHT / 2 + 10));
+        var rearAxle = new AxleNode(BACK_AXLE_PART, AffineTransform.getTranslateInstance(0, this.attrs.BASE_HEIGHT / 2 - 15));
 
         this.addChild(frontBumper);
         this.addChild(leftBumper);
@@ -394,8 +394,8 @@ function createSceneGraphModule() {
     /**
      * Node for the front and back bumpers of the car
      */
-    var BumperNode = function(startPosition, bumperName) {
-        this.initGraphNode(startPosition, bumperName);
+    var BumperNode = function(bumperName, startPosition) {
+        this.initGraphNode(bumperName, startPosition);
 
         this.attrs = {
             THICKNESS: 5
@@ -467,8 +467,8 @@ function createSceneGraphModule() {
      * @param axlePartName Which axle this node represents
      * @constructor
      */
-    var AxleNode = function(startPosition, axlePartName) {
-        this.initGraphNode(startPosition, axlePartName);
+    var AxleNode = function(axlePartName, startPosition) {
+        this.initGraphNode(axlePartName, startPosition);
 
         this.attrs = {
             BASE_HEIGHT: 5,
@@ -480,12 +480,12 @@ function createSceneGraphModule() {
 
         // Setup Tires of car
         if (this.nodeName == FRONT_AXLE_PART) {
-            var leftTire = new TireNode(AffineTransform.getTranslateInstance(-this.attrs.WIDTH / 2, this.attrs.BASE_HEIGHT / 2), FRONT_LEFT_TIRE_PART);
-            var rightTire = new TireNode(AffineTransform.getTranslateInstance(this.attrs.WIDTH / 2, this.attrs.BASE_HEIGHT / 2), FRONT_RIGHT_TIRE_PART);
+            var leftTire = new TireNode(FRONT_LEFT_TIRE_PART, AffineTransform.getTranslateInstance(-this.attrs.WIDTH / 2, this.attrs.BASE_HEIGHT / 2));
+            var rightTire = new TireNode(FRONT_RIGHT_TIRE_PART, AffineTransform.getTranslateInstance(this.attrs.WIDTH / 2, this.attrs.BASE_HEIGHT / 2));
         }
         else {
-            var leftTire = new TireNode(AffineTransform.getTranslateInstance(-this.attrs.WIDTH / 2, this.attrs.BASE_HEIGHT / 2), BACK_LEFT_TIRE_PART);
-            var rightTire = new TireNode(AffineTransform.getTranslateInstance(this.attrs.WIDTH / 2, this.attrs.BASE_HEIGHT / 2), BACK_RIGHT_TIRE_PART);
+            var leftTire = new TireNode(BACK_LEFT_TIRE_PART, AffineTransform.getTranslateInstance(-this.attrs.WIDTH / 2, this.attrs.BASE_HEIGHT / 2));
+            var rightTire = new TireNode(BACK_RIGHT_TIRE_PART, AffineTransform.getTranslateInstance(this.attrs.WIDTH / 2, this.attrs.BASE_HEIGHT / 2));
         }
         this.addChild(leftTire);
         this.addChild(rightTire);
@@ -569,8 +569,8 @@ function createSceneGraphModule() {
      * @param tirePartName Which tire this node represents
      * @constructor
      */
-    var TireNode = function(startPositionTransform, tirePartName) {
-        this.initGraphNode(new AffineTransform(), tirePartName);
+    var TireNode = function(tirePartName, startPositionTransform) {
+        this.initGraphNode(tirePartName, new AffineTransform());
 
         this.startPositionTransform = startPositionTransform;
 
