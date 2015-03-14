@@ -77,8 +77,8 @@ function createSceneGraphModule() {
         replaceGraphNode: function(nodeName, newNode) {
             if (nodeName in this.children) {
                 newNode.parent = this.children[nodeName].parent;
-                newNode.startPositionTransform = this.children[nodeName].startPositionTransform;
-                newNode.objectTransform = this.children[nodeName].objectTransform;
+                // newNode.startPositionTransform = this.children[nodeName].startPositionTransform;
+                // newNode.objectTransform = this.children[nodeName].objectTransform;
                 this.children[nodeName] = newNode;
             } else {
                 _.each(
