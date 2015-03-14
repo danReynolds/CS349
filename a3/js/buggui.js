@@ -5,9 +5,6 @@ function q(identifier) {
   return document.querySelector(identifier);
 }
 
-var mouseMove;
-var mousedown;
-
 function canvasTranslation(canvas, e) {
     var canvasBounds = canvas.getBoundingClientRect();
     var x = e.clientX - canvasBounds.left;
@@ -34,6 +31,24 @@ function pointInBox(point, top, right, bottom, left) {
   }
   return true;
 }
+var globalPoint = { x: 125, y: 175 };
+function updateCopy() {
+    var canvasCopy = q('#canvasCopy');
+    var context = canvas.getContext('2d');
+    var copyContext = canvasCopy.getContext('2d');
+
+    //call its drawImage() function passing it the source canvas directly
+    copyContext.save();
+    copyContext.clearRect(0, 0, canvasCopy.width, canvasCopy.height);
+    copyContext.scale(5,5);
+    copyContext.translate(-globalPoint.x / 2.5, -globalPoint.y / 2);
+    copyContext.drawImage(canvas, 0, 0, 400, 400);
+    copyContext.restore();
+}
+
+CanvasRenderingContext2D.prototype.setAffineTransform = function(transform) {
+    this.transform(transform.getScaleX(), transform.getShearY(), transform.getShearX(), transform.getScaleY(), transform.getTranslateX(), transform.getTranslateY());
+};
 
 window.addEventListener('load', function() {
     var sceneGraphModule = createSceneGraphModule();
@@ -52,6 +67,7 @@ window.addEventListener('load', function() {
 
     q('#canvas').addEventListener('mousedown', function(e) {
       sceneGraph.pointInObject(canvasTranslation(canvas, e));
+      updateCopy();
     });
 
     q("#canvas").addEventListener('mouseup', function(e) {
@@ -61,8 +77,15 @@ window.addEventListener('load', function() {
     q("#canvas").addEventListener('mousemove', function(e) {
         var point = canvasTranslation(canvas, e);
         carNode.manipulate(point);
+
+        if (carNode.moving) {
+          globalPoint = _.clone(point);
+        }
+        updateCopy();
     });
 
     sceneGraph.addChild(carNode);
     sceneGraph.render(context);
+
+    updateCopy();
 });

@@ -4,10 +4,6 @@
  * A function that creates and returns the scene graph classes and constants.
  */
 
-CanvasRenderingContext2D.prototype.setAffineTransform = function(transform) {
-    this.transform(transform.getScaleX(), transform.getShearY(), transform.getShearX(), transform.getScaleY(), transform.getTranslateX(), transform.getTranslateY());
-};
-
 function createSceneGraphModule() {
 
     // Part names. Use these to name your different nodes
@@ -165,7 +161,14 @@ function createSceneGraphModule() {
             context.save();
             context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
-            context.fillStyle="red";
+            if (this.highlight) {
+                context.fillStyle = 'rgb(97,201,242)';
+                context.shadowBlur=10;
+                context.shadowColor="white";
+            }
+            else {
+                context.fillStyle="red";
+            }
             context.fillRect(-this.attrs.BASE_WIDTH / 2, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT);
             
             context.beginPath();
@@ -294,6 +297,7 @@ function createSceneGraphModule() {
             this.scalingY = false;
             this.rotatingFront = false;
             this.rotatingBack = false;
+            this.highlight = false;
 
             _.each(this.children, function(c) {
                 c.stopManipulate();
@@ -410,20 +414,18 @@ function createSceneGraphModule() {
 
             context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
+            context.fillStyle="#312812";
+
             if (this.nodeName == FRONT_BUMPER) {
-                context.fillStyle="#312812";
                 context.fillRect(-this.parent.attrs.BASE_WIDTH / 2, 0, this.parent.attrs.BASE_WIDTH, this.attrs.THICKNESS);
             }
             else if (this.nodeName == REAR_BUMPER) {
-                context.fillStyle="#312812";
                 context.fillRect(-this.parent.attrs.BASE_WIDTH / 2, 0, this.parent.attrs.BASE_WIDTH, this.attrs.THICKNESS);
             }
             else if (this.nodeName == LEFT_BUMPER) {
-                context.fillStyle="#312812";
                 context.fillRect(0, -this.parent.attrs.BASE_HEIGHT / 2, this.attrs.THICKNESS, this.parent.attrs.BASE_HEIGHT);
             }
             else if (this.nodeName == RIGHT_BUMPER) {
-                context.fillStyle="#312812";
                 context.fillRect(0, -this.parent.attrs.BASE_HEIGHT / 2, this.attrs.THICKNESS, this.parent.attrs.BASE_HEIGHT);
             }
             context.restore();
@@ -445,6 +447,7 @@ function createSceneGraphModule() {
                 if (pointInBox(invPoint, 0, this.parent.attrs.BASE_WIDTH / 2, this.attrs.THICKNESS, -this.parent.attrs.BASE_WIDTH / 2)) {
                     console.log("Clicked " + this.nodeName);
                     this.parent.scalingY = true;
+                    this.parent.highlight = true;
                 }
                 else {
                     return false;
@@ -454,13 +457,14 @@ function createSceneGraphModule() {
                 if (pointInBox(invPoint, -this.parent.attrs.BASE_HEIGHT / 2, this.attrs.THICKNESS, this.parent.attrs.BASE_HEIGHT / 2, 0)) {
                     console.log("Clicked " + this.nodeName);
                     this.parent.scalingX = true;
+                    this.parent.highlight = true;
                     return false;
                 }
                 else {
                     return false;
                 }
             }            
-        }
+        },
     });
 
     /**
@@ -499,7 +503,14 @@ function createSceneGraphModule() {
             context.save();
             context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
-            context.fillStyle="red";
+            if (this.highlight) {
+                context.fillStyle = 'rgb(97,201,242)';
+                context.shadowBlur=10;
+                context.shadowColor="white";
+            }
+            else {
+                context.fillStyle="red";
+            }
             context.fillRect(-this.attrs.WIDTH / 2, 0, this.attrs.WIDTH, this.attrs.BASE_HEIGHT);
             context.restore();
 
@@ -559,6 +570,7 @@ function createSceneGraphModule() {
         },
 
         stopManipulate: function() {
+            this.highlight = false;
             _.each(this.children, function(c) {
                 c.stopManipulate();
             })
@@ -621,12 +633,12 @@ function createSceneGraphModule() {
             if (pointInBox(invPoint, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2, -this.attrs.BASE_WIDTH / 2)) {
 
                 if (pointInBox(invPoint, -this.attrs.BASE_HEIGHT / 6, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 4, -this.attrs.BASE_WIDTH / 2)) {
-                    if (this.nodeName == FRONT_LEFT_TIRE_PART || this.nodeName == FRONT_RIGHT_TIRE_PART) {
-                        this.scalingAxle = true;
-                    }
+                    this.scalingAxle = true;
                 }
                 else {
-                    this.rotating = true;
+                    if (this.nodeName == FRONT_LEFT_TIRE_PART || this.nodeName == FRONT_RIGHT_TIRE_PART) {
+                        this.rotating = true;
+                    }
                 }
 
                 console.log("Clicked " + this.nodeName);
@@ -672,8 +684,12 @@ function createSceneGraphModule() {
                 console.log("MAX WIDTH: " + this.parent.attrs.MAX_WIDTH);
 
                 if (newWidth <= this.parent.attrs.MAX_WIDTH && newWidth >= this.parent.attrs.MIN_WIDTH) {
-                    this.parent.parent.children[FRONT_AXLE_PART].attrs.WIDTH = Math.abs(point.x) * 2;
-                    this.parent.parent.children[BACK_AXLE_PART].attrs.WIDTH = Math.abs(point.x) * 2;
+                    var frontAxle = this.parent.parent.children[FRONT_AXLE_PART];
+                    var backAxle = this.parent.parent.children[BACK_AXLE_PART];
+                    frontAxle.highlight = true;
+                    backAxle.highlight = true;
+                    frontAxle.attrs.WIDTH = Math.abs(point.x) * 2;
+                    backAxle.attrs.WIDTH = Math.abs(point.x) * 2;
                 }
                 
                 else {
