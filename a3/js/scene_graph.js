@@ -40,7 +40,13 @@ function createSceneGraphModule() {
 
             // The transform that will position this object, relative
             // to its parent
-            this.startPositionTransform = startPositionTransform;
+
+            if (startPositionTransform == undefined) {
+                this.startPositionTransform = new AffineTransform();
+            }
+            else {
+                this.startPositionTransform = startPositionTransform;
+            }
 
             // Any additional transforms of this object after the previous transform
             // has been applied
@@ -70,6 +76,9 @@ function createSceneGraphModule() {
          */
         replaceGraphNode: function(nodeName, newNode) {
             if (nodeName in this.children) {
+                newNode.parent = this.children[nodeName].parent;
+                newNode.startPositionTransform = this.children[nodeName].startPositionTransform;
+                newNode.objectTransform = this.children[nodeName].objectTransform;
                 this.children[nodeName] = newNode;
             } else {
                 _.each(
@@ -159,7 +168,7 @@ function createSceneGraphModule() {
             this.objectTransform.copyFrom(this.rotationTransform).concatenate(this.scaleTransform);
 
             context.save();
-            context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
+            context.replaceAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
             if (this.highlight) {
                 context.fillStyle = 'rgb(97,201,242)';
@@ -196,7 +205,7 @@ function createSceneGraphModule() {
             context.restore();
             context.save();
             // Remove scaling going down, so only rotation applies
-            context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.rotationTransform));
+            context.replaceAffineTransform(this.startPositionTransform.clone().concatenate(this.rotationTransform));
             context.globalCompositeOperation = 'destination-over';
 
             _.each(this.children, function(c) {
@@ -412,7 +421,7 @@ function createSceneGraphModule() {
             context.save();
             this.objectTransform.copyFrom(this.scaleTransform).concatenate(this.translationTransform);
 
-            context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
+            context.replaceAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
             context.fillStyle="#312812";
 
@@ -501,7 +510,7 @@ function createSceneGraphModule() {
             this.objectTransform.copyFrom(this.scaleTransform).concatenate(this.translationTransform);
 
             context.save();
-            context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
+            context.replaceAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
             if (this.highlight) {
                 context.fillStyle = 'rgb(97,201,242)';
@@ -515,7 +524,7 @@ function createSceneGraphModule() {
             context.restore();
 
             context.save();
-            context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.translationTransform));
+            context.replaceAffineTransform(this.startPositionTransform.clone().concatenate(this.translationTransform));
 
             _.each(this.children, function(c) {
                 c.render(context);
@@ -608,7 +617,7 @@ function createSceneGraphModule() {
 
             this.objectTransform.copyFrom(this.translationTransform).concatenate(this.rotationTransform);
 
-            context.setAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
+            context.replaceAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
             context.globalCompositeOperation = 'source-over';
 
             context.fillStyle="#282828";

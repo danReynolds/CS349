@@ -46,7 +46,7 @@ function updateCopy() {
     copyContext.restore();
 }
 
-CanvasRenderingContext2D.prototype.setAffineTransform = function(transform) {
+CanvasRenderingContext2D.prototype.replaceAffineTransform = function(transform) {
     this.transform(transform.getScaleX(), transform.getShearY(), transform.getShearX(), transform.getScaleY(), transform.getTranslateX(), transform.getTranslateY());
 };
 
@@ -82,6 +82,18 @@ window.addEventListener('load', function() {
           globalPoint = _.clone(point);
         }
         updateCopy();
+    });
+
+    var replaceButton = q('.replace');
+    replaceButton.addEventListener('click', function(e) {
+      var newFrontBumper = new sceneGraphModule.BumperNode("FRONT_BUMPER");
+      var newRearBumper = new sceneGraphModule.BumperNode("REAR_BUMPER");
+      var newFrontAxle = new sceneGraphModule.AxleNode("FRONT_AXLE_PART");
+      var newFrontRightTire = new sceneGraphModule.TireNode("FRONT_RIGHT_TIRE_PART");
+      carNode.replaceGraphNode("FRONT_BUMPER", newFrontBumper);
+      carNode.replaceGraphNode("REAR_BUMPER", newRearBumper);
+      carNode.replaceGraphNode("FRONT_AXLE_PART", newFrontAxle);
+      carNode.replaceGraphNode("FRONT_RIGHT_TIRE_PART", newFrontRightTire);
     });
 
     sceneGraph.addChild(carNode);
