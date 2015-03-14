@@ -18,8 +18,6 @@ function createSceneGraphModule() {
     var REAR_BUMPER = 'REAR_BUMPER';
     var LEFT_BUMPER = 'LEFT_BUMPER';
     var RIGHT_BUMPER = 'RIGHT_BUMPER';
-    var FRONT_SECTION = 'FRONT_SECTION';
-    var REAR_SECTION = 'REAR_SECTION';
 
     var GraphNode = function() {
     };
@@ -734,7 +732,7 @@ function createSceneGraphModule() {
         BACK_RIGHT_TIRE_PART: BACK_RIGHT_TIRE_PART,
         FRONT_BUMPER: FRONT_BUMPER,
         REAR_BUMPER: REAR_BUMPER,
-        FRONT_SECTION: FRONT_SECTION,
-        REAR_SECTION: REAR_SECTION
+        LEFT_BUMPER: LEFT_BUMPER,
+        RIGHT_BUMPER: RIGHT_BUMPER
     };
 }
