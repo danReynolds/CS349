@@ -113,6 +113,12 @@ function createSceneGraphModule() {
             });
         },
 
+        cursorInObject: function(point) {
+            _.each(this.children, function(c) {
+                c.cursorInObject(point);
+            });
+        },
+
         manipulate: function(point) {
 
         },
@@ -252,6 +258,41 @@ function createSceneGraphModule() {
                 }
             }
 
+        },
+
+        cursorInObject: function(point) {
+            var _this = this;
+
+            // Generate inverse, no children care about scaling
+            var inverseMatrix = this.startPositionTransform.clone().concatenate(this.rotationTransform).concatenate(this.translationTransform).createInverse();
+            var inverseMatrixScaling = this.startPositionTransform.clone().concatenate(this.objectTransform).createInverse();
+
+            var invPoint = _.clone(point);
+            invPoint = applyMatrixToPoint(inverseMatrix, invPoint);
+
+            var invPointScaling = _.clone(point);
+            invPointScaling = applyMatrixToPoint(inverseMatrixScaling, invPointScaling);
+
+            if (pointInBox(invPointScaling, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2, -this.attrs.BASE_WIDTH / 2)) {
+                // Check if we clicked in the front area for rotation
+                if (pointInBox(invPointScaling, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH / 2, -this.attrs.BASE_HEIGHT / 4, -this.attrs.BASE_WIDTH / 2)) {
+                    document.body.style.cursor = "crosshair";
+                }
+                // Check if we clicked in the back area for rotation
+                else if (pointInBox(invPointScaling, this.attrs.BASE_HEIGHT / 4, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2, -this.attrs.BASE_WIDTH / 2)) {
+                    document.body.style.cursor = "crosshair";
+                }
+                else {
+                    document.body.style.cursor = "move";
+                }
+            }
+            else {
+                document.body.style.cursor = "";
+            }
+
+            _.each(this.children, function(c) {
+                c.cursorInObject(invPoint);
+            });
         },
 
         manipulate: function(point) {
@@ -438,6 +479,36 @@ function createSceneGraphModule() {
             context.restore();
         },
 
+        cursorInObject: function(point) {
+            var _this = this;
+
+            var matrix = new AffineTransform();
+
+            // Generate inverse
+            var inverseMatrix = matrix.clone().concatenate(this.startPositionTransform.clone().concatenate(this.objectTransform).createInverse());
+
+            var invPoint = _.clone(point);
+            invPoint = applyMatrixToPoint(inverseMatrix, invPoint);
+
+            if (this.nodeName == FRONT_BUMPER || this.nodeName == REAR_BUMPER) {
+                if (pointInBox(invPoint, 0, this.parent.attrs.BASE_WIDTH / 2, this.attrs.THICKNESS, -this.parent.attrs.BASE_WIDTH / 2)) {
+                    document.body.style.cursor = "row-resize";
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                if (pointInBox(invPoint, -this.parent.attrs.BASE_HEIGHT / 2, this.attrs.THICKNESS, this.parent.attrs.BASE_HEIGHT / 2, 0)) {
+                    document.body.style.cursor = "col-resize";
+                    return false;
+                }
+                else {
+                    return false;
+                }
+            }            
+        },
+
         // Overrides parent method
         pointInObject: function(point) {
             var _this = this;
@@ -529,6 +600,22 @@ function createSceneGraphModule() {
             });
 
             context.restore();
+        },
+
+        cursorInObject: function(point) {
+            var _this = this;
+
+            var matrixFromPoint = new AffineTransform();
+
+            // Generate inverse
+            var inverseMatrix = matrixFromPoint.clone().concatenate(this.startPositionTransform.clone().concatenate(this.translationTransform).createInverse());
+            
+            var invPoint = _.clone(point);
+            invPoint = applyMatrixToPoint(inverseMatrix, invPoint);
+
+            _.each(this.children, function(c) {
+                c.cursorInObject(invPoint);
+            });
         },
 
         // Overrides parent method
@@ -623,6 +710,30 @@ function createSceneGraphModule() {
             context.fillStyle="yellow";
             context.fillRect(-this.attrs.BASE_WIDTH / 2, -this.attrs.BASE_HEIGHT / 6, this.attrs.BASE_WIDTH, this.attrs.BASE_HEIGHT / 4);
             context.restore();
+        },
+
+        cursorInObject: function(point) {
+            var _this = this;
+
+            var matrix = new AffineTransform();
+
+            // Generate inverse
+            var inverseMatrix = matrix.clone().concatenate(this.startPositionTransform.clone().concatenate(this.objectTransform).createInverse());
+
+            var invPoint = _.clone(point);
+            invPoint = applyMatrixToPoint(inverseMatrix, invPoint);
+
+            if (pointInBox(invPoint, -this.attrs.BASE_HEIGHT / 2, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 2, -this.attrs.BASE_WIDTH / 2)) {
+
+                if (pointInBox(invPoint, -this.attrs.BASE_HEIGHT / 6, this.attrs.BASE_WIDTH / 2, this.attrs.BASE_HEIGHT / 4, -this.attrs.BASE_WIDTH / 2)) {
+                    document.body.style.cursor = "col-resize";
+                }
+                else {
+                    if (this.nodeName == FRONT_LEFT_TIRE_PART || this.nodeName == FRONT_RIGHT_TIRE_PART) {
+                        document.body.style.cursor = "crosshair";
+                    }
+                }
+            }
         },
 
         // Overrides parent method

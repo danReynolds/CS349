@@ -77,6 +77,7 @@ window.addEventListener('load', function() {
     q("#canvas").addEventListener('mousemove', function(e) {
         var point = canvasTranslation(canvas, e);
         carNode.manipulate(point);
+        carNode.cursorInObject(point);
 
         if (carNode.moving) {
           globalPoint = _.clone(point);
