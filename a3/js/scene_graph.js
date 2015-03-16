@@ -175,7 +175,7 @@ function createSceneGraphModule() {
             context.replaceAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
             if (this.highlight) {
-                context.fillStyle = 'rgb(97,201,242)';
+                context.fillStyle = '#0092F4';
                 context.shadowBlur=10;
                 context.shadowColor="white";
             }
@@ -582,7 +582,7 @@ function createSceneGraphModule() {
             context.replaceAffineTransform(this.startPositionTransform.clone().concatenate(this.objectTransform));
 
             if (this.highlight) {
-                context.fillStyle = 'rgb(97,201,242)';
+                context.fillStyle = '#0092F4';
                 context.shadowBlur=10;
                 context.shadowColor="white";
             }

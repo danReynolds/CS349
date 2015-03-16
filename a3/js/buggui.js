@@ -85,18 +85,6 @@ window.addEventListener('load', function() {
         updateCopy();
     });
 
-    var replaceButton = q('.replace');
-    replaceButton.addEventListener('click', function(e) {
-      var newFrontBumper = new sceneGraphModule.BumperNode("FRONT_BUMPER");
-      var newRearBumper = new sceneGraphModule.BumperNode("REAR_BUMPER");
-      var newFrontAxle = new sceneGraphModule.AxleNode("FRONT_AXLE_PART");
-      var newFrontRightTire = new sceneGraphModule.TireNode("FRONT_RIGHT_TIRE_PART");
-      carNode.replaceGraphNode("FRONT_BUMPER", newFrontBumper);
-      carNode.replaceGraphNode("REAR_BUMPER", newRearBumper);
-      carNode.replaceGraphNode("FRONT_AXLE_PART", newFrontAxle);
-      carNode.replaceGraphNode("FRONT_RIGHT_TIRE_PART", newFrontRightTire);
-    });
-
     sceneGraph.addChild(carNode);
     sceneGraph.render(context);
 
