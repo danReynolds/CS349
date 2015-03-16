@@ -31,7 +31,9 @@ function pointInBox(point, top, right, bottom, left) {
   }
   return true;
 }
+
 var globalPoint = { x: 125, y: 175 };
+
 function updateCopy() {
     var canvasCopy = q('#canvasCopy');
     var context = canvas.getContext('2d');
@@ -58,7 +60,6 @@ window.addEventListener('load', function() {
 
     var sceneGraph = new sceneGraphModule.GraphNode();
     sceneGraph.initGraphNode(new AffineTransform(), "SCENE_GRAPH");
-
 
     // Setup car
     var carNode = new sceneGraphModule.CarNode(AffineTransform.getTranslateInstance(200, 200));
