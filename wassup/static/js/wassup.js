@@ -1,10 +1,28 @@
+'use strict';
+
 window.addEventListener('load', function() {
     // Place your Wassup app code here
     console.log("Wassup?");
+    handleAjaxRequest({
+        command: 'add_friend',
+        command_data: { user_id: 'ndklasse' }
+    }, function(response) {
+        console.log("well");
+    })
+
+    document.body.innerHTML = '<nav class="header"> <ul class="left"> <li> <a href="/"><img class="logo" src="/static/wassup_logo.png"/></img></a></li> </ul> <ul class="right"></ul></nav>' + document.body.innerHTML;
+    if (document.cookie == "") {
+        document.querySelector('.right').innerHTML = '<li><a href="/login" id="login">Login</a></li>';
+    }
+    else {
+        document.querySelector('.right').innerHTML = '<form method="POST" id="" action="/logout" enctype="multipart/form-data"><input type="submit" value="Logout" /></form>';
+    }
 });
 
+var messageID = 0;
+
 // Example derived from: https://developer.mozilla.org/en-US/docs/AJAX/Getting_Started
-function handleAjaxRequest() {
+function handleAjaxRequest(data, callback) {
 
     // Create the request object
     var httpRequest = new XMLHttpRequest();
@@ -18,7 +36,8 @@ function handleAjaxRequest() {
             // Parse the response text as a JSON object
             var responseObj = JSON.parse(httpRequest.responseText);
 
-            // TODO: Actually do something with the data returned
+
+            _.isFunction(callback) && callback(responseObj);
         }
     });
 
@@ -28,8 +47,10 @@ function handleAjaxRequest() {
     // Set the data type being sent as JSON
     httpRequest.setRequestHeader('Content-Type', 'application/json');
 
-    // Send the JSON object, serialized as a string
-    // TODO: You will need to actually send something and respond to it
-    var objectToSend = {};
-    httpRequest.send(JSON.stringify(objectToSend));
+    // Add in the data that will be needed across messages
+    data['message_id'] = messageID++;
+    data['protocol_version'] = '1.0';
+
+    httpRequest.send(JSON.stringify(data));
 }
+

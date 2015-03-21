@@ -1,25 +1,38 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" type="text/css" href="/static/css/ext/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/css/wassup.css" />
   </head>
   <body>
-    <img class="logo" src="/static/wassup_logo.png"/>
 
-    %if error_message:
-    <p>
-      <em>{{error_message}}</em>
-    </p>
-    %end
+    <div class="container">
+      %if error_message:
+      <p>
+        <em>{{error_message}}</em>
+      </p>
+      %end
 
-    <form method="POST" id="" action="/logged_in" enctype="multipart/form-data">
-      Desired username: <input type="text" name="user_id" />
-      Full name: <input type="text" name="full_name" />
-      <input type="submit" value="Log In" />
-
-    </form>
+      <div class="row">
+        <div class="login col-md-8 col-md-offset-2">
+          <form method="POST" id="" action="/logged_in" enctype="multipart/form-data">
+            <div class="form-group">
+              <label for="user_id">User ID</label>
+              <input type="username" class="form-control" name="user_id" id="user_id" placeholder="Enter User ID">
+            </div>
+            <div class="form-group">
+              <label for="full_name">Full Name</label>
+              <input type="username" class="form-control" name="full_name" id="full_name" placeholder="Password">
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
 
     <script src="static/js/ext/underscore.js"></script>
+    <script src="static/js/ext/jquery-1.11.2.min.js"></script>
+    <script src="static/js/ext/bootstrap.min.js"></script>
     <script type="text/javascript" src="/static/js/wassup.js"></script>
   </body>
 </html>

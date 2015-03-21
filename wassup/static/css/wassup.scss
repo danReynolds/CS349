@@ -1,0 +1,82 @@
+//=====================
+// Variables
+//=====================
+$font-color: #7C7C7C;
+$purple: rgb(118, 62, 154);
+
+//=====================
+// Navigation
+//=====================
+
+body {
+  margin: 0;
+  background: $purple;
+  color: $font-color;
+
+  nav.header {
+    width: 100%;
+    height: 6rem;
+    background: white;
+
+    input[type="submit"] {
+      background: white;
+      height: 3rem;
+      color: $purple;
+      padding: 0;
+      border: none;
+      cursor: pointer;
+    }
+
+    ul {
+      margin: 0;
+      padding: 0 2rem;
+      li {
+        display: inline-block;
+        line-height: 6rem;
+      }
+
+      &.left {
+        float: left;
+        .logo {
+          height: 5rem;
+        }
+      }
+
+      &.right {
+        float: right;
+      }
+    }
+  }
+}
+
+//=====================
+// Common Styling
+//=====================
+
+label {
+  display: block;
+}
+
+a {
+  color: $purple;
+  text-decoration: none;
+}
+
+input {
+  border-radius: 4px;
+}
+
+button[type="submit"]:hover {
+  background: $purple;
+  color: white;
+}
+
+//=====================
+// Login Page
+//=====================
+
+.login {
+  margin-top: 10rem;
+  background: white;
+  padding: 4rem;
+}
