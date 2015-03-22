@@ -3,6 +3,9 @@
 //=====================
 $font-color: #7C7C7C;
 $purple: rgb(118, 62, 154);
+$private-color: #252525;
+$header: #626262;
+$yellow: rgb(245, 209, 30);
 
 //=====================
 // Navigation
@@ -13,10 +16,22 @@ body {
   background: $purple;
   color: $font-color;
 
+  &.private {
+    background: $private-color;
+  }
+
   nav.header {
     width: 100%;
     height: 6rem;
     background: white;
+    
+    li::before {
+      border-left: 1px solid black;
+    }
+
+    li + li {
+      margin-left: 10px;
+    }
 
     input {
       background: white;
@@ -72,13 +87,34 @@ button[type="submit"]:hover {
 }
 
 .container {
-  margin-top: 10rem;
+
+  @media (min-width: 450px) {
+    margin-top: 10rem;
+  }
 }
 
 .widget {
   border-radius: 2px;
   background: white;
   margin: 2rem 0;
+
+  .header {
+    padding: 2rem;
+    background: $header;
+    color: white;
+    border-radius: 1px;
+
+    &.private {
+      color: $purple;
+      background: rgb(232, 232, 232);
+    }
+  }
+
+  .main {
+    padding: 2rem;
+  }
+
+  h2 { margin: 0; }
 }
 
 h2 {
@@ -92,4 +128,85 @@ h2 {
 .login {
   background: white;
   padding: 4rem;
+}
+
+//=====================
+// Home Page
+//=====================
+
+.home-page {
+  .widget {
+    .list-group-item {
+      position: relative;
+
+      &.selected {
+        background: $purple;
+        color: white;
+      }
+    }
+
+    .server-mode {
+      text-align: center;
+      #private-server, #public-server {
+        text-align: center;
+        margin: 0 auto;
+        fill: $yellow;
+
+        &:hover {
+          cursor: pointer;
+          fill: $purple;
+        }
+
+      }
+
+      .public-server-mode {
+        display: none;
+      }
+    }
+
+
+    #trash-sup {
+      font-size: 10px;
+      width: 30px;
+      float: right;
+      margin: 10px 0;
+      cursor: pointer;
+    }
+
+    ul.friends-list {
+      margin-top: 1rem;
+      overflow-y: scroll;
+      max-height: 182px;
+      li.friend-item {
+        border: none;
+        padding: 0;
+        margin: 3px 3px 0 3px;
+        .badge {
+          position: absolute;
+          right: 10px;
+          top: 30%;
+          background: red;
+
+          &:hover {
+            background: darken(red, 10%);
+          }
+        }
+      }
+    }
+
+    #sup-canvas {
+      width: 100%;
+    }
+
+
+    h2 { margin: 0; }
+  }
+
+  .prev {
+    float: left;
+  }
+
+  .next {
+    float: right;
+  }
 }
