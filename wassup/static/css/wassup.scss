@@ -18,9 +18,9 @@ body {
     height: 6rem;
     background: white;
 
-    input[type="submit"] {
+    input {
       background: white;
-      height: 3rem;
+      height: 6rem;
       color: $purple;
       padding: 0;
       border: none;
@@ -71,12 +71,25 @@ button[type="submit"]:hover {
   color: white;
 }
 
+.container {
+  margin-top: 10rem;
+}
+
+.widget {
+  border-radius: 2px;
+  background: white;
+  margin: 2rem 0;
+}
+
+h2 {
+  font-size: 20px;
+}
+
 //=====================
 // Login Page
 //=====================
 
 .login {
-  margin-top: 10rem;
   background: white;
   padding: 4rem;
 }
