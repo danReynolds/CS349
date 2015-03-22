@@ -79,6 +79,10 @@ h2 {
   .home-page .widget .list-group-item.selected {
     background: #763e9a;
     color: white; }
+.home-page .widget .no-sup-present p {
+  margin: 0; }
+.home-page .widget .sup-present {
+  position: relative; }
 .home-page .widget .server-mode {
   text-align: center; }
   .home-page .widget .server-mode #private-server, .home-page .widget .server-mode #public-server {
@@ -95,7 +99,11 @@ h2 {
   width: 30px;
   float: right;
   margin: 10px 0;
-  cursor: pointer; }
+  cursor: pointer;
+  top: 0;
+  right: 10px;
+  z-index: 1000;
+  position: absolute; }
 .home-page .widget ul.friends-list {
   margin-top: 1rem;
   overflow-y: scroll;

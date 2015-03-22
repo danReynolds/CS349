@@ -145,6 +145,12 @@ h2 {
       }
     }
 
+    .no-sup-present {
+      p { margin: 0; }
+    }
+
+    .sup-present { position: relative; }
+
     .server-mode {
       text-align: center;
       #private-server, #public-server {
@@ -171,6 +177,10 @@ h2 {
       float: right;
       margin: 10px 0;
       cursor: pointer;
+      top: 0;
+      right: 10px;
+      z-index: 1000;
+      position: absolute;
     }
 
     ul.friends-list {
