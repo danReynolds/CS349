@@ -92,7 +92,7 @@ h2 {
     .home-page .widget .server-mode #private-server:hover, .home-page .widget .server-mode #public-server:hover {
       cursor: pointer;
       fill: #763e9a; }
-  .home-page .widget .server-mode .public-server-mode {
+  .home-page .widget .server-mode .private-server-mode {
     display: none; }
 .home-page .widget #trash-sup {
   font-size: 10px;
@@ -106,8 +106,8 @@ h2 {
   position: absolute; }
 .home-page .widget ul.friends-list {
   margin-top: 1rem;
-  overflow-y: scroll;
-  max-height: 182px; }
+  max-height: 182px;
+  overflow-y: auto; }
   .home-page .widget ul.friends-list li.friend-item {
     border: none;
     padding: 0;

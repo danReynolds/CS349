@@ -165,7 +165,7 @@ h2 {
 
       }
 
-      .public-server-mode {
+      .private-server-mode {
         display: none;
       }
     }
@@ -185,8 +185,8 @@ h2 {
 
     ul.friends-list {
       margin-top: 1rem;
-      overflow-y: scroll;
       max-height: 182px;
+      overflow-y: auto;
       li.friend-item {
         border: none;
         padding: 0;

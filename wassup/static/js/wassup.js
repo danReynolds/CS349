@@ -4,10 +4,9 @@ var messageID = 0;
 var sup_messages = {};
 var sup_position = 0;
 var sup_id;
-var private_server = "http://104.197.3.113";
-var public_server = "http://localhost:8080";
-var server = public_server;
-var current_user = document.cookie.match(/user_id=(.*)/)[1];
+var public_server = "http://104.197.3.113";
+var private_server = "http://localhost:8080";
+var server = private_server;
 
 function randomColor() {
     var r = 255*Math.random()|0,
@@ -22,25 +21,28 @@ function randomInt(min, max) {
 
 function getSups(current_user) {
     // Get all of the current users' sups
+    var cur_server = server;
     var canvas = document.querySelector('#sup-canvas');
     handleAjaxRequest({
         command: 'get_sups',
         command_data: { user_id: current_user }
     }, function(response) {
-        _.each(response['reply_data'], function(sup) {
-            if (sup_messages[sup['sup_id']] == undefined) {
-                sup_messages[sup['sup_id']] = {
-                    sup: sup,
-                    fill: randomColor(),
-                    fontSize: randomInt(20, 50),
-                    rotation: randomInt(1, 360),
-                    positionX: randomInt(1, canvas.height),
-                    positionY: randomInt(1, canvas.height),
-                    background: randomColor()
+        if (server == cur_server) {
+            _.each(response['reply_data'], function(sup) {
+                if (sup_messages[sup['sup_id']] == undefined) {
+                    sup_messages[sup['sup_id']] = {
+                        sup: sup,
+                        fill: randomColor(),
+                        fontSize: randomInt(20, 50),
+                        rotation: randomInt(1, 360),
+                        positionX: randomInt(1, canvas.height),
+                        positionY: randomInt(1, canvas.height),
+                        background: randomColor()
+                    }
                 }
-            }
-        })
-        renderSup();
+            })
+            renderSup();
+        }
     })
 }
 
@@ -122,10 +124,27 @@ function reloadFriends(current_user) {
 }
 
 window.addEventListener('load', function() {
+
+    if (window.location.pathname == '/login') {
+        document.querySelector('#login-user').addEventListener('submit', function(e) {
+            var user_id = document.querySelector('#user_id').value;
+            var full_name = document.querySelector('#full_name').value;
+            server = public_server;
+            e.preventDefault();
+            handleAjaxRequest({
+                command: 'create_user',
+                user_id: user_id,
+                command_data: { user_id: user_id, full_name: full_name }
+            }, function(response) {
+                e.srcElement.submit();
+            })
+        });
+    }
     if (window.location.pathname == '/') {
+        var current_user = document.cookie.match(/user_id=(.*)/)[1];
 
         // Setup Login/Logout button
-        document.querySelector('.right').innerHTML = '<li>Mode: <span class="label label-default">Public</span></li><li><form method="POST" id="" action="/logout" enctype="multipart/form-data"><input type="submit" value="Logout" /></form></li>';
+        document.querySelector('.right').innerHTML = '<li>Mode: <span class="label label-success">Private</span></li><li><form method="POST" id="" action="/logout" enctype="multipart/form-data"><input type="submit" value="Logout" /></form></li>';
 
         // Setup add friend button
         document.querySelector('.add-friend-button').addEventListener('click', function(e) {
@@ -142,6 +161,12 @@ window.addEventListener('load', function() {
                 }
             })
             input.value = "";
+        });
+
+        document.querySelector('.add-friend-field').addEventListener('keyup', function(e) {
+            if (e.keyCode == 13) {
+                document.querySelector('.add-friend-button').click();
+            }
         });
 
         // Setup the send button
@@ -237,7 +262,7 @@ window.addEventListener('load', function() {
         setInterval(function () {
             console.log("checking for new sups...");
             getSups(current_user);
-        }, 500);
+        }, 1000);
 
         reloadFriends(current_user);
         getSups(current_user);
@@ -281,8 +306,12 @@ function handleAjaxRequest(data, callback) {
     data['message_id'] = messageID++;
     data['protocol_version'] = '1.1';
 
-    if (server == private_server) {
-        data['user_id'] = current_user;
+    var current_user = document.cookie.match(/user_id=(.*)/);
+    if (current_user != null) {
+        current_user = current_user[1];
+        if (server == public_server) {
+            data['user_id'] = current_user;
+        }
     }
 
     httpRequest.send(JSON.stringify(data));
