@@ -39,6 +39,9 @@ body {
         body nav.header ul.right li {
           line-height: 1; } }
 
+.alert {
+  margin: 2.2rem 0 1rem 0; }
+
 .modal-dialog {
   position: absolute;
   top: 40vh;

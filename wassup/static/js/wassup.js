@@ -121,12 +121,13 @@ function reloadFriends(current_user) {
 
         _.each(document.querySelectorAll('a.list-group-item'), function(item) {
             var _item = item;
-            item.addEventListener('click', function() {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
                 if (_item.className == "list-group-item") {
-                    _item.className = "list-group-item selected";
+                    _item.classList.add("selected");
                 }
                 else {
-                    _item.className = "list-group-item";
+                    _item.classList.remove("selected");
                 }
             });
         });
