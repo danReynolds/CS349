@@ -31,6 +31,22 @@ body {
           height: 5rem; }
       body nav.header ul.right {
         float: right; }
+    @media (max-width: 345px) {
+      body nav.header ul.right {
+        float: none;
+        margin: 0;
+        padding: 0; }
+        body nav.header ul.right li {
+          line-height: 1; } }
+
+.modal-dialog {
+  position: absolute;
+  top: 40vh;
+  width: 100%; }
+  .modal-dialog .modal-content {
+    width: 50%;
+    margin: 0 auto;
+    text-align: center; }
 
 label {
   display: block; }
@@ -48,7 +64,8 @@ button[type="submit"]:hover {
 
 @media (min-width: 450px) {
   .container {
-    margin-top: 10rem; } }
+    margin-top: 10rem;
+    margin-bottom: 10rem; } }
 
 .widget {
   border-radius: 2px;
@@ -70,9 +87,17 @@ button[type="submit"]:hover {
 h2 {
   font-size: 20px; }
 
+.form-group {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto; }
+
 .login {
   background: white;
   padding: 4rem; }
+
+.busy-modal-button {
+  display: none; }
 
 .home-page .widget .list-group-item {
   position: relative; }

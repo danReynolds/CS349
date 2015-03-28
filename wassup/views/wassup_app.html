@@ -6,6 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body class="private">
+    <!-- Busy Modal -->
+    <button type="button" class="btn btn-primary btn-lg busy-modal-button" data-toggle="modal" data-target="#busy-modal">
+      Launch demo modal
+    </button>
+    <div class="modal fade" id="busy-modal" tabindex="-1" role="dialog" aria-labelledby="busy-modal" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            Fetching public server data...
+          </div>
+          <button type="button" class="btn btn-default busy-modal-button busy-close" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+
     <nav class="header">
       <ul class="left">
         <li>

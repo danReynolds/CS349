@@ -7,6 +7,8 @@ var sup_id;
 var public_server = "http://104.197.3.113";
 var private_server = "http://localhost:8080";
 var server = private_server;
+var serverTimeout;
+var serverBusy = false;
 
 function randomColor() {
     var r = 255*Math.random()|0,
@@ -34,8 +36,8 @@ function getSups(current_user) {
                         sup: sup,
                         fill: randomColor(),
                         fontSize: randomInt(20, 50),
-                        rotation: randomInt(1, 360),
-                        positionX: randomInt(1, canvas.height),
+                        rotation: randomInt(1, 45),
+                        positionX: randomInt(1, canvas.width / 1.5),
                         positionY: randomInt(1, canvas.height),
                         background: randomColor()
                     }
@@ -44,6 +46,14 @@ function getSups(current_user) {
             renderSup();
         }
     })
+}
+
+function serverAlert(div, message, type) {
+    var alertNode = document.createElement("div");
+    alertNode.className = "alert " + type;
+    alertNode.innerHTML = '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + message + '</div>'
+
+    div.insertBefore(alertNode, div.children[0]);
 }
 
 function renderSup() {
@@ -102,7 +112,7 @@ function reloadFriends(current_user) {
                         reloadFriends(current_user);
                     }
                     else {
-                        alert("error");
+                        serverAlert(document.querySelector('.home-page'), "Uh-oh, we couldn't remove your friend. Stay friends for now?", "alert alert-danger");
                     }
                 });
                 e.stopPropagation();
@@ -130,13 +140,11 @@ window.addEventListener('load', function() {
             var user_id = document.querySelector('#user_id').value;
             var full_name = document.querySelector('#full_name').value;
             server = public_server;
-            e.preventDefault();
             handleAjaxRequest({
                 command: 'create_user',
                 user_id: user_id,
                 command_data: { user_id: user_id, full_name: full_name }
             }, function(response) {
-                e.srcElement.submit();
             })
         });
     }
@@ -157,7 +165,7 @@ window.addEventListener('load', function() {
                     reloadFriends(current_user);
                 }
                 else {
-                    alert("error");
+                    serverAlert(document.querySelector('.home-page'), "Uh-oh, we couldn't get your friends' list. Our bad.", "alert alert-danger");
                 }
             })
             input.value = "";
@@ -172,6 +180,7 @@ window.addEventListener('load', function() {
         // Setup the send button
         var send_sup = document.querySelector('.send-sup');
         send_sup.addEventListener('click', function() {
+            var success = true;
             _.each(document.querySelectorAll('a.list-group-item'), function(item) {
                 if (item.className == "list-group-item selected") {
                     // Send the sup!
@@ -184,15 +193,20 @@ window.addEventListener('load', function() {
                             date: date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear()
                         }
                     }, function(response) {
-                        if (response['error'] == "") {
-                        }
-                        else {
-                            alert("error");
+                        if (response['error'] != "") {
+                            success = false;
                         }
                     })
                 }
+
                 item.className = "list-group-item";
             });
+            if (success) {
+                serverAlert(document.querySelector('.home-page'), "Your friends' sups are on their way!", "alert alert-success");
+            }
+            else {
+                serverAlert(document.querySelector('.home-page'), "Whoops, something went wrong sending your sups.", "alert alert-danger");
+            }
         });
 
         // Setup carousel buttons
@@ -238,9 +252,9 @@ window.addEventListener('load', function() {
             document.querySelector('.private-server-mode').style.display = "none";
             server = private_server;
             sup_messages = {};
+            sup_position = 0;
 
             reloadFriends(current_user);
-            getSups(current_user);
         });
 
         document.querySelector('#public-server').addEventListener('click', function() {
@@ -252,16 +266,19 @@ window.addEventListener('load', function() {
             document.querySelector('.public-server-mode').style.display = "none";
             document.querySelector('.private-server-mode').style.display = "block";
             server = public_server;
+            sup_position = 0;
 
             sup_messages = {};
+
             reloadFriends(current_user);
-            getSups(current_user);
         });
 
         // Setup the polling for new sups
-        setInterval(function () {
-            console.log("checking for new sups...");
-            getSups(current_user);
+        serverTimeout = setInterval(function () {
+            if (!serverBusy) {
+                console.log("checking for new sups...");
+                getSups(current_user);
+            }
         }, 1000);
 
         reloadFriends(current_user);
@@ -290,11 +307,13 @@ function handleAjaxRequest(data, callback) {
         if (httpRequest.readyState === 4 && httpRequest.status === 200) {
             // Parse the response text as a JSON object
             var responseObj = JSON.parse(httpRequest.responseText);
-
-
+            serverBusy = false;
+            clearInterval(interval);
+            
             _.isFunction(callback) && callback(responseObj);
         }
     });
+
 
     // This opens a POST connection with the server at the given URL
     httpRequest.open('POST', server + '/post');
@@ -315,5 +334,16 @@ function handleAjaxRequest(data, callback) {
     }
 
     httpRequest.send(JSON.stringify(data));
+    serverBusy = true;
+
+    var count = 0;
+    var interval = setInterval(function () {
+        count += 1;
+        console.log(count);
+        if (count > 50) {
+            clearInterval(interval);
+            document.querySelector(".busy-modal-button").click();
+        }
+    }, 10);
 }
 
