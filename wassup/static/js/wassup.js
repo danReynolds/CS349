@@ -60,22 +60,25 @@ function renderSup() {
     var canvas = document.querySelector('#sup-canvas');
     var context = document.querySelector('#sup-canvas').getContext('2d');
     var sup_message = sup_messages[_.keys(sup_messages)[sup_position]];
+    document.querySelector('#sup-canvas').style.opacity = 1;
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     if (_.size(sup_messages) > 0) {
-        document.querySelector('.sup-present').style.display = "block";
-        document.querySelector('.no-sup-present').style.display = "none";
-        context.save();
-        context.font = sup_message.fontSize + 'px Helvetica';
-        context.fillStyle = sup_message.fill;
-        context.translate(sup_message.positionX, sup_message.positionY);
-        context.rotate(Math.PI / 180 * sup_message.rotation);
-        context.fillText("Sup!", 0, 0);
-        context.restore();
+        if (sup_message != undefined) {
+            document.querySelector('.sup-present').style.display = "block";
+            document.querySelector('.no-sup-present').style.display = "none";
+            context.save();
+            context.font = sup_message.fontSize + 'px Helvetica';
+            context.fillStyle = sup_message.fill;
+            context.translate(sup_message.positionX, sup_message.positionY);
+            context.rotate(Math.PI / 180 * sup_message.rotation);
+            context.fillText("Sup!", 0, 0);
+            context.restore();
 
-        canvas.style.backgroundColor = sup_message.background;
-        document.querySelector('.sup-col').innerHTML = '<p> This beautiful sup comes from <strong id="supper">' + sup_message.sup.sender_id + '</strong> at <strong id="suppertime">' + sup_message.sup.date + '</strong> </p>';
-        document.querySelector('#sup-label').innerHTML = "Sup " + (sup_position + 1) + " of " + _.size(sup_messages);
+            canvas.style.backgroundColor = sup_message.background;
+            document.querySelector('.sup-col').innerHTML = '<p> This beautiful sup comes from <strong id="supper">' + sup_message.sup.sender_id + '</strong> at <strong id="suppertime">' + sup_message.sup.date + '</strong> </p>';
+            document.querySelector('#sup-label').innerHTML = "Sup " + (sup_position + 1) + " of " + _.size(sup_messages);
+        }
     }
     else {
         document.querySelector('#sup-label').innerHTML = "No Sups";
@@ -141,11 +144,13 @@ window.addEventListener('load', function() {
             var user_id = document.querySelector('#user_id').value;
             var full_name = document.querySelector('#full_name').value;
             server = public_server;
+            e.preventDefault();
             handleAjaxRequest({
                 command: 'create_user',
                 user_id: user_id,
                 command_data: { user_id: user_id, full_name: full_name }
             }, function(response) {
+                document.querySelector('#login-user').submit();
             })
         });
     }
@@ -190,7 +195,7 @@ window.addEventListener('load', function() {
                         command: 'send_sup',
                         command_data: {
                             user_id: item.querySelector('.friend').id, 
-                            sup_id: (new Date()).getTime(),
+                            sup_id: (new Date()).getTime().toString(),
                             date: date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear()
                         }
                     }, function(response) {
@@ -235,10 +240,18 @@ window.addEventListener('load', function() {
         document.querySelector('#trash-sup').addEventListener('click', function() {
             handleAjaxRequest({
                 command: 'remove_sup',
-                command_data: { sup_id: parseInt(_.keys(sup_messages)[sup_position]) }
+                command_data: { sup_id: _.keys(sup_messages)[sup_position] }
             }, function(response) {
-                delete sup_messages[parseInt(_.keys(sup_messages)[sup_position])];
-                getSups(current_user);
+                delete sup_messages[_.keys(sup_messages)[sup_position]];
+                var canvas = document.querySelector('#sup-canvas');
+                canvas.getContext('2d').fillStyle = "#626262";
+                canvas.getContext('2d').font = '10px Helvetica';
+                canvas.getContext('2d').fillRect(0, 0, canvas.width, canvas.height);
+                canvas.getContext('2d').fillStyle = "white";
+                canvas.getContext('2d').fillText("Removing...", canvas.width / 2 - 30, canvas.height / 2);
+                if (sup_position != 0) {
+                    sup_position = sup_position - 1;
+                }
             })
         });
 
@@ -277,7 +290,6 @@ window.addEventListener('load', function() {
         // Setup the polling for new sups
         serverTimeout = setInterval(function () {
             if (!serverBusy) {
-                console.log("checking for new sups...");
                 getSups(current_user);
             }
         }, 1000);
@@ -310,7 +322,12 @@ function handleAjaxRequest(data, callback) {
             var responseObj = JSON.parse(httpRequest.responseText);
             serverBusy = false;
             clearInterval(interval);
-            
+
+            if (count > 75) {
+                document.querySelector(".busy-modal-button").click();
+                count = 0;
+            }
+
             _.isFunction(callback) && callback(responseObj);
         }
     });
@@ -340,8 +357,7 @@ function handleAjaxRequest(data, callback) {
     var count = 0;
     var interval = setInterval(function () {
         count += 1;
-        console.log(count);
-        if (count > 50) {
+        if (count > 75) {
             clearInterval(interval);
             document.querySelector(".busy-modal-button").click();
         }
