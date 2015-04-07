@@ -1,0 +1,29 @@
+/* Put any additional CSS here */
+
+html {
+  height: 100%;
+  background: gray;
+}
+
+body {
+  text-align: center;
+}
+
+#canvas {
+  border: 1px solid black;
+  background: rgb(216, 216, 216);
+}
+
+#canvasCopy {
+  border: 1px dotted black;
+  background: rgb(216, 216, 216);
+}
+
+.close-up {
+  text-align: center;
+  display: inline-block;
+}
+
+.instructions {
+  text-align: left;
+}

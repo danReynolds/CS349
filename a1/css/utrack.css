@@ -1,0 +1,129 @@
+/* Put any additional CSS here */
+@media (min-width: 768px) { .row.nav, .container { width: 44rem; } }
+@media (min-width: 992px) { .row.nav, .container { width: 44rem; } }
+@media (min-width: 1200px) { .row.nav, .container { width: 44rem; } }
+
+@font-face {
+ font-family: 'Raleway';
+ src: url('/fonts/Raleway-Regular.ttf'),
+ url('/fonts/Raleway-Regular.ttf') format('truetype');
+ font-weight: normal;
+ font-style: normal;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Raleway';
+  background: url("/images/footer_lodyas.png") repeat fixed center;
+}
+
+h1 {
+  font-size: 1.5rem;
+}
+
+.header {
+  background: rgb(86, 182, 240);
+  display: inline-block;
+  padding: 1rem 2rem;
+  position: absolute;
+  left: 4rem;
+  top: 0;
+  color: white;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+#utrack-content {
+  margin-top: 20vh;
+  padding: 2rem;
+}
+
+.container {
+  background: white;
+  box-shadow: 1px 1px 1px rgb(86, 86, 86);
+}
+
+ul {
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+li.tab {
+  display: inline-block;
+  background: rgb(86, 182, 240);
+  padding: 0.5rem 2rem;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+}
+
+li.tab.active {
+  background: white;
+  color: rgb(87, 87, 87);
+}
+.row.nav {
+  margin: 0 auto;
+}
+
+.row.add-activity {
+  margin: 1.5rem;
+  margin-left: 0;
+  padding: 2rem;
+}
+
+.add-activity input, .add-activity select {
+  width: 80%;
+}
+
+progress {
+  height: 50px;
+  width: 200px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+progress::-webkit-progress-value {
+  background-color: rgb(86, 182, 240) !important;
+}
+
+.form-group {
+  display: none;
+}
+
+.form-group.active {
+  display: block;
+}
+
+.btn-primary {
+  border-color: white !important;
+  background-color: rgb(52, 150, 210) !important;
+}
+
+#history {
+  display: none;
+}
+
+.alert {
+  margin-top: 1rem;
+}
+
+.alert ul {
+  margin-left: 1rem;
+}
+
+table {
+  margin-top: 1.5rem;
+}
+
+table.show {
+  display: table !important;
+}
+
+#graph {
+  margin: 1rem 0;
+}

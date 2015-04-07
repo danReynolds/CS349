@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Biggui!</title>
+
+    <!--
+    All of your CSS must go in css/buggui.css. Do not add styles to individual elements.
+    All of your CSS must be your own -- you may not use third-party CSS, like Bootstrap.
+    -->
+    <link rel="stylesheet" href="css/buggui.css"/>
+    <style>
+        .marking-button {
+            float:right;
+        }
+        .marking-div-clear {
+            clear:both;
+        }
+    </style>
+</head>
+<body>
+
+<!-- This header can be replaced -->
+<h1>Biggui!</h1>
+
+<div id="app-container">
+    <!--
+         An attachment point to place all of your dynamically created content. Do not remove or
+         rename this div.
+    -->
+</div>
+
+<canvas id="canvas" height="600" width="800">
+</canvas>
+
+<div class="close-up">
+    <ul class="instructions">
+        <li>
+            <strong>Front and Back Bumpers:</strong>
+            Select the front or back black bumpers to alter the car's height.
+        </li>
+        <li>
+            <strong>Left and Right Bumpers:</strong>
+            Select the left or right bumpers to alter the car's width.
+        </li>
+        <li>
+            <strong>Tires:</strong>
+            Select the yellow stripes on the tires to change the width of the axles.
+        </li>
+        <li>
+            <strong>Tires:</strong>
+            Select the black front or back of the front tires to rotate the front tires.
+        </li>
+        <li>
+            <strong>Body:</strong>
+            Select anywhere in the middle of the car to move it from one spot to another.
+        </li>
+        <li>
+            <strong>Body:</strong>
+            Select near the front or back of the car's body to rotate it in place.
+        </li>
+        <li> Drive in style!</li>
+    </ul>
+    <div>
+        Car Close up
+    </div>
+    <canvas id="canvasCopy" height="400" width="400">
+    </canvas>
+</div>
+
+<!-- Ensure this is in your document so TAs can run unit tests -->
+<div id="unit-tests">
+
+    <!-- This button is for marking purposes to test your architecture. Do not remove it-->
+    <button class="marking-button">Mark Me!</button>
+    <div class="marking-div-clear"></div>
+
+    <a href="unit_tests.html">Run Unit Tests</a>
+</div>
+
+<script src="js/ext/underscore.js"></script>
+<script src="js/ext/affinetransform.js"></script>
+<script src="js/scene_graph.js"></script>
+<script src="js/buggui.js"></script>
+<script src="js/markers_code.js"></script>
+</body>
+</html>
